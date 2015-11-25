@@ -105,6 +105,44 @@ class RestApi implements IRestApi {
         etc...
 }
 ```
+
+---
+# Grunt
+A task named grunt-nimrod have been created to easily use the grunt task manager to generate the typescrips files.
+
+### Getting Started
+
+If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
+
+```shell
+npm install grunt-nimrod --save-dev
+```
+
+Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
+
+```js
+grunt.loadNpmTasks('grunt-nimrod');
+```
+
+### Example
+```
+module.exports = function(grunt) {
+  grunt.initConfig({
+    nimrod: {
+      default_options: {
+        options: {
+			module: 'typescript',
+			output: 'C:\\temp\\nimrod-test-generated',
+			files : ['C:\\path\\to\\assembly1\\assembly1.dll'
+				    ,'C:\\path\\to\\assembly2\\assembly2.dll']
+        }
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-nimrod');
+}
+```
+
 ---
 # Questions & Answers
 
