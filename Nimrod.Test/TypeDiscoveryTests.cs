@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using System.Web.Mvc;
+using Nimrod.Test.ModelExamples;
 
 namespace Nimrod.Test
 {
@@ -25,14 +26,7 @@ namespace Nimrod.Test
                 throw new NotImplementedException();
             }
         }
-        public class TestController : Controller
-        {
-            [HttpGet]
-            public JsonNetResult<bool> TestAction(string stringValue)
-            {
-                throw new NotImplementedException();
-            }
-        }
+
 
         public class GenericFoo<T>
         {

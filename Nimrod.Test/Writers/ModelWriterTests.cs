@@ -43,7 +43,6 @@ namespace Nimrod.Test
             }
             string ts = builder.ToString();
             Assert.IsFalse(ts.Contains("Foo"));
-
         }
 
         [Test]
@@ -99,6 +98,19 @@ namespace Nimrod.Test
             }
             string ts = builder.ToString();
             Assert.IsTrue(ts.Contains("export = IFuzz;"));
+        }
+
+        [Test]
+        public void WriteModel_Movie()
+        {
+            var writer = new ModelWriter(ModuleType.TypeScript);
+            var builder = new StringBuilder();
+            using (var stringWriter = new StringWriter(builder))
+            {
+                writer.Write(stringWriter, typeof(Movie));
+            }
+            string ts = builder.ToString();
+            
         }
 
     }

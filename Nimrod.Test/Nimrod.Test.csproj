@@ -96,6 +96,8 @@
   <ItemGroup>
     <Compile Include="ExtensionsTest.cs" />
     <Compile Include="JsonNetResult.cs" />
+    <Compile Include="ModelExamples\Controllers\MovieController.cs" />
+    <Compile Include="ModelExamples\Controllers\TestController.cs" />
     <Compile Include="ModelExamples\EnumViewModel.cs" />
     <Compile Include="ModelExamples\GenericClass.cs" />
     <Compile Include="ModelExamples\IgnoreDataMemberClass.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="TypeDiscoveryTests.cs" />
     <Compile Include="TypeExtensionsTest.cs" />
     <Compile Include="Writers\BaseWriterTests.cs" />
+    <Compile Include="Writers\ControllerWriterTests.cs" />
     <Compile Include="Writers\EnumWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ToTypescriptTests.cs" />
