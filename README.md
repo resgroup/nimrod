@@ -1,34 +1,13 @@
 # Nimrod
-An  ASP.NET MVC to TypeScript Converter
 
-# Usage
+Nimrod is an ASP.NET MVC to TypeScript Converter.
+That means that it will take all your exising ASP.NET MVC application, and generate TypeScript models and services correponding to your C# code.
+Generally, you have to write the model code two times, one time in the backend langage (Java, Ruby, PHP, C#), and one time in the frontend langage (JavaScript).
+Unless your backend is node.js. This implies a lot of boilerplate code.
 
-### Command line
+This library allow you to skip the step to rewrite your frontend code by generating all the TypeScript code for you, so you can use the power of strongly type langage like TypeScript.
 
-Use the Nimrod.Console utilities to generate files
-```
-Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\assembly1.dll:..\\assembly2.dll',
-```
-###  Options
-
-|Name|Alias|Description|
-|:----|:----|:-----|
-|--module|-m|Module mode, valid values are `typescript` for [typescript] modules style and `require` for [requirejs] modules|
-|--output|-o|Directory where files will be generated|
-|--files|-f|Assembly files to read, separated by a colon. Example : --files=bin\\Assembly1.dll:bin\\Assembly2.dll|
-|--verbose|-v|Prints all messages to standard output|
-|--help|-h|Prints all messages to standard output|
-
-# Features
-
-When you launch Nimrod, the following steps are going to happens:
-
- - Read all the assembly to search for class which inherits from [Controllers]
- - From thoses classes, search public method which have one of the following attribute [HttpGet], [HttpPost], [HttpPut], [HttpDelete]
- - Search all classes referenced by the generic return of those methodes (see below), and their arguments
- - Generate typescript files for all referenced classes, and for the controllers
- 
-### Example
+# Example
 
 C# code
 ```
@@ -47,7 +26,7 @@ public class MovieController : Controller
     }
 }
 ```
-TypeScript code
+Generated TypeScript code
 ```
 module Nimrod.Test.ModelExamples {
     export interface IMovie {
@@ -72,22 +51,15 @@ module Nimrod.Test.ModelExamples {
 }
 
 ```
-The interfaces `IRequestShortcutConfig`, `IRestApi` and `IPromise` should be added accordingly to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
+Interfaces `IRequestShortcutConfig` and `IPromise` should be added accordingly to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
 
 ```
-
-    export interface IRestApi {
-        Delete<T>(url: string, config?: IRequestShortcutConfig): IPromise<T>;
-        Get<T>(url: string, config?: IRequestShortcutConfig): IPromise<T>;
-        Post<T>(url: string, data: any, config?: IRequestShortcutConfig): IPromise<T>;
-        Put<T>(url: string, data: any, config?: IRequestShortcutConfig): IPromise<T>;
-    }
     export interface IRequestShortcutConfig extends ng.IRequestShortcutConfig {
     }
     export interface IPromise<T> extends ng.IPromise<T> {
     }
 ```
-The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. Here is an example with Angular:
+The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. Here is an example with Angular that will use the `$http` angular service:
 
 ```
 class RestApi implements IRestApi {
@@ -105,6 +77,33 @@ class RestApi implements IRestApi {
         etc...
 }
 ```
+
+# How does it works?
+
+When you launch Nimrod, the following steps are going to happen:
+
+ - Read all the assembly to search for class which inherits from [Web.Mvc.Controller](https://msdn.microsoft.com/library/system.web.mvc.controller)
+ - From thoses classes, search public method which have one of the following attribute [HttpGet], [HttpPost], [HttpPut], [HttpDelete]
+ - Search all classes referenced by the generic return of those methodes (see below), and their arguments
+ - Generate TypeScript files for all those classes
+
+# Usage
+
+### Command line
+
+Use the Nimrod.Console utilities to generate files
+```
+Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\assembly1.dll:..\\assembly2.dll',
+```
+###  Options
+
+|Name|Alias|Description|
+|:----|:----|:-----|
+|--module|-m|Module mode, valid values are `typescript` for [typescript] modules style and `require` for [requirejs] modules|
+|--output|-o|Directory where files will be generated|
+|--files|-f|Assembly files to read, separated by a colon. Example : --files=bin\\Assembly1.dll:bin\\Assembly2.dll|
+|--verbose|-v|Prints all messages to standard output|
+|--help|-h|Prints all messages to standard output|
 
 ---
 # Grunt
@@ -170,7 +169,6 @@ So we look at who built Babel, and it was a dude called [Nimrod], that's it!
    [search]: <https://www.npmjs.com/search?q=babel>
    [typescript]: <http://www.johnpapa.net/typescriptpost4>
    [requirejs]: <http://requirejs.org/>
-   [Controllers]: <https://msdn.microsoft.com/library/system.web.mvc.controller>
    [HttpGet]: <https://msdn.microsoft.com/library/system.web.mvc.httpgetattribute.aspx>
    [HttpPost]: <https://msdn.microsoft.com/library/system.web.mvc.httppostattribute.aspx>
    [HttpPut]: <https://msdn.microsoft.com/library/system.web.mvc.httpputattribute.aspx>
