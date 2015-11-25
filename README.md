@@ -13,7 +13,7 @@ Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\asse
 
 |Name|Alias|Description|
 |:----|:----|:-----|
-|--module|-m|Module mode, valid values are `typescript` for [typescript](tsModule) modules style and `require` for [require](requirejs) modules|
+|--module|-m|Module mode, valid values are `typescript` for [typescript] modules style and `require` for [requirejs] modules|
 |--output|-o|Directory where files will be generated|
 |--files|-f|Assembly files to read, separated by a colon. Example : --files=bin\\Assembly1.dll:bin\\Assembly2.dll|
 |--verbose|-v|Prints all messages to standard output|
@@ -23,7 +23,7 @@ Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\asse
 
 When you launch Nimrod, the following steps are going to happens:
 
- - Read all the assembly to search for class which inherits from [Controllers](controllers)
+ - Read all the assembly to search for class which inherits from [Controllers]
  - From thoses classes, search public method which have one of the following attribute [HttpGet], [HttpPost], [HttpPut], [HttpDelete]
  - Search all classes referenced by the generic return of those methodes (see below), and their arguments
  - Generate typescript files for all referenced classes, and for the controllers
@@ -123,9 +123,9 @@ We plan to deliver a version of the converter only for POCOs, but pull requests 
  - Docs
  - Limitations on generics, specifically return embed generics. IE : a method returning a `Json<List<Tuple<int, string>>>` is not going to work
 
-   [tsModule]: <http://www.johnpapa.net/typescriptpost4>
+   [typescript]: <http://www.johnpapa.net/typescriptpost4>
    [requirejs]: <http://requirejs.org/>
-   [controllers]: <https://msdn.microsoft.com/library/system.web.mvc.controller>
+   [Controllers]: <https://msdn.microsoft.com/library/system.web.mvc.controller>
    [HttpGet]: <https://msdn.microsoft.com/library/system.web.mvc.httpgetattribute.aspx>
    [HttpPost]: <https://msdn.microsoft.com/library/system.web.mvc.httppostattribute.aspx>
    [HttpPut]: <https://msdn.microsoft.com/library/system.web.mvc.httpputattribute.aspx>
