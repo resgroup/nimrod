@@ -88,6 +88,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeDiscovery.cs" />
     <Compile Include="Writers\BaseWriter.cs" />
+    <Compile Include="Writers\StaticWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

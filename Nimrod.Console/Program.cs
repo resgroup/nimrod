@@ -76,6 +76,10 @@ namespace Nimrod.Console
                             .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
                             .Distinct()
                             .ToList();
+                        System.Console.Write($"Writing static files...");
+                        WriteStaticFiles(foldersManager, options.ModuleType);
+                        System.Console.WriteLine($" Done!");
+
                         System.Console.Write($"Writing {toWrites.Count} files...");
                         toWrites.ForEach(t =>
                         {
@@ -101,33 +105,36 @@ namespace Nimrod.Console
             }
         }
 
+        static private void WriteStaticFiles(FoldersManager foldersManager, ModuleType module)
+        {
+            var writer = new StaticWriter(module);
+            using (var fileWriter = File.CreateText(Path.Combine(foldersManager.OutputFolderPath, "IRestApi.ts")))
+            {
+                writer.Write(fileWriter);
+            }
+        }
         static private void WriteType(FoldersManager foldersManager, Type type, ModuleType module)
         {
             BaseWriter writer;
 
-            string folder;
             if (type.IsWebMvcController())
             {
                 writer = new ControllerWriter(module);
-                folder = foldersManager.ControllersPath;
             }
             else if (type.IsEnum)
             {
                 writer = new EnumWriter(module);
-                folder = foldersManager.EnumsPath;
             }
             else if (type.IsValueType)
             {
-                folder = foldersManager.SerializablesPath;
                 writer = new SerializableWriter(module);
             }
             else
             {
-                folder = foldersManager.ModelsPath;
                 writer = new ModelWriter(module);
             }
             
-            using (var fileWriter = File.CreateText(Path.Combine(folder, type.GetTypeScriptFilename())))
+            using (var fileWriter = File.CreateText(Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename())))
             {
                 writer.Write(fileWriter, type);
             }

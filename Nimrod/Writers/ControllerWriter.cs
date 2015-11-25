@@ -25,7 +25,8 @@ namespace Nimrod
             else if (Module == ModuleType.Require)
             {
                 WriteImports(writer, type);
-                WriteLine(writer, $"import RestApi = require('../ServerApi/RestApi');");
+                WriteLine(writer, $"import Nimrod = require('../Nimrod/Nimrod');");
+                WriteLine(writer, $"import IRestApi = require('./IRestApi');");
             }
             WriteInterface(writer, type);
             WriteImplementation(writer, type);
@@ -142,7 +143,15 @@ namespace Nimrod
         {
             bool needNamespace = Module == ModuleType.TypeScript;
             Write(writer, method.Name);
-            Write(writer, "(restApi: RestApi.IRestApi");
+
+            if (Module == ModuleType.TypeScript)
+            {
+                Write(writer, "(restApi: Nimrod.IRestApi");
+            }
+            else
+            {
+                Write(writer, "(restApi: IRestApi");
+            }
             foreach (var methodParameter in method.GetParameters())
             {
                 Write(writer, ", ");
@@ -150,7 +159,7 @@ namespace Nimrod
                 Write(writer, ": ");
                 Write(writer, methodParameter.ParameterType.ToTypeScript(needNamespace));
             }
-            Write(writer, ", config?: RestApi.IRequestShortcutConfig)");
+            Write(writer, ", config?: Nimrod.IRequestShortcutConfig)");
             string returnType;
             if (method.ReturnType.GetGenericArguments().Length == 1)
             {
@@ -163,7 +172,7 @@ namespace Nimrod
                 // the return type is not wrapped, we can't determine it, so just a basic object
                 returnType = "{}";
             }
-            Write(writer, $": RestApi.IPromise<{returnType}>");
+            Write(writer, $": Nimrod.IPromise<{returnType}>");
         }
     }
 }
