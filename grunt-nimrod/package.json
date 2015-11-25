@@ -3,10 +3,16 @@
   "description": "An ASP.NET MVC to TypeScript Converter",
   "version": "0.1.2",
   "homepage": "https://github.com/resgroup/nimrod",
-  "author": {
+  "contributors": [ {
+    "name": "David Stevens",
+    "email": "david.stevens@eoleres.com"
+  },{
+    "name": "Clarisse Bertiner",
+    "email": "clarisse.bertiner@eoleres.com"
+  },{
     "name": "Cyril Gandon",
     "email": "cyril.gandon@eoleres.com"
-  },
+  } ],
   "repository": {
     "type": "git",
     "url": "https://github.com/resgroup/nimrod.git"
@@ -27,15 +33,16 @@
     "test": "grunt test"
   },
   "devDependencies": {
+    "grunt": "~0.4.5",
     "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-copy": "^0.8.2",
     "grunt-contrib-nodeunit": "^0.3.3",
-	"grunt-exec": "^0.4.6",
-    "grunt": "~0.4.5"
+    "grunt-exec": "^0.4.6"
   },
   "peerDependencies": {
     "grunt": "~0.4.5"
   },
   "keywords": [
-    "gruntplugin"
+    "typescript c# .net asp.netmvc converter"
   ]
 }

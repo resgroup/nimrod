@@ -12,7 +12,7 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('nimrod', 'An ASP.NET MVC to TypeScript Converter', function() {
 
 	  var options = this.options();
-	  var cmd = __dirname + '\\Release\\Nimrod.Console.exe -m '+ options.module +' -o '+options.output+' --files=' + options.files.join(':');
+	  var cmd = __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe -m '+ options.module +' -o '+options.output+' --files=' + options.files.join(':');
 	  
 	  this.async();
 

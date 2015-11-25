@@ -15,9 +15,21 @@ module.exports = function(grunt) {
 
     // Before generating any new files, remove any previously-created files.
     clean: {
-      tests: ['tmp']
+      insideFolder: ['tasks/Nimrod.Console/*'],
+	  folder: ['tasks/Nimrod.Console']
     },
-
+	copy: {
+		default: {
+			files: [
+				{ 
+					expand: false, 
+					flatten: true,
+					src: '../Nimrod.Console/bin/Release/**/*', 
+					dest: 'tasks/Release/' 
+				},
+			],
+		},
+	},
     // Configuration to be run (and then tested).
     nimrod: {
       default_options: {
@@ -40,15 +52,11 @@ module.exports = function(grunt) {
   // Actually load this plugin's task(s).
   grunt.loadTasks('tasks');
 
-  // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
-  // Whenever the "test" task is run, first clean the "tmp" dir, then run this
-  // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'nimrod', 'nodeunit']);
-
-  // By default, lint and run all tests.
-  grunt.registerTask('default', ['nimrod:default_options']);
+  grunt.registerTask('default', ['clean', 'copy:default', 'nimrod:default_options']);
+  
+  grunt.registerTask('publish', ['clean', 'copy:default']);
 
 };

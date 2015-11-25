@@ -116,6 +116,11 @@ On the C# side, the return type of a controller method is always wrapped inside 
 
 We plan to deliver a version of the converter only for POCOs, but pull requests are welcomed
 
+**Q: Where did the name 'Nimrod' come from?**
+
+Like every other convertor/translator in the world, we would ilke to name the library 'Babel'. That seems not a good idea on a [search].
+So we look at who built Babel, and it was a dude called [Nimrod], that's it!
+
 
 # Todos
 
@@ -123,6 +128,8 @@ We plan to deliver a version of the converter only for POCOs, but pull requests 
  - Docs
  - Limitations on generics, specifically return embed generics. IE : a method returning a `Json<List<Tuple<int, string>>>` is not going to work
 
+   [Nimrod]: <https://en.wikipedia.org/wiki/Nimrod>
+   [search]: <https://www.npmjs.com/search?q=babel>
    [typescript]: <http://www.johnpapa.net/typescriptpost4>
    [requirejs]: <http://requirejs.org/>
    [Controllers]: <https://msdn.microsoft.com/library/system.web.mvc.controller>
