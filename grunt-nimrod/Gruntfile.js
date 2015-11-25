@@ -2,7 +2,7 @@
  * nimrod
  * https://github.com/resgroup/nimrod
  *
- * Copyright (c) 2015 Cyril Gandon
+ * Copyright (c) 2015 RES
  * Licensed under the MIT license.
  */
 
@@ -23,12 +23,9 @@ module.exports = function(grunt) {
       default_options: {
         options: {
 			module: 'typescript',
-			output: '.\\Views\\ServerApi.Generated',
+			output: 'C:\\temp\\nimrod-test-generated',
 			files : ['C:\\SoftwareGit\\software\\WikiProject\\Wiki\\bin\\RES.WikiProject.Wiki.dll'
 				,'C:\\SoftwareGit\\software\\WikiProject\\Wiki\\bin\\RES.Insee.Wiki.dll']
-        },
-        files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
         }
       }
     },
