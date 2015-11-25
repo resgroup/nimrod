@@ -1,8 +1,11 @@
 # Nimrod
 
 Nimrod is an ASP.NET MVC to TypeScript Converter.
+
 That means that it will take all your exising ASP.NET MVC application, and generate TypeScript models and services correponding to your C# code.
+
 Generally, you have to write the model code two times, one time in the backend langage (Java, Ruby, PHP, C#), and one time in the frontend langage (JavaScript).
+
 Unless your backend is node.js. This implies a lot of boilerplate code.
 
 This library allow you to skip the step to rewrite your frontend code by generating all the TypeScript code for you, so you can use the power of strongly type langage like TypeScript.
@@ -37,10 +40,10 @@ module Nimrod.Test.ModelExamples {
 }
 module Nimrod.Test.ModelExamples {
     export interface IMovieService {
-        Movie(restApi: RestApi.IRestApi, id: number, config?: RestApi.IRequestShortcutConfig): RestApi.IPromise<Nimrod.Test.ModelExamples.IMovie>;
+        Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie>;
     }
     export class MovieService implements IMovieService {
-        public Movie(restApi: RestApi.IRestApi, id: number, config?: RestApi.IRequestShortcutConfig): RestApi.IPromise<Nimrod.Test.ModelExamples.IMovie> {
+        public Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie> {
             (config || (config = {})).params = {
                 id: id,
             };
@@ -54,27 +57,38 @@ module Nimrod.Test.ModelExamples {
 Interfaces `IRequestShortcutConfig` and `IPromise` should be added accordingly to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
 
 ```
+module Nimrod {
     export interface IRequestShortcutConfig extends ng.IRequestShortcutConfig {
     }
-    export interface IPromise<T> extends ng.IPromise<T> {
+	export interface IPromise<T> extends ng.IPromise<T> {
     }
+}
 ```
-The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. Here is an example with Angular that will use the `$http` angular service:
+The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. The wrapper have to implement the `Nimrod.IRestApi` interface which is composed of the four methods Get, Post, Put and Delete.
+
+Example with Angular and the [$http](https://docs.angularjs.org/api/ng/service/$http) angular service:
 
 ```
-class RestApi implements IRestApi {
-        static $inject: string[] = ['$http', '$q'];
-        constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
-        }
+class RestApi implements Nimrod.IRestApi {
+    static $inject: string[] = ['$http'];
+    constructor(private $http: ng.IHttpService) {
+    }
 
-        public Delete<T>(url: string, config?: ng.IRequestShortcutConfig) {
-            var deferred = this.$q.defer<T>();
-            this.$http.delete<T>(url, config)
-                .success(response => { deferred.resolve(response); })
-                .error((response, status, headers, config) => deferred.reject(response));
-            return deferred.promise;
-        }
-        etc...
+    public Get<T>(url: string, config?: ng.IRequestShortcutConfig) {
+        return this.$http.get<T>(url, config)
+    }
+
+    public Post<T>(url: string, data: any, config?: ng.IRequestShortcutConfig) {
+        return this.$http.post<T>(url, data, config);
+    }
+
+    public Put<T>(url: string, data: any, config?: ng.IRequestShortcutConfig) {
+        return this.$http.put<T>(url, data, config);
+    }
+
+    public Delete<T>(url: string, config?: ng.IRequestShortcutConfig) {
+        return this.$http.delete<T>(url, config);
+    }
 }
 ```
 
