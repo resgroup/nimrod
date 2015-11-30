@@ -3,16 +3,20 @@
   "description": "An ASP.NET MVC to TypeScript Converter",
   "version": "0.1.3",
   "homepage": "https://github.com/resgroup/nimrod",
-  "contributors": [ {
-    "name": "David Stevens",
-    "email": "david.stevens@eoleres.com"
-  },{
-    "name": "Clarisse Bertiner",
-    "email": "clarisse.bertiner@eoleres.com"
-  },{
-    "name": "Cyril Gandon",
-    "email": "cyril.gandon@eoleres.com"
-  } ],
+  "contributors": [
+    {
+      "name": "David Stevens",
+      "email": "david.stevens@eoleres.com"
+    },
+    {
+      "name": "Clarisse Bertiner",
+      "email": "clarisse.bertiner@eoleres.com"
+    },
+    {
+      "name": "Cyril Gandon",
+      "email": "cyril.gandon@eoleres.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/resgroup/nimrod.git"
@@ -37,7 +41,8 @@
     "grunt-contrib-clean": "^0.5.0",
     "grunt-contrib-copy": "^0.8.2",
     "grunt-contrib-nodeunit": "^0.3.3",
-    "grunt-exec": "^0.4.6"
+    "grunt-exec": "^0.4.6",
+    "grunt-ts": "^5.2.0"
   },
   "peerDependencies": {
     "grunt": "~0.4.5"

@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GruntNimrod", "GruntNimrod.csproj", "{96F91691-321B-4346-9B38-6DDDB63F6C2B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96F91691-321B-4346-9B38-6DDDB63F6C2B}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{96F91691-321B-4346-9B38-6DDDB63F6C2B}.Release|Any CPU.ActiveCfg = Debug|x86
+		{96F91691-321B-4346-9B38-6DDDB63F6C2B}.Release|Any CPU.Build.0 = Debug|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

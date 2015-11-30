@@ -10,7 +10,7 @@ namespace Nimrod.Console
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace Nimrod.Console
                     if (options.Help)
                     {
                         string helpText = CommandLine.Text.HelpText.AutoBuild(options).ToString();
-                        System.Console.WriteLine(helpText);
+                        options.WriteLine(helpText);
                     }
                     else
                     {
@@ -29,7 +29,7 @@ namespace Nimrod.Console
                         var files = new List<FileInfo>();
                         foreach (var filePath in options.Files)
                         {
-                            if (options.Verbose) System.Console.Write($"Reading file {filePath}...");
+                            options.Write($"Reading file {filePath}...");
 
                             if (!File.Exists(filePath))
                             {
@@ -38,12 +38,12 @@ namespace Nimrod.Console
                             else
                             {
                                 files.Add(new FileInfo(filePath));
-                                if (options.Verbose) System.Console.WriteLine($"OK!");
+                                options.WriteLine($"OK!");
 
                             }
                         }
 
-                        System.Console.WriteLine("outputFolderPath = " + outputFolderPath);
+                        options.WriteLine("outputFolderPath = " + outputFolderPath);
 
                         var directories = files.Select(f => f.DirectoryName).Distinct();
 
@@ -53,41 +53,41 @@ namespace Nimrod.Console
                         {
                             foreach (var assemblyFile in Directory.EnumerateFiles(directory, "*.dll"))
                             {
-                                if (options.Verbose) System.Console.Write($"Loading assembly {assemblyFile}");
+                                options.Write($"Loading assembly {assemblyFile}");
                                 Assembly.LoadFile(Path.Combine(directory, assemblyFile));
-                                if (options.Verbose) System.Console.WriteLine($" Done!");
+                                options.WriteLine($" Done!");
                             }
                         }
 
                         var foldersManager = new FoldersManager(outputFolderPath);
-                        if (options.Verbose) System.Console.Write($"Recursive deletion of {outputFolderPath}...");
+                        options.Write($"Recursive deletion of {outputFolderPath}...");
                         foldersManager.Recreate();
-                        if (options.Verbose) System.Console.WriteLine($" Done!");
+                        options.WriteLine($" Done!");
 
 
                         var assemblies = files.Select(t => Assembly.LoadFile(t.FullName));
 
-                        System.Console.WriteLine($"Discovering types..");
+                        options.Write($"Discovering types..");
                         var types = TypeDiscovery.GetControllerTypes(assemblies, true).ToList();
-                        System.Console.WriteLine($" Done!");
+                        options.WriteLine($" Done!");
                         // Write all types except the ones in System
                         var toWrites = types
                             .Where(t => t.IsSystem() == false)
                             .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
                             .Distinct()
                             .ToList();
-                        System.Console.Write($"Writing static files...");
+                        options.Write($"Writing static files...");
                         WriteStaticFiles(foldersManager, options.ModuleType);
-                        System.Console.WriteLine($" Done!");
+                        options.WriteLine($" Done!");
 
-                        System.Console.Write($"Writing {toWrites.Count} files...");
+                        options.Write($"Writing {toWrites.Count} files...");
                         toWrites.ForEach(t =>
                         {
-                            System.Console.Write($"Writing {t.Name}...");
+                            options.Write($"Writing {t.Name}...");
                             WriteType(foldersManager, t, options.ModuleType);
-                            System.Console.WriteLine($" Done!");
+                            options.WriteLine($" Done!");
                         });
-                        System.Console.WriteLine($" Done!");
+                        options.WriteLine($"Writing {toWrites.Count} files...Done!");
                     }
                 }
                 else
@@ -101,8 +101,10 @@ namespace Nimrod.Console
             catch (Exception e)
             {
                 System.Console.WriteLine(e.ToString());
-                Environment.Exit(-1);
+                //Environment.Exit(-1);
             }
+            //Environment.Exit(-1);
+            return 0;
         }
 
         static private void WriteStaticFiles(FoldersManager foldersManager, ModuleType module)
@@ -133,7 +135,7 @@ namespace Nimrod.Console
             {
                 writer = new ModelWriter(module);
             }
-            
+
             using (var fileWriter = File.CreateText(Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename())))
             {
                 writer.Write(fileWriter, type);

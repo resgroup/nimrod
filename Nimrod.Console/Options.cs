@@ -28,6 +28,19 @@ namespace Nimrod.Console
         [OptionList('f', "files", Required = true, Separator = ':', HelpText = "Specify files, separated by a colon. Example --files=bin\\Assembly1.dll:bin\\Assembly2.dll'")]
         public IList<string> Files { get; set; }
 
-
+        public void WriteLine(string value)
+        {
+            if (Verbose)
+            {
+                System.Console.WriteLine(value);
+            }
+        }
+        public void Write(string value)
+        {
+            if (Verbose)
+            {
+                System.Console.Write(value);
+            }
+        }
     }
 }
