@@ -101,9 +101,8 @@ namespace Nimrod.Console
             catch (Exception e)
             {
                 System.Console.WriteLine(e.ToString());
-                //Environment.Exit(-1);
+                Environment.Exit(-1);
             }
-            //Environment.Exit(-1);
             return 0;
         }
 

@@ -17,7 +17,7 @@ export interface IGruntNimrodOptions {
 module.exports = function (grunt: IGrunt) {
     grunt.registerMultiTask('nimrod', 'An ASP.NET MVC to TypeScript Converter', function () {
 
-        var task = <grunt.task.ITask>this;
+        var task = <grunt.task.ITask>this; 
         var done = task.async();
 
         var options = task.options<IGruntNimrodOptions>({});
@@ -26,7 +26,7 @@ module.exports = function (grunt: IGrunt) {
         if (options.verbose === true) {
             verbose = ' --verbose';
         }
-        console.log(__dirname);
+        
         var cmd = __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
 
         var childProcess = child.exec(cmd);

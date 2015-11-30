@@ -8,7 +8,6 @@ module.exports = function (grunt) {
         if (options.verbose === true) {
             verbose = ' --verbose';
         }
-        console.log(__dirname);
         var cmd = __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
         var childProcess = child.exec(cmd);
         childProcess.stdout.on('data', function (data) {
