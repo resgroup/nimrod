@@ -17,7 +17,7 @@ This library allows you to skip the step to rewrite your frontend code by genera
 # Example
 
 C# code
-```
+```csharp
 public class Movie
 {
     public string Name { get; }
@@ -34,7 +34,7 @@ public class MovieController : Controller
 }
 ```
 Generated TypeScript code
-```
+```ts
 module Nimrod.Test.ModelExamples {
     export interface IMovie {
         Name: string;
@@ -60,7 +60,7 @@ module Nimrod.Test.ModelExamples {
 ```
 You will need to implemented interfaces `IRequestShortcutConfig` and `IPromise` according to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
 
-```
+```ts
 module Nimrod {
     export interface IRequestShortcutConfig extends ng.IRequestShortcutConfig {
     }
@@ -72,7 +72,7 @@ The `restApi` parameter is a wrapper you must write that will wrap the logic of 
 
 Example with Angular and the [$http](https://docs.angularjs.org/api/ng/service/$http) angular service:
 
-```
+```ts
 class RestApi implements Nimrod.IRestApi {
     static $inject: string[] = ['$http'];
     constructor(private $http: ng.IHttpService) {
@@ -110,7 +110,7 @@ When you launch Nimrod, the following steps happen:
 ### Command line
 
 Use the Nimrod.Console utilities to generate files
-```
+```shell
 Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\assembly1.dll:..\\assembly2.dll',
 ```
 ###  Options
@@ -142,7 +142,7 @@ grunt.loadNpmTasks('grunt-nimrod');
 ```
 
 ### Example
-```
+```js
 module.exports = function(grunt) {
   grunt.initConfig({
     nimrod: {
