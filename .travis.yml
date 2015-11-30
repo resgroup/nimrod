@@ -1,2 +1,8 @@
 language: csharp
 solution: Nimrod.sln
+install:
+  - nuget restore Nimrod.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release Nimrod.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Nimrod.Test/bin/Release/Nimrod.Test.dll
