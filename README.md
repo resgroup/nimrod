@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cyrilgandon/nimrod.svg)](https://travis-ci.org/cyrilgandon/nimrod)
+
 # Nimrod
 
 Nimrod is an ASP.NET MVC to TypeScript Converter.
