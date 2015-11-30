@@ -23,7 +23,6 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_WriteImports()
         {
-            var writer = new ModelWriter(ModuleType.TypeScript);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {

@@ -109,7 +109,7 @@ namespace Nimrod.Test
             {
                 writer.Write(stringWriter, typeof(Movie));
             }
-            string ts = builder.ToString();
+            //string ts = builder.ToString();
             
         }
 

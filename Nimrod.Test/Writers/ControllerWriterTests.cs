@@ -21,7 +21,7 @@ namespace Nimrod.Test
             {
                 writer.Write(stringWriter, typeof(MovieController));
             }
-            string ts = builder.ToString();
+            //string ts = builder.ToString();
         }
         
 

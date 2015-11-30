@@ -34,7 +34,6 @@ namespace Nimrod
 
             foreach (var enumValue in type.GetEnumValues())
             {
-                var description = GetEnumDescription(enumValue);
                 var enumName = type.GetEnumName(enumValue);
                 if (underlyingType == typeof(int))
                 {
