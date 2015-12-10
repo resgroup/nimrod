@@ -17,6 +17,7 @@ namespace Nimrod.Test
         {
             Assert.AreEqual("string[]", typeof(List<string>).ToTypeScript());
             Assert.AreEqual("string[]", typeof(IEnumerable<string>).ToTypeScript());
+            Assert.AreEqual("string[]", typeof(ICollection<string>).ToTypeScript());
             Assert.AreEqual("string[]", typeof(string[]).ToTypeScript(false));
         }
 

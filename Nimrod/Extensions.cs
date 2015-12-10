@@ -135,7 +135,8 @@ namespace Nimrod
                 {
                     bool isGenericArray = type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
                                 || type.GetGenericTypeDefinition() == typeof(List<>)
-                                || type.GetGenericTypeDefinition() == typeof(IList<>);
+                                || type.GetGenericTypeDefinition() == typeof(IList<>)
+                                || type.GetGenericTypeDefinition() == typeof(ICollection<>);
                     if (isGenericArray && genericArguments.Length == 1)
                     {
                         return genericArguments[0].ToTypeScript(includeNamespace) + "[]";
