@@ -3,63 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Diagnostics.Contracts;
 
 namespace Nimrod
 {
     /// <summary>
     /// Base class to write typescript file
     /// </summary>
-    public abstract class BaseWriter
+    public class BaseWriter
     {
 
+        protected AutoIndentingTextWriter Writer { get; }
+
         private int Indent { get; set; }
+        private bool AtStartOfLine { get; set; }
 
         public ModuleType Module { get; }
 
-        public BaseWriter(ModuleType module)
+        public BaseWriter(TextWriter writer, ModuleType module)
         {
+            Contract.Requires(writer != null);
+            
+            Writer = new AutoIndentingTextWriter(writer, "    ");
             Module = module;
             Indent = 0;
+            AtStartOfLine = true;
         }
 
-        public abstract void Write(TextWriter writer, Type type);
+        public virtual void Write(Type type) { }
 
-        protected void IncrementIndent()
+        protected void Write(string text)
         {
-            Indent++;
-        }
-
-        protected void DecrementIndent()
-        {
-            Indent--;
-        }
-
-        protected void WriteIndent(TextWriter writer)
-        {
-            for (int i = 0; i < Indent; i++)
+            if (AtStartOfLine)
             {
-                Write(writer, "    ");   // 4 spaces
+                Writer.WriteIndent();
+                AtStartOfLine = false;
             }
+
+            Writer.Write(text);
         }
 
-        protected void Write(TextWriter writer, string text)
+        protected void WriteLine(string line)
         {
-            writer.Write(text);
+            Writer.WriteLine(line);
+            AtStartOfLine = true;
         }
 
-        protected void WriteLine(TextWriter writer, string line)
+        protected void WriteLine()
         {
-            WriteIndent(writer);
-            writer.WriteLine(line);
-        }
-
-        protected void WriteLine(TextWriter writer)
-        {
-            writer.WriteLine();
+            Writer.WriteLine();
+            AtStartOfLine = true;
         }
 
 
-        public static void WriteImports(TextWriter writer, IEnumerable<Type> importedTypes, IEnumerable<Type> exclude = null)
+        public void WriteImports(IEnumerable<Type> importedTypes, IEnumerable<Type> exclude = null)
         {
             var distinctByTemplates = importedTypes
                 .SelectMany(type => type.ReferencedTypes().Concat(new[] { type.IsGenericType ? type.GetGenericTypeDefinition() : type }))
@@ -72,7 +69,7 @@ namespace Nimrod
                 {
                     var typeName = type.ToTypeScript(false, false);
                     var moduleName = type.TypeScriptModuleName();
-                    writer.WriteLine($"import {typeName} = require('./{moduleName}');");
+                    Writer.WriteLine($"import {typeName} = require('./{moduleName}');");
                 }
             }
         }

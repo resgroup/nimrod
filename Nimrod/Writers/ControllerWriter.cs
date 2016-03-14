@@ -11,33 +11,31 @@ namespace Nimrod
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class ControllerWriter : BaseWriter
     {
-        public ControllerWriter(ModuleType moduleType) : base(moduleType)
+        public ControllerWriter(TextWriter writer, ModuleType moduleType) : base(writer, moduleType)
         {
         }
 
-        public override void Write(TextWriter writer, Type type)
+        public override void Write(Type type)
         {
             if (Module == ModuleType.TypeScript)
             {
-                WriteLine(writer, string.Format("module {0} {1}", type.Namespace, '{'));
-                IncrementIndent();
+                WriteLine(string.Format("module {0} {1}", type.Namespace, '{'));
             }
             else if (Module == ModuleType.Require)
             {
-                WriteImports(writer, type);
-                WriteLine(writer, $"import Nimrod = require('../Nimrod/Nimrod');");
-                WriteLine(writer, $"import IRestApi = require('./IRestApi');");
+                WriteImports(type);
+                WriteLine($"import Nimrod = require('../Nimrod/Nimrod');");
+                WriteLine($"import IRestApi = require('./IRestApi');");
             }
-            WriteInterface(writer, type);
-            WriteImplementation(writer, type);
+            WriteInterface(type);
+            WriteImplementation(type);
             if (Module == ModuleType.TypeScript)
             {
-                DecrementIndent();
-                WriteLine(writer, "}");
+                WriteLine("}");
             }
         }
 
-        public static void WriteImports(TextWriter writer, Type controllerType)
+        public void WriteImports(Type controllerType)
         {
             var importedTypes = new HashSet<Type>();
             foreach (var method in TypeDiscovery.GetControllerActions(controllerType))
@@ -51,45 +49,39 @@ namespace Nimrod
                     importedTypes.Add(arg);
                 }
             }
-            WriteImports(writer, importedTypes);
+            WriteImports(importedTypes);
         }
 
 
-        public void WriteInterface(TextWriter writer, Type type)
+        public void WriteInterface(Type type)
         {
-            WriteLine(writer, string.Format("export interface I{0} {1}", type.Name.Replace("Controller", "Service"), '{'));
-            IncrementIndent();
+            WriteLine(string.Format("export interface I{0} {1}", type.Name.Replace("Controller", "Service"), '{'));
 
             foreach (var method in TypeDiscovery.GetControllerActions(type))
             {
-                WriteIndent(writer);
-                WriteMethodSignature(writer, method);
-                Write(writer, ";");
-                WriteLine(writer);
+                WriteMethodSignature(method);
+                Write(";");
+                WriteLine();
             }
 
-            DecrementIndent();
-            WriteLine(writer, "}");
+            WriteLine("}");
         }
 
-        public void WriteImplementation(TextWriter writer, Type type)
+        public void WriteImplementation(Type type)
         {
             bool needNamespace = Module == ModuleType.TypeScript;
             var serviceName = type.Name.Replace("Controller", "Service");
-            WriteLine(writer, $"export class {serviceName} implements I{serviceName} {{");
-            IncrementIndent();
+            WriteLine($"export class {serviceName} implements I{serviceName} {{");
 
             foreach (var method in TypeDiscovery.GetControllerActions(type))
             {
                 var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
                 var parameters = method.GetParameters().AsEnumerable();
 
-                WriteIndent(writer);
-                Write(writer, "public ");
-                WriteMethodSignature(writer, method);
-                Write(writer, " {");
-                WriteLine(writer);
-                IncrementIndent();
+                Write("public ");
+                WriteMethodSignature(method);
+                Write(" {");
+                WriteLine();
                 string genericArgString;
                 var genericArguments = method.ReturnType.GetGenericArguments();
                 if (genericArguments.Length == 0)
@@ -105,61 +97,55 @@ namespace Nimrod
 
                 if (httpVerb == HttpMethodAttribute.Get || httpVerb == HttpMethodAttribute.Delete)
                 {
-                    WriteLine(writer, "(config || (config = {})).params = {");
-                    IncrementIndent();
+                    WriteLine("(config || (config = {})).params = {");
                     foreach (var methodParameter in parameters)
                     {
-                        WriteLine(writer, $"{methodParameter.Name}: {methodParameter.Name},");
+                        WriteLine($"{methodParameter.Name}: {methodParameter.Name},");
                     }
-                    DecrementIndent();
-                    WriteLine(writer, "};");
-                    WriteLine(writer, $"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', config);");
+                    WriteLine("};");
+                    WriteLine($"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', config);");
                 }
                 else
                 {
-                    WriteLine(writer, "var data = {");
-                    IncrementIndent();
+                    WriteLine("var data = {");
                     foreach (var methodParameter in parameters)
                     {
-                        WriteLine(writer, $"{methodParameter.Name}: {methodParameter.Name},");
+                        WriteLine($"{methodParameter.Name}: {methodParameter.Name},");
                     }
-                    DecrementIndent();
-                    WriteLine(writer, "};");
-                    WriteLine(writer, $"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', data, config);");
+                    WriteLine("};");
+                    WriteLine($"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', data, config);");
                 }
-                DecrementIndent();
-                WriteLine(writer, "}");
+                WriteLine("}");
             }
 
-            DecrementIndent();
-            WriteLine(writer, "}");
+            WriteLine("}");
             if (Module == ModuleType.TypeScript)
             {
-                WriteLine(writer, $"service('serverApi.{serviceName}', {serviceName});");
+                WriteLine($"service('serverApi.{serviceName}', {serviceName});");
             }
         }
 
-        private void WriteMethodSignature(TextWriter writer, MethodInfo method)
+        private void WriteMethodSignature(MethodInfo method)
         {
             bool needNamespace = Module == ModuleType.TypeScript;
-            Write(writer, method.Name);
+            Write(method.Name);
 
             if (Module == ModuleType.TypeScript)
             {
-                Write(writer, "(restApi: Nimrod.IRestApi");
+                Write("(restApi: Nimrod.IRestApi");
             }
             else
             {
-                Write(writer, "(restApi: IRestApi");
+                Write("(restApi: IRestApi");
             }
             foreach (var methodParameter in method.GetParameters())
             {
-                Write(writer, ", ");
-                Write(writer, methodParameter.Name);
-                Write(writer, ": ");
-                Write(writer, methodParameter.ParameterType.ToTypeScript(needNamespace));
+                Write(", ");
+                Write(methodParameter.Name);
+                Write(": ");
+                Write(methodParameter.ParameterType.ToTypeScript(needNamespace));
             }
-            Write(writer, ", config?: Nimrod.IRequestShortcutConfig)");
+            Write(", config?: Nimrod.IRequestShortcutConfig)");
             string returnType;
             if (method.ReturnType.GetGenericArguments().Length == 1)
             {
@@ -172,7 +158,7 @@ namespace Nimrod
                 // the return type is not wrapped, we can't determine it, so just a basic object
                 returnType = "{}";
             }
-            Write(writer, $": Nimrod.IPromise<{returnType}>");
+            Write($": Nimrod.IPromise<{returnType}>");
         }
     }
 }

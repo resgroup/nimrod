@@ -126,26 +126,26 @@ namespace Nimrod
         {
             BaseWriter writer;
 
-            if (type.IsWebMvcController())
-            {
-                writer = new ControllerWriter(module);
-            }
-            else if (type.IsEnum)
-            {
-                writer = new EnumWriter(module);
-            }
-            else if (type.IsValueType)
-            {
-                writer = new SerializableWriter(module);
-            }
-            else
-            {
-                writer = new ModelWriter(module);
-            }
-
             using (var fileWriter = this.fileSystem.File.CreateText(this.fileSystem.Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename())))
             {
-                writer.Write(fileWriter, type);
+                if (type.IsWebMvcController())
+                {
+                    writer = new ControllerWriter(fileWriter, module);
+                }
+                else if (type.IsEnum)
+                {
+                    writer = new EnumWriter(fileWriter, module);
+                }
+                else if (type.IsValueType)
+                {
+                    writer = new SerializableWriter(fileWriter, module);
+                }
+                else
+                {
+                    writer = new ModelWriter(fileWriter, module);
+                }
+
+                writer.Write(type);
             }
         }
     }

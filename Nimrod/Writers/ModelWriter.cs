@@ -10,20 +10,19 @@ namespace Nimrod
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class ModelWriter : BaseWriter
     {
-        public ModelWriter(ModuleType module) : base(module)
+        public ModelWriter(TextWriter writer, ModuleType moduleType) : base(writer, moduleType)
         {
         }
 
-        public override void Write(TextWriter writer, Type type)
+        public override void Write(Type type)
         {
             bool needNamespace = Module == ModuleType.TypeScript;
             var tsClassType = type.ToTypeScript(false);
 
             if (Module == ModuleType.TypeScript)
             {
-                WriteLine(writer, string.Format("module {0} {1}", type.Namespace, '{'));
-                IncrementIndent();
-                WriteLine(writer, $"export interface {tsClassType} {{");
+                WriteLine(string.Format("module {0} {1}", type.Namespace, '{'));
+                WriteLine($"export interface {tsClassType} {{");
             }
             else if (Module == ModuleType.Require)
             {
@@ -38,11 +37,9 @@ namespace Nimrod
                 var propertyTypes = type.GetProperties()
                                         .Select(p => p.PropertyType)
                                         .Where(p => genericArguments.Contains(p) == false);
-                WriteImports(writer, propertyTypes, genericArguments);
-                WriteLine(writer, $"interface {tsClassType} {{");
+                WriteImports(propertyTypes, genericArguments);
+                WriteLine($"interface {tsClassType} {{");
             }
-
-            IncrementIndent();
 
             foreach (var property in type.GetProperties())
             {
@@ -51,24 +48,22 @@ namespace Nimrod
                 if (ignoreDataMemberAttributes.Any() == false)
                 {
                     var tsPropertyType = property.PropertyType.ToTypeScript(needNamespace);
-                    WriteLine(writer, $"{property.Name}: {tsPropertyType};");
+                    WriteLine($"{property.Name}: {tsPropertyType};");
                 }
             }
 
-            DecrementIndent();
-            WriteLine(writer, "}");
+            WriteLine("}");
 
 
             if (Module == ModuleType.TypeScript)
             {
-                DecrementIndent();
-                WriteLine(writer, "}");
+                WriteLine("}");
             }
             else if (Module == ModuleType.Require)
             {
                 // no generic for export on require mode
                 var nonGenericTypescriptClass = type.ToTypeScript(false, false);
-                WriteLine(writer, $"export = {nonGenericTypescriptClass};");
+                WriteLine($"export = {nonGenericTypescriptClass};");
             }
         }
     }

@@ -87,7 +87,9 @@
     <Compile Include="IOptions.cs" />
     <Compile Include="ModuleType.cs" />
     <Compile Include="TypeAnalyzer.cs" />
+    <Compile Include="Writers\AutoIndentingTextWriter.cs" />
     <Compile Include="Writers\EnumWriter.cs" />
+    <Compile Include="Writers\IndentingTextWriter.cs" />
     <Compile Include="Writers\SerializableWriter.cs" />
     <Compile Include="Writers\ModelWriter.cs" />
     <Compile Include="Writers\ControllerWriter.cs" />
@@ -95,6 +97,7 @@
     <Compile Include="TypeDiscovery.cs" />
     <Compile Include="Writers\BaseWriter.cs" />
     <Compile Include="Writers\StaticWriter.cs" />
+    <Compile Include="Writers\TidyUp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
