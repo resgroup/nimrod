@@ -6,7 +6,7 @@ using CommandLine;
 
 namespace Nimrod.Console
 {
-    public class Options 
+    public class Options : IOptions
     {
         // -i -import
         [Option('m', "module", Required = false, HelpText = "Module mode, valid values are 'typescript' for typescript namespaces style and 'require' for require style.")]

@@ -8,27 +8,25 @@ namespace Nimrod
 {
     public class SerializableWriter : BaseWriter
     {
-        public SerializableWriter(ModuleType module) : base(module)
+        public SerializableWriter(TextWriter writer, ModuleType moduleType) : base(writer, moduleType)
         {
         }
 
-        public override void Write(TextWriter writer, Type type)
+        public override void Write(Type type)
         {
             var tsClassType = type.ToTypeScript();
 
             if (Module == ModuleType.TypeScript)
             {
-                WriteLine(writer, string.Format("module {0} {1}", type.Namespace, '{'));
-                IncrementIndent();
-                WriteLine(writer, $"export class {tsClassType} extends String {"{}"}");
-                DecrementIndent();
-                WriteLine(writer, "}");
+                WriteLine(string.Format("module {0} {1}", type.Namespace, '{'));
+                WriteLine($"export class {tsClassType} extends String {"{}"}");
+                WriteLine("}");
             }
             
             if (Module == ModuleType.Require)
             {
-                WriteLine(writer, $"class {tsClassType} extends String {"{}"}");
-                WriteLine(writer, $"export = {tsClassType};");
+                WriteLine($"class {tsClassType} extends String {"{}"}");
+                WriteLine($"export = {tsClassType};");
             }
         }
     }

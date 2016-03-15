@@ -35,11 +35,11 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_IgnoreDataMember()
         {
-            var writer = new ModelWriter(ModuleType.TypeScript);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {
-                writer.Write(stringWriter, typeof(IgnoreDataMemberClass));
+                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
+                writer.Write(typeof(IgnoreDataMemberClass));
             }
             string ts = builder.ToString();
             Assert.IsFalse(ts.Contains("Foo"));
@@ -48,11 +48,11 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_Generic()
         {
-            var writer = new ModelWriter(ModuleType.TypeScript);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {
-                writer.Write(stringWriter, typeof(GenericFoo<int>).GetGenericTypeDefinition());
+                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
+                writer.Write(typeof(GenericFoo<int>).GetGenericTypeDefinition());
             }
             string ts = builder.ToString();
 
@@ -64,11 +64,11 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_GenericListContainer()
         {
-            var writer = new ModelWriter(ModuleType.TypeScript);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {
-                writer.Write(stringWriter, typeof(BarWrapper<int>).GetGenericTypeDefinition());
+                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
+                writer.Write(typeof(BarWrapper<int>).GetGenericTypeDefinition());
             }
             string ts = builder.ToString();
             Assert.IsTrue(ts.Contains("Bars: T[];"));
@@ -77,11 +77,11 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_GenericCustomContainer()
         {
-            var writer = new ModelWriter(ModuleType.TypeScript);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {
-                writer.Write(stringWriter, typeof(Fuzz<int>).GetGenericTypeDefinition());
+                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
+                writer.Write(typeof(Fuzz<int>).GetGenericTypeDefinition());
             }
             string ts = builder.ToString();
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T>;"));
@@ -90,11 +90,11 @@ namespace Nimrod.Test
         [Test]
         public void ModelWriter_RequireExportWithoutGenericArgument()
         {
-            var writer = new ModelWriter(ModuleType.Require);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {
-                writer.Write(stringWriter, typeof(Fuzz<int>));
+                var writer = new ModelWriter(stringWriter, ModuleType.Require);
+                writer.Write(typeof(Fuzz<int>));
             }
             string ts = builder.ToString();
             Assert.IsTrue(ts.Contains("export = IFuzz;"));
@@ -103,11 +103,11 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_Movie()
         {
-            var writer = new ModelWriter(ModuleType.TypeScript);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {
-                writer.Write(stringWriter, typeof(Movie));
+                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
+                writer.Write(typeof(Movie));
             }
             //string ts = builder.ToString();
             

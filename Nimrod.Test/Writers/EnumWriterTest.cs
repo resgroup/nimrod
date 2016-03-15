@@ -19,11 +19,11 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_ArrayLike_Test()
         {
-            var writer = new EnumWriter(ModuleType.TypeScript);
             var builder = new StringBuilder();
             using (var stringWriter = new StringWriter(builder))
             {
-                writer.Write(stringWriter, typeof(Fruits));
+                var writer = new EnumWriter(stringWriter, ModuleType.TypeScript);
+                writer.Write(typeof(Fruits));
             }
             string ts = builder.ToString();
             Assert.IsTrue(ts.Contains("enum IFruits"));

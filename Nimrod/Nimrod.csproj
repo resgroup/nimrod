@@ -42,6 +42,10 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.124, Culture=neutral, PublicKeyToken=d480b5b72fb413da, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Abstractions.2.0.0.124\lib\net40\System.IO.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
@@ -78,10 +82,14 @@
     <Compile Include="AssemblyLocator.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FoldersManager.cs" />
+    <Compile Include="Generator.cs" />
     <Compile Include="HttpMethodAttribute.cs" />
+    <Compile Include="IOptions.cs" />
     <Compile Include="ModuleType.cs" />
     <Compile Include="TypeAnalyzer.cs" />
+    <Compile Include="Writers\AutoIndentingTextWriter.cs" />
     <Compile Include="Writers\EnumWriter.cs" />
+    <Compile Include="Writers\IndentingTextWriter.cs" />
     <Compile Include="Writers\SerializableWriter.cs" />
     <Compile Include="Writers\ModelWriter.cs" />
     <Compile Include="Writers\ControllerWriter.cs" />
@@ -89,6 +97,7 @@
     <Compile Include="TypeDiscovery.cs" />
     <Compile Include="Writers\BaseWriter.cs" />
     <Compile Include="Writers\StaticWriter.cs" />
+    <Compile Include="Writers\TidyUp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

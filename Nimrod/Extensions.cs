@@ -101,25 +101,20 @@ namespace Nimrod
 
         static public string ToTypeScript(this Type inType, bool includeNamespace = false, bool includeGenericArguments = true)
         {
-            Type type;
-            if (inType.IsGenericType && inType.FullName == null && !inType.IsSystem())
-            {
-                type = inType.GetGenericTypeDefinition();
-            }
-            else
-            {
-                type = inType;
-            }
+            var type = GetType(inType);
+
             if (type.IsArray)
-            {
-                var elementTypeScript = type.GetElementType().ToTypeScript(includeNamespace);
-                return elementTypeScript + "[]";
-            }
-            if (type == typeof(string)) return "string";
-            if (type.IsNumber()) return "number";
-            if (type == typeof(bool)) return "boolean";
-            if (type == typeof(DateTime)) return "Date";
-            if (type.IsGenericParameter) return type.Name;
+                return type.GetElementType().ToTypeScript(includeNamespace) + "[]";
+            if (type == typeof(string))
+                return "string";
+            if (type.IsNumber())
+                return "number";
+            if (type == typeof(bool))
+                return "boolean";
+            if (type == typeof(DateTime))
+                return "Date";
+            if (type.IsGenericParameter)
+                return type.Name;
             if (type.IsGenericType == false)
             {
                 return includeNamespace ? $"{type.Namespace}.I{type.Name}" : $"I{type.Name}";
@@ -133,17 +128,12 @@ namespace Nimrod
                 }
                 else
                 {
-                    bool isGenericArray = type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-                                || type.GetGenericTypeDefinition() == typeof(List<>)
-                                || type.GetGenericTypeDefinition() == typeof(IList<>)
-                                || type.GetGenericTypeDefinition() == typeof(ICollection<>);
-                    if (isGenericArray && genericArguments.Length == 1)
+                    if (IsGeneric1DArray(type, genericArguments))
                     {
                         return genericArguments[0].ToTypeScript(includeNamespace) + "[]";
                     }
 
-                    bool isDictionary = type.GetGenericTypeDefinition() == typeof(Dictionary<,>);
-                    if (isDictionary)
+                    if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                     {
                         var keyTypescript = genericArguments[0].ToTypeScript(includeNamespace);
                         var valueTypescript = genericArguments[1].ToTypeScript(includeNamespace);
@@ -151,30 +141,60 @@ namespace Nimrod
                         return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";
                     }
 
-                    // Generic type, emit GenericType`2<A, B> as GenericType<A, B>
-                    var genericTypeName = new StringBuilder();
-                    if (includeNamespace)
-                    {
-                        genericTypeName.Append($"{type.GetGenericTypeDefinition().Namespace}.");
-                    }
-                    genericTypeName.Append($"I{type.GetGenericTypeDefinition().Name.TrimEnd("`1234567890".ToCharArray())}");
-                    if (includeGenericArguments)
-                    {
-                        genericTypeName.Append('<');
-                        bool first = true;
-                        foreach (var genericArgument in type.GetGenericArguments())
-                        {
-                            if (first == false)
-                            {
-                                genericTypeName.Append(", ");
-                                first = false;
-                            }
-                            genericTypeName.Append(genericArgument.ToTypeScript(includeNamespace));
-                        }
-                        genericTypeName.Append('>');
-                    }
-                    return genericTypeName.ToString();
+                    return GenericTypeToTypeScript(includeNamespace, includeGenericArguments, type);
                 }
+            }
+        }
+
+        private static string GenericTypeToTypeScript(bool includeNamespace, bool includeGenericArguments, Type type)
+        {
+            // Generic type, emit GenericType`2<A, B> as GenericType<A, B>
+            var genericTypeName = new StringBuilder();
+            if (includeNamespace)
+            {
+                genericTypeName.Append($"{type.GetGenericTypeDefinition().Namespace}.");
+            }
+            genericTypeName.Append($"I{type.GetGenericTypeDefinition().Name.TrimEnd("`1234567890".ToCharArray())}");
+            if (includeGenericArguments)
+            {
+                genericTypeName.Append('<');
+                bool first = true;
+                foreach (var genericArgument in type.GetGenericArguments())
+                {
+                    if (first == false)
+                    {
+                        genericTypeName.Append(", ");
+                        first = false;
+                    }
+                    genericTypeName.Append(genericArgument.ToTypeScript(includeNamespace));
+                }
+                genericTypeName.Append('>');
+            }
+            return genericTypeName.ToString();
+        }
+
+        private static bool IsGeneric1DArray(Type type, Type[] genericArguments)
+        {
+            return IsGenericArray(type) && genericArguments.Length == 1;
+        }
+
+        private static bool IsGenericArray(Type type)
+        {
+            return type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                        || type.GetGenericTypeDefinition() == typeof(List<>)
+                        || type.GetGenericTypeDefinition() == typeof(IList<>)
+                        || type.GetGenericTypeDefinition() == typeof(ICollection<>);
+        }
+
+        private static Type GetType(Type inType)
+        {
+            if (inType.IsGenericType && inType.FullName == null && !inType.IsSystem())
+            {
+                return inType.GetGenericTypeDefinition();
+            }
+            else
+            {
+                return inType;
             }
         }
 
