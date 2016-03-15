@@ -169,6 +169,11 @@ On the C# side in a MVC controller action, when returning JSON data the model ob
 
 If your action returns `Json(new Foo<Bar>())` we require you to change the method return type to `JsonNetResult<Foo<Bar>>`. Nimrod will generate typescript classes for `Foo` and `Bar`.
 
+**Q: DateTime is a C# type serialized to a number or a string in JavaScript, not a JavaScript Date object, why Nimrod is lying?**
+
+Yes, Nimrod is lying, we are sorry. There is no standard way to represent date in the JSON format. Still, we believe that every Date object server side should be a Date object client side, not matter what JSON say.
+To use Nimrod properly with Date, you should do something to automatically parse your Date coming from server (either string or number) to Date object client side. An example on how to do it in Angular can be found here: [Automatic JSON date parsing with AngularJS](http://aboutcode.net/2013/07/27/json-date-parsing-angularjs.html).
+
 **Q: I only need those models generators, not all the fancy service controller whatever stuff, can you do it?**
 
 We plan to deliver a version of the converter only for POCOs, but pull requests are welcomed
