@@ -12,16 +12,16 @@ namespace Nimrod
 
         public FoldersManager(string outputFolderPath)
         {
-            OutputFolderPath = outputFolderPath;
+            this.OutputFolderPath = outputFolderPath;
         }
 
         public void Recreate()
         {
-            if (Directory.Exists(OutputFolderPath))
+            if (Directory.Exists(this.OutputFolderPath))
             {
-                Directory.Delete(OutputFolderPath, true);
+                Directory.Delete(this.OutputFolderPath, true);
             }
-            Directory.CreateDirectory(OutputFolderPath);
+            Directory.CreateDirectory(this.OutputFolderPath);
         }
     }
 }

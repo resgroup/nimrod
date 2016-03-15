@@ -8,7 +8,9 @@ namespace Nimrod
 {
     public class AutoIndentingTextWriter : IndentingTextWriter
     {
-        public AutoIndentingTextWriter(TextWriter textWriter, string indentString) : base(textWriter, indentString) { }
+        public AutoIndentingTextWriter(TextWriter textWriter, string indentString) : base(textWriter, indentString)
+        {
+        }
 
         public void Write(string partOfLine)
         {
@@ -18,10 +20,14 @@ namespace Nimrod
         public override void WriteLine(string line)
         {
             if (line.Contains('}'))
+            {
                 Outdent();
+            }
             base.WriteLine(line);
             if (line.Contains('{'))
+            {
                 Indent();
+            }
         }
     }
 }

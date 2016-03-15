@@ -80,13 +80,13 @@
   <ItemGroup>
     <Compile Include="AssemblyData.cs" />
     <Compile Include="AssemblyLocator.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FoldersManager.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="HttpMethodAttribute.cs" />
     <Compile Include="IOptions.cs" />
     <Compile Include="ModuleType.cs" />
-    <Compile Include="TypeAnalyzer.cs" />
     <Compile Include="Writers\AutoIndentingTextWriter.cs" />
     <Compile Include="Writers\EnumWriter.cs" />
     <Compile Include="Writers\IndentingTextWriter.cs" />

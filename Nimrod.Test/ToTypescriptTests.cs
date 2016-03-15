@@ -85,6 +85,12 @@ namespace Nimrod.Test
             Assert.AreEqual("IFooEnum", typeof(FooEnum?).ToTypeScript());
         }
 
+        [Test]
+        public void GetTypescriptType_Date_Test()
+        {
+            Assert.AreEqual("Date", typeof(DateTime).ToTypeScript());
+            Assert.AreEqual("Date", typeof(DateTimeOffset).ToTypeScript());
+        }
 
         [Test]
         public void GetTypescriptType_GenericPropertyOfGenericClass()

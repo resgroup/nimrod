@@ -18,7 +18,10 @@ namespace Nimrod.Console
                 var options = new Options();
                 if (CommandLine.Parser.Default.ParseArguments(args, options))
                 {
-                    return (new Generator(fileSystem: new FileSystem()).Generate(options, CommandLine.Text.HelpText.AutoBuild(options).ToString())) ? 0 : -1;
+                    var generator = new Generator(fileSystem: new FileSystem());
+                    string helpText = CommandLine.Text.HelpText.AutoBuild(options);
+                    generator.Generate(options, helpText);
+                    return 0;
                 }
                 else
                 {
@@ -35,40 +38,5 @@ namespace Nimrod.Console
                 return -1;
             }
         }
-
-        //static private void WriteStaticFiles(FoldersManager foldersManager, ModuleType module)
-        //{
-        //    var writer = new StaticWriter(module);
-        //    using (var fileWriter = File.CreateText(Path.Combine(foldersManager.OutputFolderPath, "IRestApi.ts")))
-        //    {
-        //        writer.Write(fileWriter);
-        //    }
-        //}
-        //static private void WriteType(FoldersManager foldersManager, Type type, ModuleType module)
-        //{
-        //    BaseWriter writer;
-
-        //    if (type.IsWebMvcController())
-        //    {
-        //        writer = new ControllerWriter(module);
-        //    }
-        //    else if (type.IsEnum)
-        //    {
-        //        writer = new EnumWriter(module);
-        //    }
-        //    else if (type.IsValueType)
-        //    {
-        //        writer = new SerializableWriter(module);
-        //    }
-        //    else
-        //    {
-        //        writer = new ModelWriter(module);
-        //    }
-
-        //    using (var fileWriter = File.CreateText(Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename())))
-        //    {
-        //        writer.Write(fileWriter, type);
-        //    }
-        //}
     }
 }

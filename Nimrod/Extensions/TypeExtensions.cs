@@ -7,10 +7,9 @@ using System.Web.Mvc;
 
 namespace Nimrod
 {
-    public static class Extensions
+    public static class TypeExtensions
     {
         public static readonly Type[] NumberTypes = { typeof(short), typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal) };
-
 
         public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)
         {
@@ -30,7 +29,7 @@ namespace Nimrod
 
         public static bool IsWebMvcController(this Type type)
         {
-            return typeof(System.Web.Mvc.Controller).IsAssignableFrom(type);
+            return typeof(Controller).IsAssignableFrom(type);
         }
 
         public static bool IsBuiltinType(this Type type)
@@ -72,7 +71,7 @@ namespace Nimrod
 
         static public IEnumerable<Type> ReferencedTypes(this Type type)
         {
-            var seen = new HashSet<Type> ();
+            var seen = new HashSet<Type>();
             foreach (var genericArgument in type.GetGenericArguments())
             {
                 if (genericArgument.IsGenericType)
@@ -104,17 +103,29 @@ namespace Nimrod
             var type = GetType(inType);
 
             if (type.IsArray)
+            {
                 return type.GetElementType().ToTypeScript(includeNamespace) + "[]";
+            }
             if (type == typeof(string))
+            {
                 return "string";
+            }
             if (type.IsNumber())
+            {
                 return "number";
+            }
             if (type == typeof(bool))
+            {
                 return "boolean";
-            if (type == typeof(DateTime))
+            }
+            if (type == typeof(DateTime) || type == typeof(DateTimeOffset))
+            {
                 return "Date";
+            }
             if (type.IsGenericParameter)
+            {
                 return type.Name;
+            }
             if (type.IsGenericType == false)
             {
                 return includeNamespace ? $"{type.Namespace}.I{type.Name}" : $"I{type.Name}";
@@ -141,12 +152,12 @@ namespace Nimrod
                         return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";
                     }
 
-                    return GenericTypeToTypeScript(includeNamespace, includeGenericArguments, type);
+                    return GenericTypeToTypeScript(type, includeNamespace, includeGenericArguments);
                 }
             }
         }
 
-        private static string GenericTypeToTypeScript(bool includeNamespace, bool includeGenericArguments, Type type)
+        private static string GenericTypeToTypeScript(Type type, bool includeNamespace, bool includeGenericArguments)
         {
             // Generic type, emit GenericType`2<A, B> as GenericType<A, B>
             var genericTypeName = new StringBuilder();
@@ -175,10 +186,10 @@ namespace Nimrod
 
         private static bool IsGeneric1DArray(Type type, Type[] genericArguments)
         {
-            return IsGenericArray(type) && genericArguments.Length == 1;
+            return type.IsGenericArray() && genericArguments.Length == 1;
         }
 
-        private static bool IsGenericArray(Type type)
+        public static bool IsGenericArray(this Type type)
         {
             return type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
                         || type.GetGenericTypeDefinition() == typeof(List<>)
@@ -205,7 +216,5 @@ namespace Nimrod
             var moduleName = fullTypeName.Substring(0, index) + fullTypeName.Substring(index + 1);
             return moduleName;
         }
-
-
     }
 }

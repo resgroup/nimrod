@@ -12,21 +12,17 @@ namespace Nimrod
     /// </summary>
     public class BaseWriter
     {
-
+        public const string IndentString = "    ";
         protected AutoIndentingTextWriter Writer { get; }
-
-        private int Indent { get; set; }
         private bool AtStartOfLine { get; set; }
-
         public ModuleType Module { get; }
 
         public BaseWriter(TextWriter writer, ModuleType module)
         {
             Contract.Requires(writer != null);
             
-            Writer = new AutoIndentingTextWriter(writer, "    ");
+            Writer = new AutoIndentingTextWriter(writer, BaseWriter.IndentString);
             Module = module;
-            Indent = 0;
             AtStartOfLine = true;
         }
 
@@ -54,7 +50,6 @@ namespace Nimrod
             Writer.WriteLine();
             AtStartOfLine = true;
         }
-
 
         public void WriteImports(IEnumerable<Type> importedTypes, IEnumerable<Type> exclude = null)
         {

@@ -7,24 +7,6 @@ namespace Nimrod
 {
     public static class TypeDiscovery
     {
-        static public IEnumerable<Type> GetViewModelTypes(System.Reflection.Assembly assembly)
-        {
-            HashSet<Type> typesEnumerated = new HashSet<Type>();
-            var exportedTypes = assembly.GetExportedTypes();
-            var viewModelTypes = exportedTypes.Where(type => type.Name.EndsWith("ViewModel"));
-            foreach (var viewModelType in viewModelTypes)
-            {
-                foreach (var type in EnumerateTypes(viewModelType, typesEnumerated))
-                {
-                    if ((type.Name != "SmartDate") &&
-                        (type.IsGenericType == false)) // Dodgy filtering
-                    {
-                        yield return type;
-                    }
-                }
-            }
-        }
-
         static public IEnumerable<Type> EnumerateTypes(Type forType, HashSet<Type> typesEnumerated)
         {
             if (typesEnumerated.Contains(forType) == false)
@@ -37,7 +19,6 @@ namespace Nimrod
                 }
                 else
                 {
-
                     yield return forType;
 
                     foreach (var genericArgumentType in forType.GetGenericArguments())

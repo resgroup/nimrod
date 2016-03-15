@@ -9,114 +9,97 @@ namespace Nimrod
 {
     public class Generator
     {
-        protected IFileSystem fileSystem { get; }
+        public IFileSystem FileSystem { get; }
 
         public Generator(IFileSystem fileSystem)
         {
-            this.fileSystem = fileSystem;
+            this.FileSystem = fileSystem.ThrowIfNull(nameof(fileSystem));
         }
 
-        public bool Generate(IOptions options, string helpText)
+        public void Generate(IOptions options, string helpText)
         {
-            try
+            if (options.Help)
             {
-                //var options = new Options();
-                //if (CommandLine.Parser.Default.ParseArguments(args, options))
-                //{
+                options.WriteLine(helpText);
+            }
+            else
+            {
+                var outputFolderPath = options.OutputPath;
 
-                if (options.Help)
-                {
-                    options.WriteLine(helpText);
-                }
-                else
-                {
-                    var outputFolderPath = options.OutputPath;
-
-                    var files = new List<FileInfoBase>();
-                    foreach (var filePath in options.Files)
+                var files = options.Files
+                    .Select(filePath =>
                     {
                         options.Write($"Reading file {filePath}...");
 
-                        if (!this.fileSystem.File.Exists(filePath))
+                        if (this.FileSystem.File.Exists(filePath))
                         {
-                            System.Console.WriteLine($"Warning! The specified file {filePath} doesn't exist and will be skipped.");
+                            options.WriteLine($"OK!");
+                            return new { File = this.FileSystem.FileInfo.FromFileName(filePath), Success = true }; ;
                         }
                         else
                         {
-                            files.Add(this.fileSystem.FileInfo.FromFileName(filePath));
-                            options.WriteLine($"OK!");
-
+                            options.WriteLine($"Warning! The specified file {filePath} doesn't exist and will be skipped.");
+                            return new { File = null as FileInfoBase, Success = false };
                         }
-                    }
+                    })
+                    .Where(file => file.Success)
+                    .Select(file => file.File)
+                    .ToList();
 
-                    options.WriteLine("outputFolderPath = " + outputFolderPath);
+                options.WriteLine("outputFolderPath = " + outputFolderPath);
 
-                    var directories = files.Select(f => f.DirectoryName).Distinct();
+                var directories = files.Select(f => f.DirectoryName).Distinct();
 
-                    // Load all assemblies in the folder
-                    AssemblyLocator.Init();
-                    foreach (var directory in directories)
+                // Load all assemblies in the folder
+                AssemblyLocator.Init();
+                foreach (var directory in directories)
+                {
+                    foreach (var assemblyFile in this.FileSystem.Directory.EnumerateFiles(directory, "*.dll"))
                     {
-                        foreach (var assemblyFile in this.fileSystem.Directory.EnumerateFiles(directory, "*.dll"))
-                        {
-                            options.Write($"Loading assembly {assemblyFile}");
-                            Assembly.LoadFile(this.fileSystem.Path.Combine(directory, assemblyFile));
-                            options.WriteLine($" Done!");
-                        }
-                    }
-
-                    var foldersManager = new FoldersManager(outputFolderPath);
-                    options.Write($"Recursive deletion of {outputFolderPath}...");
-                    foldersManager.Recreate();
-                    options.WriteLine($" Done!");
-
-
-                    var assemblies = files.Select(t => Assembly.LoadFile(t.FullName));
-
-                    options.Write($"Discovering types..");
-                    var types = TypeDiscovery.GetControllerTypes(assemblies, true).ToList();
-                    options.WriteLine($" Done!");
-                    // Write all types except the ones in System
-                    var toWrites = types
-                        .Where(t => t.IsSystem() == false)
-                        .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
-                        .Distinct()
-                        .ToList();
-                    options.Write($"Writing static files...");
-                    WriteStaticFiles(foldersManager, options.ModuleType);
-                    options.WriteLine($" Done!");
-
-                    options.Write($"Writing {toWrites.Count} files...");
-                    toWrites.ForEach(t =>
-                    {
-                        options.Write($"Writing {t.Name}...");
-                        WriteType(foldersManager, t, options.ModuleType);
+                        options.Write($"Loading assembly {assemblyFile}");
+                        Assembly.LoadFile(this.FileSystem.Path.Combine(directory, assemblyFile));
                         options.WriteLine($" Done!");
-                    });
-                    options.WriteLine($"Writing {toWrites.Count} files...Done!");
+                    }
                 }
 
-                //else
-                //{
-                //    System.Console.WriteLine($"Error in the command line arguments {string.Join(" ", args)}");
-                //    string helpText = CommandLine.Text.HelpText.AutoBuild(options).ToString();
-                //    System.Console.WriteLine(helpText);
-                //}
+                var foldersManager = new FoldersManager(outputFolderPath);
+                options.Write($"Recursive deletion of {outputFolderPath}...");
+                foldersManager.Recreate();
+                options.WriteLine($" Done!");
 
-            }
-            catch (Exception e)
-            {
-                options.WriteLine(e.ToString());
-                return false;
+
+                var assemblies = files.Select(t => Assembly.LoadFile(t.FullName));
+
+                options.Write($"Discovering types..");
+                var types = TypeDiscovery.GetControllerTypes(assemblies, true).ToList();
+                options.WriteLine($" Done!");
+                // Write all types except the ones in System
+                var toWrites = types
+                    .Where(t => t.IsSystem() == false)
+                    .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
+                    .Distinct()
+                    .ToList();
+                options.Write($"Writing static files...");
+                WriteStaticFiles(foldersManager, options.ModuleType);
+                options.WriteLine($" Done!");
+
+                options.Write($"Writing {toWrites.Count} files...");
+                toWrites.ForEach(t =>
+                {
+                    options.Write($"Writing {t.Name}...");
+                    WriteType(foldersManager, t, options.ModuleType);
+                    options.WriteLine($" Done!");
+                });
+                options.WriteLine($"Writing {toWrites.Count} files...Done!");
             }
 
-            return true;
         }
 
         private void WriteStaticFiles(FoldersManager foldersManager, ModuleType module)
         {
             var writer = new StaticWriter(module);
-            using (var fileWriter = this.fileSystem.File.CreateText(this.fileSystem.Path.Combine(foldersManager.OutputFolderPath, "IRestApi.ts")))
+            var restApiFilePath = this.FileSystem.Path.Combine(foldersManager.OutputFolderPath, "IRestApi.ts");
+            using (var fileWriter = this.FileSystem.File.CreateText(restApiFilePath))
             {
                 writer.Write(fileWriter);
             }
@@ -125,8 +108,8 @@ namespace Nimrod
         private void WriteType(FoldersManager foldersManager, Type type, ModuleType module)
         {
             BaseWriter writer;
-
-            using (var fileWriter = this.fileSystem.File.CreateText(this.fileSystem.Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename())))
+            var filePath = this.FileSystem.Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename());
+            using (var fileWriter = this.FileSystem.File.CreateText(filePath))
             {
                 if (type.IsWebMvcController())
                 {
