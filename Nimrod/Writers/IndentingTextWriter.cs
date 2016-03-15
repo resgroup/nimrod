@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -9,12 +10,11 @@ namespace Nimrod
         protected TextWriter _textWriter { get; }
         public string IndentString { get; }
 
-        private int _indentLevel;
+        public int IndentLevel { get; private set; } = 0;
 
         public IndentingTextWriter(TextWriter textWriter, string indentString)
         {
             _textWriter = textWriter;
-            _indentLevel = 0;
             IndentString = indentString;
         }
 
@@ -31,19 +31,20 @@ namespace Nimrod
 
         public void WriteIndent()
         {
-            for (int i = 0; i < _indentLevel; i++)
+            for (int i = 0; i < IndentLevel; i++)
             {
                 _textWriter.Write(IndentString);
             }
         }
 
-        public TidyUp AutoCloseIndent()
+        public void Indent(int indent) => IndentLevel += indent;
+        public void Outdent(int indent)
         {
-            Indent();
-            return new TidyUp(() => Outdent());
+            if (IndentLevel - indent < 0)
+            {
+                throw new InvalidOperationException("Cannot outdent, level is already at zero. There is a problem in the indentation problem.");
+            }
+            IndentLevel -= indent;
         }
-
-        public void Indent() => _indentLevel++;
-        public void Outdent() => _indentLevel--;
     }
 }

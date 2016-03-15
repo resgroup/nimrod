@@ -106,10 +106,12 @@
     <Compile Include="ReferencedTypesTests.cs" />
     <Compile Include="TypeDiscoveryTests.cs" />
     <Compile Include="TypeExtensionsTest.cs" />
+    <Compile Include="Writers\AutoIndentingTextWriterTests.cs" />
     <Compile Include="Writers\BaseWriterTests.cs" />
     <Compile Include="Writers\EnumWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ToTypescriptTests.cs" />
+    <Compile Include="Writers\ControllerWriterTest.cs" />
     <Compile Include="Writers\ModelWriterTests.cs" />
   </ItemGroup>
   <ItemGroup>

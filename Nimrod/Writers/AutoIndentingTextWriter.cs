@@ -12,21 +12,36 @@ namespace Nimrod
         {
         }
 
-        public void Write(string partOfLine)
+        public void Write(string text)
         {
-            _textWriter.Write(partOfLine);
+            ComputeIndentAndWrite(text);
+            _textWriter.Write(text);
         }
 
-        public override void WriteLine(string line)
+        public override void WriteLine(string text)
         {
-            if (line.Contains('}'))
+            ComputeIndentAndWrite(text, t => base.WriteLine(t));
+        }
+
+        private void ComputeIndentAndWrite(string text, Action<string> action = null)
+        {
+            var opened = text.Count(c => c == '{');
+            var closed = text.Count(c => c == '}');
+            var indentation = opened - closed;
+
+            if (indentation < 0)
             {
-                Outdent();
+                Outdent(-indentation);
             }
-            base.WriteLine(line);
-            if (line.Contains('{'))
+            // outdentation has to be done before writing
+            if (action != null)
             {
-                Indent();
+                action(text);
+            }
+            // whereas indentation has to be done after writing
+            if (indentation > 0)
+            {
+                Indent(indentation);
             }
         }
     }
