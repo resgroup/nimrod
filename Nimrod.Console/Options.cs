@@ -6,7 +6,7 @@ using CommandLine;
 
 namespace Nimrod.Console
 {
-    public class Options : IOptions
+    public class Options
     {
         // -i -import
         [Option('m', "module", Required = false, HelpText = "Module mode, valid values are 'typescript' for typescript namespaces style and 'require' for require style.")]
@@ -27,20 +27,5 @@ namespace Nimrod.Console
         // Assemblies to retrieve, -f --files
         [OptionList('f', "files", Required = true, Separator = ':', HelpText = "Specify files, separated by a colon. Example --files=bin\\Assembly1.dll:bin\\Assembly2.dll'")]
         public IList<string> Files { get; set; }
-
-        public void WriteLine(string value)
-        {
-            if (Verbose)
-            {
-                System.Console.WriteLine(value);
-            }
-        }
-        public void Write(string value)
-        {
-            if (Verbose)
-            {
-                System.Console.Write(value);
-            }
-        }
     }
 }

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Nimrod
+namespace Nimrod.Writers.Default
 {
     /// <summary>
     /// For classes which extends String, ie: which are Serializable
@@ -15,7 +15,7 @@ namespace Nimrod
         {
         }
 
-        public override IEnumerable<string> Build()
+        public override IEnumerable<string> GetLines()
         {
             var tsClassType = this.Type.ToTypeScript();
             yield return $"module {this.Type.Namespace} {{";

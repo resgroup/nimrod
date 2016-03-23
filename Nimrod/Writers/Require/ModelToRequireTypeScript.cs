@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Nimrod
+namespace Nimrod.Writers.Require
 {
     public class ModelToRequireTypeScript : ModelToTypeScript
     {
@@ -25,7 +25,10 @@ namespace Nimrod
             var propertyTypes = this.Type.GetProperties()
                                     .Select(p => p.PropertyType)
                                     .Where(p => genericArguments.Contains(p) == false);
-            var imports = RequireModuleWriter.GetImports(propertyTypes, genericArguments);
+            var imports = RequireModuleHelper.GetTypesToImport(propertyTypes)
+                                .Where(t => genericArguments.Contains(t) == false)
+                                .Select(t=> RequireModuleHelper.GetImportLine(t));
+
             foreach (var import in imports)
             {
                 yield return import;

@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.IO;
 using System.IO.Abstractions;
 
 namespace Nimrod.Console
@@ -18,25 +15,43 @@ namespace Nimrod.Console
                 var options = new Options();
                 if (CommandLine.Parser.Default.ParseArguments(args, options))
                 {
-                    var generator = new Generator(fileSystem: new FileSystem());
-                    string helpText = CommandLine.Text.HelpText.AutoBuild(options);
-                    generator.Generate(options, helpText);
-                    return 0;
+                    OnOptionsSuccessful(options);
                 }
                 else
                 {
-                    System.Console.WriteLine($"Error in the command line arguments {string.Join(" ", args)}");
-                    string helpText = CommandLine.Text.HelpText.AutoBuild(options).ToString();
-                    System.Console.WriteLine(helpText);
-                    return 0;
+                    OnOptionsFailed(args);
                 }
-
+                return 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                System.Console.WriteLine(e.ToString());
+                System.Console.WriteLine(exception.ToString());
                 return -1;
             }
         }
+
+        private static void OnOptionsFailed(string[] args)
+        {
+            System.Console.WriteLine($"Error in the command line arguments {string.Join(" ", args)}");
+            string helpText = CommandLine.Text.HelpText.AutoBuild(new Options()).ToString();
+            System.Console.WriteLine(helpText);
+        }
+
+        static void OnOptionsSuccessful(Options options)
+        {
+            if (options.Help)
+            {
+                string helpText = CommandLine.Text.HelpText.AutoBuild(options);
+                System.Console.WriteLine(helpText);
+            }
+            else
+            {
+                var logger = options.Verbose ? new ConsoleLogger() : null;
+                var ioOperations = new IOOperations(new FileSystem(), options.OutputPath, logger);
+                var generator = new Generator(ioOperations);
+                generator.Generate(options.Files, options.ModuleType);
+            }
+        }
+
     }
 }

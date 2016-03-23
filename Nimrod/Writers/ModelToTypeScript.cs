@@ -17,7 +17,7 @@ namespace Nimrod
         protected abstract IEnumerable<string> GetHeader();
         protected abstract IEnumerable<string> GetFooter();
 
-        public override IEnumerable<string> Build()
+        public override IEnumerable<string> GetLines()
         {
             foreach(var line in this.GetHeader())
             {

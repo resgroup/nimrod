@@ -1,4 +1,6 @@
 ﻿using Nimrod.Test.ModelExamples;
+using Nimrod.Writers.Default;
+using Nimrod.Writers.Require;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -21,15 +23,23 @@ namespace Nimrod.Test
         }
 
         [Test]
-        public void WriteModel_WriteImports()
+        public void WriteModel_GetImports()
         {
-            var imports = RequireModuleWriter.GetImports(new[] { typeof(GenericWrapper<GenericItem<int>>) })
-                .OrderBy(s => s)
+            var dependencies = new[] { typeof(GenericWrapper<GenericItem<int>>) };
+            var imports = RequireModuleHelper.GetTypesToImport(dependencies)
+                .OrderBy(s => s.Name)
                 .ToList();
 
             Assert.AreEqual(2, imports.Count);
-            Assert.AreEqual("import IGenericItem = require('./Nimrod.Test.GenericItem');", imports[0]);
-            Assert.AreEqual("import IGenericWrapper = require('./Nimrod.Test.GenericWrapper');", imports[1]);
+            Assert.AreEqual(typeof(GenericItem<>), imports[0]);
+            Assert.AreEqual(typeof(GenericWrapper<>), imports[1]);
+        }
+
+        [Test]
+        public void WriteModel_WriteImports()
+        {
+            Assert.AreEqual("import IGenericItem = require('./Nimrod.Test.GenericItem');", RequireModuleHelper.GetImportLine(typeof(GenericItem<>)));
+            Assert.AreEqual("import IGenericWrapper = require('./Nimrod.Test.GenericWrapper');", RequireModuleHelper.GetImportLine(typeof(GenericWrapper<>)));
         }
 
         [Test]
@@ -38,7 +48,7 @@ namespace Nimrod.Test
             var genericTypeDefinition = typeof(GenericFoo<int>).GetGenericTypeDefinition();
             var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
 
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
 
             Assert.IsTrue(ts.Contains("GenericFoo<T>"));
             Assert.IsTrue(ts.Contains("GenericProperty: T"));
@@ -50,7 +60,7 @@ namespace Nimrod.Test
         {
             var genericTypeDefinition = typeof(BarWrapper<int>).GetGenericTypeDefinition();
             var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsTrue(ts.Contains("Bars: T[];"));
         }
 
@@ -60,7 +70,7 @@ namespace Nimrod.Test
             var genericTypeDefinition = typeof(Fuzz<int>).GetGenericTypeDefinition();
             var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
 
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T>;"));
         }
 

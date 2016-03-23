@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Nimrod.Writers.Default;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_ArrayLike_Test()
         {
             var writer = new EnumToDefaultTypeScript(typeof(Fruits));
-            var lines = writer.Build();
+            var lines = writer.GetLines();
             string ts = string.Join(Environment.NewLine, lines);
             Assert.IsTrue(ts.Contains("enum IFruits"));
             Assert.IsTrue(ts.Contains("Apple = 0,"));
@@ -37,7 +38,7 @@ namespace Nimrod.Test
         public void EnumTypesNotIntNotSupported()
         {
             var writer = new EnumToDefaultTypeScript(typeof(SomeEnum));
-            var lines = writer.Build().ToList();
+            var lines = writer.GetLines().ToList();
         }
     }
 }

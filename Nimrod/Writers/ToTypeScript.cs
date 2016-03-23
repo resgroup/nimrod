@@ -12,6 +12,6 @@ namespace Nimrod
         {
             this.Type = type.ThrowIfNull(nameof(type));
         }
-        public abstract IEnumerable<string> Build();
+        public abstract IEnumerable<string> GetLines();
     }
 }

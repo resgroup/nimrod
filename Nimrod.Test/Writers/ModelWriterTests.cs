@@ -1,4 +1,6 @@
 ﻿using Nimrod.Test.ModelExamples;
+using Nimrod.Writers.Default;
+using Nimrod.Writers.Require;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -36,7 +38,7 @@ namespace Nimrod.Test
         public void WriteModel_IgnoreDataMember()
         {
             var writer = new ModelToDefaultTypeScript(typeof(IgnoreDataMemberClass));
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsFalse(ts.Contains("Foo"));
         }
 
@@ -45,7 +47,7 @@ namespace Nimrod.Test
         {
             var genericTypeDefinition = typeof(GenericFoo<int>).GetGenericTypeDefinition();
             var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
 
             Assert.IsTrue(ts.Contains("GenericFoo<T>"));
             Assert.IsTrue(ts.Contains("GenericProperty: T"));
@@ -56,7 +58,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_GenericListContainer()
         {
             var writer = new ModelToDefaultTypeScript(typeof(BarWrapper<int>).GetGenericTypeDefinition());
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsTrue(ts.Contains("Bars: T[];"));
         }
 
@@ -64,7 +66,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_GenericCustomContainer()
         {
             var writer = new ModelToDefaultTypeScript(typeof(Fuzz<int>).GetGenericTypeDefinition());
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T>;"));
         }
 
@@ -72,7 +74,7 @@ namespace Nimrod.Test
         public void ModelWriter_RequireExportWithoutGenericArgument()
         {
             var writer = new ModelToRequireTypeScript(typeof(Fuzz<int>));
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsTrue(ts.Contains("export = IFuzz;"));
         }
 
@@ -80,7 +82,7 @@ namespace Nimrod.Test
         public void WriteModel_Movie()
         {
             var writer = new ModelToDefaultTypeScript(typeof(Movie));
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             //string ts = builder.ToString();
         }
 

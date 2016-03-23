@@ -29,10 +29,8 @@ namespace Nimrod
             }
             foreach (var methodParameter in method.GetParameters())
             {
-                builder.Append(", ");
-                builder.Append(methodParameter.Name);
-                builder.Append(": ");
-                builder.Append(methodParameter.ParameterType.ToTypeScript(needNamespace));
+                var param = methodParameter.ParameterType.ToTypeScript(needNamespace);
+                builder.Append($", {methodParameter.Name}: {param}");
             }
             builder.Append(", config?: Nimrod.IRequestShortcutConfig)");
             string returnType;

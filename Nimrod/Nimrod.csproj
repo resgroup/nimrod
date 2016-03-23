@@ -12,6 +12,8 @@
     <AssemblyName>Nimrod</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
@@ -83,29 +86,33 @@
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\MethodExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
-    <Compile Include="FoldersManager.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="IOOperations.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="HttpMethodAttribute.cs" />
-    <Compile Include="IOptions.cs" />
     <Compile Include="ModuleType.cs" />
-    <Compile Include="Writers\Controller\ControllerToDefaultTypeScript.cs" />
-    <Compile Include="Writers\Controller\ControllerToRequireTypeScript.cs" />
-    <Compile Include="Writers\Enum\EnumToDefaultTypeScript.cs" />
-    <Compile Include="Writers\Enum\EnumToRequireTypeScript.cs" />
-    <Compile Include="Writers\Enum\EnumToTypeScript.cs" />
-    <Compile Include="Writers\Model\ModelToRequireTypeScript.cs" />
-    <Compile Include="Writers\Model\ModelToDefaultTypeScript.cs" />
-    <Compile Include="Writers\RequireModuleWriter.cs" />
-    <Compile Include="Writers\Struct\StructToDefaultTypeScript.cs" />
-    <Compile Include="Writers\Struct\StructToRequireTypeScript.cs" />
-    <Compile Include="Writers\Struct\StructToTypeScript.cs" />
-    <Compile Include="Writers\Model\ModelToTypeScript.cs" />
-    <Compile Include="Writers\Controller\ControllerToTypeScript.cs" />
+    <Compile Include="Writers\Default\ControllerToDefaultTypeScript.cs" />
+    <Compile Include="Writers\Default\ToDefaultTypeScriptBuildRules.cs" />
+    <Compile Include="Writers\Require\ControllerToRequireTypeScript.cs" />
+    <Compile Include="Writers\Default\EnumToDefaultTypeScript.cs" />
+    <Compile Include="Writers\Require\EnumToRequireTypeScript.cs" />
+    <Compile Include="Writers\EnumToTypeScript.cs" />
+    <Compile Include="Writers\Require\ModelToRequireTypeScript.cs" />
+    <Compile Include="Writers\Default\ModelToDefaultTypeScript.cs" />
+    <Compile Include="Writers\Require\RequireModuleHelper.cs" />
+    <Compile Include="Writers\Default\StructToDefaultTypeScript.cs" />
+    <Compile Include="Writers\Require\ToRequireTypeScriptBuildRules.cs" />
+    <Compile Include="Writers\Require\StructToRequireTypeScript.cs" />
+    <Compile Include="Writers\StructToTypeScript.cs" />
+    <Compile Include="Writers\ModelToTypeScript.cs" />
+    <Compile Include="Writers\ControllerToTypeScript.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeDiscovery.cs" />
     <Compile Include="Writers\StaticWriter.cs" />
     <Compile Include="Writers\ToTypeScript.cs" />
+    <Compile Include="Writers\ToTypeScriptBuildRules.cs" />
     <Compile Include="Writers\ToTypeScriptBuildRule.cs" />
   </ItemGroup>
   <ItemGroup>

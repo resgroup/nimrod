@@ -101,65 +101,82 @@ namespace Nimrod
         static public string ToTypeScript(this Type inType, bool includeNamespace = false, bool includeGenericArguments = true)
         {
             var type = GetType(inType);
-
             if (type.IsArray)
             {
-                return type.GetElementType().ToTypeScript(includeNamespace) + "[]";
+                var elementTypeName = type.GetElementType().ToTypeScript(includeNamespace);
+                return $"{elementTypeName}[]";
             }
-            if (type == typeof(string))
+           else if (type == typeof(string))
             {
                 return "string";
             }
-            if (type.IsNumber())
+            else if (type.IsNumber())
             {
                 return "number";
             }
-            if (type == typeof(bool))
+            else if (type == typeof(bool))
             {
                 return "boolean";
             }
-            if (type == typeof(DateTime) || type == typeof(DateTimeOffset))
+            else if (type == typeof(DateTime) || type == typeof(DateTimeOffset))
             {
                 return "Date";
             }
-            if (type.IsGenericParameter)
+            else if (type.IsGenericParameter)
             {
                 return type.Name;
             }
-            if (type.IsGenericType == false)
+            else if (type.IsGenericType == false)
             {
                 return includeNamespace ? $"{type.Namespace}.I{type.Name}" : $"I{type.Name}";
             }
             else
             {
-                var genericArguments = type.GetGenericArguments();
-                if (type.FullName != null && type.FullName.Contains("System.Nullable") && genericArguments.Length == 1)
-                {
-                    return genericArguments[0].ToTypeScript(includeNamespace);  // optional values
-                }
-                else
-                {
-                    if (IsGeneric1DArray(type, genericArguments))
-                    {
-                        return genericArguments[0].ToTypeScript(includeNamespace) + "[]";
-                    }
-
-                    if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-                    {
-                        var keyTypescript = genericArguments[0].ToTypeScript(includeNamespace);
-                        var valueTypescript = genericArguments[1].ToTypeScript(includeNamespace);
-
-                        return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";
-                    }
-
-                    return GenericTypeToTypeScript(type, includeNamespace, includeGenericArguments);
-                }
+                return ToTypeScriptForGenericClass(type, includeNamespace, includeGenericArguments);
             }
         }
 
+        /// <summary>
+        /// Complicated stuff for returning the name of a generic class
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="includeNamespace"></param>
+        /// <param name="includeGenericArguments"></param>
+        /// <returns></returns>
+        static private string ToTypeScriptForGenericClass(Type type, bool includeNamespace, bool includeGenericArguments)
+        {
+            var genericArguments = type.GetGenericArguments();
+            if (type.FullName != null && type.FullName.Contains("System.Nullable") && genericArguments.Length == 1)
+            {
+                return genericArguments[0].ToTypeScript(includeNamespace);  // optional values
+            }
+            else
+            {
+                if (IsGeneric1DArray(type, genericArguments))
+                {
+                    return genericArguments[0].ToTypeScript(includeNamespace) + "[]";
+                }
+
+                if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                {
+                    var keyTypescript = genericArguments[0].ToTypeScript(includeNamespace);
+                    var valueTypescript = genericArguments[1].ToTypeScript(includeNamespace);
+
+                    return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";
+                }
+
+                return GenericTypeToTypeScript(type, includeNamespace, includeGenericArguments);
+            }
+        }
+        /// <summary>
+        /// Generic type, emit GenericType`2<A, B> as GenericType<A, B> 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="includeNamespace"></param>
+        /// <param name="includeGenericArguments"></param>
+        /// <returns></returns>
         private static string GenericTypeToTypeScript(Type type, bool includeNamespace, bool includeGenericArguments)
         {
-            // Generic type, emit GenericType`2<A, B> as GenericType<A, B>
             var genericTypeName = new StringBuilder();
             if (includeNamespace)
             {
@@ -197,6 +214,11 @@ namespace Nimrod
                         || type.GetGenericTypeDefinition() == typeof(ICollection<>);
         }
 
+        /// <summary>
+        /// Return the templated type if it is a generic one, else return the input type
+        /// </summary>
+        /// <param name="inType"></param>
+        /// <returns></returns>
         private static Type GetType(Type inType)
         {
             if (inType.IsGenericType && inType.FullName == null && !inType.IsSystem())

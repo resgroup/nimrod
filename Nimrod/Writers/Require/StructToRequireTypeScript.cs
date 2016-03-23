@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Nimrod
+namespace Nimrod.Writers.Require
 {
     public class StructToRequireTypeScript : StructToTypeScript
     {
@@ -12,7 +12,7 @@ namespace Nimrod
         {
         }
 
-        public override IEnumerable<string> Build()
+        public override IEnumerable<string> GetLines()
         {
             var tsClassType = this.Type.ToTypeScript();
             yield return $"class {tsClassType} extends String {"{}"}";

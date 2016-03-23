@@ -10,7 +10,6 @@ namespace Nimrod.Test
     [TestFixture]
     public class ToTReferencedTypesTests
     {
-
         [Test]
         public void StandardTest()
         {
@@ -22,8 +21,6 @@ namespace Nimrod.Test
             Assert.AreEqual(args[1], typeof(IEnumerable<int>).GetGenericTypeDefinition());
             Assert.AreEqual(args[2], typeof(int));
         }
-
-
     }
 
 }

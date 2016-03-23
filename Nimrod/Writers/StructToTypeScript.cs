@@ -19,6 +19,6 @@ namespace Nimrod
             }
         }
 
-        public abstract override IEnumerable<string> Build();
+        public abstract override IEnumerable<string> GetLines();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Nimrod.Test.ModelExamples;
+using Nimrod.Writers.Default;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Nimrod.Test
         public void Write_SimpleController()
         {
             var writer = new ControllerToDefaultTypeScript(typeof(MovieController));
-            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsFalse(ts.Contains("Foo"));
         }
     }

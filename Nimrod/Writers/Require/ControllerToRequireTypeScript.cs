@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 
-namespace Nimrod
+namespace Nimrod.Writers.Require
 {
     // This project can output the Class library as a NuGet Package.
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
@@ -33,7 +33,8 @@ namespace Nimrod
                 }
             }
 
-            var imports = RequireModuleWriter.GetImports(importedTypes);
+            var imports = RequireModuleHelper.GetTypesToImport(importedTypes)
+                                             .Select(t => RequireModuleHelper.GetImportLine(t));
             foreach (var import in imports)
             {
                 yield return import;

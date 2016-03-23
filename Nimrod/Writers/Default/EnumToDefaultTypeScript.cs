@@ -5,23 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Nimrod
+namespace Nimrod.Writers.Default
 {
-    public class EnumToRequireTypeScript : EnumToTypeScript
+    public class EnumToDefaultTypeScript : EnumToTypeScript
     {
-        public EnumToRequireTypeScript(Type type) : base(type)
+        public EnumToDefaultTypeScript(Type type) : base(type)
         {
 
         }
+
         protected override IEnumerable<string> GetHeader()
         {
-            yield return $"enum {TsName} {{";
+            yield return $"module {this.Type.Namespace} {{";
+            yield return $"export enum {this.TsName} {{";
         }
 
         protected override IEnumerable<string> GetFooter()
         {
             yield return "}";
-            yield return $"export = {TsName};";
+            yield return "}";
         }
     }
 }
