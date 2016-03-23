@@ -13,23 +13,31 @@ namespace Nimrod.Test
         Orange = 5,
         Ananas
     }
+    enum SomeEnum : byte
+    {
+        SomeValue = 0x01,
+    }
     [TestFixture]
     public class EnumWriterTest
     {
         [Test]
         public void GetTypescriptType_ArrayLike_Test()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new EnumWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(Fruits));
-            }
-            string ts = builder.ToString();
+            var writer = new EnumToDefaultTypeScript(typeof(Fruits));
+            var lines = writer.Build();
+            string ts = string.Join(Environment.NewLine, lines);
             Assert.IsTrue(ts.Contains("enum IFruits"));
             Assert.IsTrue(ts.Contains("Apple = 0,"));
             Assert.IsTrue(ts.Contains("Orange = 5,"));
             Assert.IsTrue(ts.Contains("Ananas = 6,"));
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void EnumTypesNotIntNotSupported()
+        {
+            var writer = new EnumToDefaultTypeScript(typeof(SomeEnum));
+            var lines = writer.Build().ToList();
         }
     }
 }

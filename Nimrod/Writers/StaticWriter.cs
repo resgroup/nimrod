@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,16 +7,10 @@ namespace Nimrod
 {
     public class StaticWriter
     {
-        public ModuleType Module { get; }
-        public StaticWriter(ModuleType module)
-        {
-            this.Module = module;
-        }
-
-        public void Write(TextWriter writer)
+        public string Write(ModuleType module)
         {
             string content;
-            if (Module == ModuleType.TypeScript)
+            if (module == ModuleType.TypeScript)
             {
                 content = @"
 module Nimrod {
@@ -43,7 +36,7 @@ interface IRestApi {
 export = IRestApi;
 ";
             }
-            writer.Write(content);
+            return content;
         }
     }
 }

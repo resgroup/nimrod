@@ -23,26 +23,22 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_WriteImports()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                new BaseWriter(stringWriter, ModuleType.TypeScript).WriteImports(new[] { typeof(GenericWrapper<GenericItem<int>>) });
-            }
-            string ts = builder.ToString();
-            Assert.IsTrue(ts.Contains("import IGenericItem = require('./Nimrod.Test.GenericItem');"));
-            Assert.IsTrue(ts.Contains("import IGenericWrapper = require('./Nimrod.Test.GenericWrapper');"));
+            var imports = RequireModuleWriter.GetImports(new[] { typeof(GenericWrapper<GenericItem<int>>) })
+                .OrderBy(s => s)
+                .ToList();
+
+            Assert.AreEqual(2, imports.Count);
+            Assert.AreEqual("import IGenericItem = require('./Nimrod.Test.GenericItem');", imports[0]);
+            Assert.AreEqual("import IGenericWrapper = require('./Nimrod.Test.GenericWrapper');", imports[1]);
         }
 
         [Test]
         public void GetTypescriptType_Generic()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(GenericFoo<int>).GetGenericTypeDefinition());
-            }
-            string ts = builder.ToString();
+            var genericTypeDefinition = typeof(GenericFoo<int>).GetGenericTypeDefinition();
+            var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
+
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
 
             Assert.IsTrue(ts.Contains("GenericFoo<T>"));
             Assert.IsTrue(ts.Contains("GenericProperty: T"));
@@ -52,26 +48,19 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_GenericListContainer()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(BarWrapper<int>).GetGenericTypeDefinition());
-            }
-            string ts = builder.ToString();
+            var genericTypeDefinition = typeof(BarWrapper<int>).GetGenericTypeDefinition();
+            var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             Assert.IsTrue(ts.Contains("Bars: T[];"));
         }
 
         [Test]
         public void GetTypescriptType_GenericCustomContainer()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(Fuzz<int>).GetGenericTypeDefinition());
-            }
-            string ts = builder.ToString();
+            var genericTypeDefinition = typeof(Fuzz<int>).GetGenericTypeDefinition();
+            var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
+
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T>;"));
         }
 

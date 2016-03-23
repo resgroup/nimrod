@@ -12,17 +12,11 @@ namespace Nimrod.Test
     [TestFixture]
     public class ControllerWriterTest
     {
-
         [Test]
         public void Write_SimpleController()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ControllerWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(MovieController));
-            }
-            string ts = builder.ToString();
+            var writer = new ControllerToDefaultTypeScript(typeof(MovieController));
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             Assert.IsFalse(ts.Contains("Foo"));
         }
     }

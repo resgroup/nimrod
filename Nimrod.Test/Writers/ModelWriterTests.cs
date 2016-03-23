@@ -35,26 +35,17 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_IgnoreDataMember()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(IgnoreDataMemberClass));
-            }
-            string ts = builder.ToString();
+            var writer = new ModelToDefaultTypeScript(typeof(IgnoreDataMemberClass));
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             Assert.IsFalse(ts.Contains("Foo"));
         }
 
         [Test]
         public void GetTypescriptType_Generic()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(GenericFoo<int>).GetGenericTypeDefinition());
-            }
-            string ts = builder.ToString();
+            var genericTypeDefinition = typeof(GenericFoo<int>).GetGenericTypeDefinition();
+            var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
 
             Assert.IsTrue(ts.Contains("GenericFoo<T>"));
             Assert.IsTrue(ts.Contains("GenericProperty: T"));
@@ -64,53 +55,33 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_GenericListContainer()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(BarWrapper<int>).GetGenericTypeDefinition());
-            }
-            string ts = builder.ToString();
+            var writer = new ModelToDefaultTypeScript(typeof(BarWrapper<int>).GetGenericTypeDefinition());
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             Assert.IsTrue(ts.Contains("Bars: T[];"));
         }
 
         [Test]
         public void GetTypescriptType_GenericCustomContainer()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(Fuzz<int>).GetGenericTypeDefinition());
-            }
-            string ts = builder.ToString();
+            var writer = new ModelToDefaultTypeScript(typeof(Fuzz<int>).GetGenericTypeDefinition());
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T>;"));
         }
 
         [Test]
         public void ModelWriter_RequireExportWithoutGenericArgument()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.Require);
-                writer.Write(typeof(Fuzz<int>));
-            }
-            string ts = builder.ToString();
+            var writer = new ModelToRequireTypeScript(typeof(Fuzz<int>));
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             Assert.IsTrue(ts.Contains("export = IFuzz;"));
         }
 
         [Test]
         public void WriteModel_Movie()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new ModelWriter(stringWriter, ModuleType.TypeScript);
-                writer.Write(typeof(Movie));
-            }
+            var writer = new ModelToDefaultTypeScript(typeof(Movie));
+            string ts = string.Join(Environment.NewLine, writer.Build().ToArray());
             //string ts = builder.ToString();
-            
         }
 
     }

@@ -102,9 +102,13 @@ namespace Nimrod
             }
         }
 
-        static public IEnumerable<MethodInfo> GetControllerActions(Type controller)
+        static public IEnumerable<MethodInfo> GetControllerActions(this Type controllerType)
         {
-            foreach (var method in controller.GetMethods())
+            if (!controllerType.IsWebMvcController())
+            {
+                throw new ArgumentOutOfRangeException($"Type {controllerType.Name} MUST extends System.Web.Mvc.Controller", nameof(controllerType));
+            }
+            foreach (var method in controllerType.GetMethods())
             {
                 var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
                 if (httpVerb != null)

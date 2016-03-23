@@ -84,10 +84,19 @@ namespace Nimrod
                 options.WriteLine($" Done!");
 
                 options.Write($"Writing {toWrites.Count} files...");
-                toWrites.ForEach(t =>
+                toWrites.ForEach(type =>
                 {
-                    options.Write($"Writing {t.Name}...");
-                    WriteType(foldersManager, t, options.ModuleType);
+                    options.Write($"Writing {type.Name}...");
+                    var toTypeScript = ToTypeScriptBuildRule.GetToTypeScript(type, options.ModuleType);
+                    var lines = toTypeScript.Build();
+                    var indentedLines = lines.IndentLines();
+                    var text = string.Join(Environment.NewLine, indentedLines.ToArray());
+
+                    var filePath = this.FileSystem.Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename());
+                    using (var fileWriter = this.FileSystem.File.CreateText(filePath))
+                    {
+                        fileWriter.Write(text);
+                    }
                     options.WriteLine($" Done!");
                 });
                 options.WriteLine($"Writing {toWrites.Count} files...Done!");
@@ -97,39 +106,14 @@ namespace Nimrod
 
         private void WriteStaticFiles(FoldersManager foldersManager, ModuleType module)
         {
-            var writer = new StaticWriter(module);
+            var content = new StaticWriter().Write(module);
             var restApiFilePath = this.FileSystem.Path.Combine(foldersManager.OutputFolderPath, "IRestApi.ts");
             using (var fileWriter = this.FileSystem.File.CreateText(restApiFilePath))
             {
-                writer.Write(fileWriter);
+                fileWriter.Write(content);
             }
         }
 
-        private void WriteType(FoldersManager foldersManager, Type type, ModuleType module)
-        {
-            BaseWriter writer;
-            var filePath = this.FileSystem.Path.Combine(foldersManager.OutputFolderPath, type.GetTypeScriptFilename());
-            using (var fileWriter = this.FileSystem.File.CreateText(filePath))
-            {
-                if (type.IsWebMvcController())
-                {
-                    writer = new ControllerWriter(fileWriter, module);
-                }
-                else if (type.IsEnum)
-                {
-                    writer = new EnumWriter(fileWriter, module);
-                }
-                else if (type.IsValueType)
-                {
-                    writer = new SerializableWriter(fileWriter, module);
-                }
-                else
-                {
-                    writer = new ModelWriter(fileWriter, module);
-                }
-
-                writer.Write(type);
-            }
-        }
     }
 }
+

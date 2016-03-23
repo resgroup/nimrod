@@ -216,5 +216,6 @@ namespace Nimrod
             var moduleName = fullTypeName.Substring(0, index) + fullTypeName.Substring(index + 1);
             return moduleName;
         }
+
     }
 }

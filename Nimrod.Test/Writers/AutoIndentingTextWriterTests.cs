@@ -23,40 +23,32 @@ namespace Nimrod.Test
         [Test]
         public void AutoIndentingTextWriter_StandardCase()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new AutoIndentingTextWriter(stringWriter, "_");
-                writer.WriteLine("{");
-                writer.WriteLine("{}");
-                writer.Write("hello");
-                writer.WriteLine("{");
-                writer.WriteLine("}");
-                writer.WriteLine("}");
-            }
-            string actual = builder.ToString();
+            var lines = new[] {
+                        "{",
+                         "{}",
+                        "hello{",
+                          "}",
+                           "}"
+                 };
+            string actual = string.Join(Environment.NewLine, lines.IndentLines("_"));
             var expected =
 @"{
 _{}
-hello_{
+_hello{
 _}
-}
-";
+}";
             Assert.AreEqual(expected, actual);
         }
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
         public void AutoIndentingTextWriter_TooMuchOutdent()
         {
-            var builder = new StringBuilder();
-            using (var stringWriter = new StringWriter(builder))
-            {
-                var writer = new AutoIndentingTextWriter(stringWriter, "_");
-                writer.WriteLine("{");
-                writer.WriteLine("}");
-                // illegal should happen here
-                writer.WriteLine("}");
-            }
+                var lines = new[] {
+                        "{",
+                         "}",
+                        "}"
+                 };
+            var indetedLines = lines.IndentLines().ToList();
         }
     }
 }

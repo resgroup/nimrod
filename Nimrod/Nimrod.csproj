@@ -80,6 +80,8 @@
   <ItemGroup>
     <Compile Include="AssemblyData.cs" />
     <Compile Include="AssemblyLocator.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\MethodExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FoldersManager.cs" />
@@ -87,17 +89,24 @@
     <Compile Include="HttpMethodAttribute.cs" />
     <Compile Include="IOptions.cs" />
     <Compile Include="ModuleType.cs" />
-    <Compile Include="Writers\AutoIndentingTextWriter.cs" />
-    <Compile Include="Writers\EnumWriter.cs" />
-    <Compile Include="Writers\IndentingTextWriter.cs" />
-    <Compile Include="Writers\SerializableWriter.cs" />
-    <Compile Include="Writers\ModelWriter.cs" />
-    <Compile Include="Writers\ControllerWriter.cs" />
+    <Compile Include="Writers\Controller\ControllerToDefaultTypeScript.cs" />
+    <Compile Include="Writers\Controller\ControllerToRequireTypeScript.cs" />
+    <Compile Include="Writers\Enum\EnumToDefaultTypeScript.cs" />
+    <Compile Include="Writers\Enum\EnumToRequireTypeScript.cs" />
+    <Compile Include="Writers\Enum\EnumToTypeScript.cs" />
+    <Compile Include="Writers\Model\ModelToRequireTypeScript.cs" />
+    <Compile Include="Writers\Model\ModelToDefaultTypeScript.cs" />
+    <Compile Include="Writers\RequireModuleWriter.cs" />
+    <Compile Include="Writers\Struct\StructToDefaultTypeScript.cs" />
+    <Compile Include="Writers\Struct\StructToRequireTypeScript.cs" />
+    <Compile Include="Writers\Struct\StructToTypeScript.cs" />
+    <Compile Include="Writers\Model\ModelToTypeScript.cs" />
+    <Compile Include="Writers\Controller\ControllerToTypeScript.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeDiscovery.cs" />
-    <Compile Include="Writers\BaseWriter.cs" />
     <Compile Include="Writers\StaticWriter.cs" />
-    <Compile Include="Writers\TidyUp.cs" />
+    <Compile Include="Writers\ToTypeScript.cs" />
+    <Compile Include="Writers\ToTypeScriptBuildRule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
