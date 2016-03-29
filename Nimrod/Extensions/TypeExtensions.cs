@@ -106,7 +106,11 @@ namespace Nimrod
                 var elementTypeName = type.GetElementType().ToTypeScript(includeNamespace);
                 return $"{elementTypeName}[]";
             }
-           else if (type == typeof(string))
+            else if (type.IsTuple())
+            {
+                return TupleToTypeScript(inType, includeNamespace, includeGenericArguments);
+            }
+            else if (type == typeof(string))
             {
                 return "string";
             }
@@ -134,6 +138,24 @@ namespace Nimrod
             {
                 return ToTypeScriptForGenericClass(type, includeNamespace, includeGenericArguments);
             }
+        }
+
+        public static bool IsTuple(this Type type)
+        {
+            return type.FullName.StartsWith("System.Tuple");
+        }
+
+        public static string TupleToTypeScript(this Type type, bool includeNamespace = false, bool includeGenericArguments = true)
+        {
+            if (!type.IsTuple())
+            {
+                throw new ArgumentException(nameof(type), "Type should be a Tuple");
+            }
+            var content = string.Join(", ", type.GetGenericArguments()
+                .Select(a => a.ToTypeScript())
+                .Select((s, i) => $"Item{i + 1}: {s}").ToArray());
+
+            return $"{{ {content} }}";
         }
 
         /// <summary>

@@ -13,6 +13,16 @@ namespace Nimrod.Test
     public class ToTypescriptTests
     {
         [Test]
+        public void GetTypescriptType_TupleToTypeScript_Test()
+        {
+            Assert.AreEqual("{ Item1: number }", typeof(Tuple<int>).TupleToTypeScript());
+            Assert.AreEqual("{ Item1: string }", typeof(Tuple<string>).TupleToTypeScript());
+            Assert.AreEqual("{ Item1: number, Item2: string }", typeof(Tuple<int, string>).TupleToTypeScript());
+            Assert.AreEqual("{ Item1: number, Item2: string, Item3: Date }", typeof(Tuple<int, string, DateTime>).TupleToTypeScript());
+            Assert.AreEqual("{ Item1: { Item1: number } }", typeof(Tuple<Tuple<int>>).TupleToTypeScript());
+        }
+
+        [Test]
         public void GetTypescriptType_ArrayLike_Test()
         {
             Assert.AreEqual("string[]", typeof(List<string>).ToTypeScript());
