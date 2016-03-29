@@ -140,9 +140,21 @@ namespace Nimrod
             }
         }
 
+        private static readonly HashSet<Type> GenericTupleTypes = new HashSet<Type>(new[]
+        {
+            typeof(Tuple<>),
+            typeof(Tuple<,>),
+            typeof(Tuple<,,>),
+            typeof(Tuple<,,,>),
+            typeof(Tuple<,,,,>),
+            typeof(Tuple<,,,,,>),
+            typeof(Tuple<,,,,,,>),
+            typeof(Tuple<,,,,,,,>)
+        });
         public static bool IsTuple(this Type type)
         {
-            return type.FullName.StartsWith("System.Tuple");
+            var typeDefinition = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
+            return GenericTupleTypes.Contains(typeDefinition);
         }
 
         public static string TupleToTypeScript(this Type type, bool includeNamespace = false, bool includeGenericArguments = true)

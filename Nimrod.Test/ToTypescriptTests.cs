@@ -13,13 +13,25 @@ namespace Nimrod.Test
     public class ToTypescriptTests
     {
         [Test]
-        public void GetTypescriptType_TupleToTypeScript_Test()
+        public void GetTypescriptType_ToTypeScript_Test()
         {
-            Assert.AreEqual("{ Item1: number }", typeof(Tuple<int>).TupleToTypeScript());
-            Assert.AreEqual("{ Item1: string }", typeof(Tuple<string>).TupleToTypeScript());
-            Assert.AreEqual("{ Item1: number, Item2: string }", typeof(Tuple<int, string>).TupleToTypeScript());
-            Assert.AreEqual("{ Item1: number, Item2: string, Item3: Date }", typeof(Tuple<int, string, DateTime>).TupleToTypeScript());
-            Assert.AreEqual("{ Item1: { Item1: number } }", typeof(Tuple<Tuple<int>>).TupleToTypeScript());
+            Assert.AreEqual("{ Item1: number }", typeof(Tuple<int>).ToTypeScript());
+            Assert.AreEqual("{ Item1: string }", typeof(Tuple<string>).ToTypeScript());
+            Assert.AreEqual("{ Item1: number, Item2: string }", typeof(Tuple<int, string>).ToTypeScript());
+            Assert.AreEqual("{ Item1: number, Item2: string, Item3: Date }", typeof(Tuple<int, string, DateTime>).ToTypeScript());
+            Assert.AreEqual("{ Item1: { Item1: number } }", typeof(Tuple<Tuple<int>>).ToTypeScript());
+        }
+
+        [Test]
+        public void IsTupleTest()
+        {
+            Assert.IsTrue(typeof(Tuple<int>).IsTuple());
+            Assert.IsTrue(typeof(Tuple<int, int>).IsTuple());
+            Assert.IsTrue(typeof(Tuple<int, int, Tuple<int, int>>).IsTuple());
+            Assert.IsTrue(typeof(Tuple<>).IsTuple());
+            Assert.IsTrue(typeof(Tuple<,>).IsTuple());
+            Assert.IsFalse(typeof(int).IsTuple());
+            Assert.IsFalse(new object().GetType().IsTuple());
         }
 
         [Test]
@@ -59,7 +71,7 @@ namespace Nimrod.Test
             Assert.AreEqual("IGeneric<string>", typeof(Generic<string>).ToTypeScript(false, true));
             Assert.AreEqual("IGeneric", typeof(Generic<string>).ToTypeScript(false, false));
         }
-        
+
         [Test]
         public void GetTypescriptType_NonGeneric_Test()
         {
