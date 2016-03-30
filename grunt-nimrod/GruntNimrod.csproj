@@ -21,7 +21,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <ItemGroup>
-    <None Include="LICENSE-MIT" />
     <None Include="package.json" />
     <None Include="README.md" />
     <None Include="tsd.json" />

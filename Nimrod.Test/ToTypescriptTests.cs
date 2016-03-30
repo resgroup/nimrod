@@ -20,6 +20,10 @@ namespace Nimrod.Test
             Assert.AreEqual("{ Item1: number, Item2: string }", typeof(Tuple<int, string>).ToTypeScript());
             Assert.AreEqual("{ Item1: number, Item2: string, Item3: Date }", typeof(Tuple<int, string, DateTime>).ToTypeScript());
             Assert.AreEqual("{ Item1: { Item1: number } }", typeof(Tuple<Tuple<int>>).ToTypeScript());
+
+
+            Assert.AreEqual("{ Item1: INonGenericClass }", typeof(Tuple<NonGenericClass>).ToTypeScript(false));
+            Assert.AreEqual("{ Item1: Nimrod.Test.INonGenericClass }", typeof(Tuple<NonGenericClass>).ToTypeScript(true));
         }
 
         [Test]
