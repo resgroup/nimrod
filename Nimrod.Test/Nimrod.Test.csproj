@@ -94,6 +94,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TupleToTypeScriptTests.cs" />
     <Compile Include="ExtensionsTest.cs" />
     <Compile Include="JsonNetResult.cs" />
     <Compile Include="ModelExamples\Controllers\MovieController.cs" />
