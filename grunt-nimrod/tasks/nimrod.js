@@ -1,3 +1,4 @@
+"use strict";
 var child = require("child_process");
 module.exports = function (grunt) {
     grunt.registerMultiTask('nimrod', 'An ASP.NET MVC to TypeScript Converter', function () {

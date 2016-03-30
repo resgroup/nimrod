@@ -27,18 +27,6 @@ module.exports = function (grunt) {
                 ],
             },
         },
-        nimrod: {
-            default_options: {
-                options: {
-                    //verbose: false,
-                    module: 'typescript',
-                    output: 'C:/temp/nimrod-test-generated',
-                    files: ['/SoftwareGit/software/WikiProject/Wiki/bin/RES.WikiProject.Wiki.dll'
-                        , '/SoftwareGit/software/WikiProject/Wiki/bin/RES.Insee.Wiki.dll']
-                }
-            }
-        },
-
         nodeunit: {
             tests: ['test/*_test.js']
         },
@@ -65,6 +53,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-ts');
 
-    grunt.registerTask('default', ['clean', 'ts', 'copy', 'nimrod']);
+    grunt.registerTask('default', ['clean', 'ts', 'copy']);
 
 };
