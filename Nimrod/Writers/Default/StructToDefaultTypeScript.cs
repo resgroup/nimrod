@@ -18,7 +18,7 @@ namespace Nimrod.Writers.Default
         public override IEnumerable<string> GetLines()
         {
             var tsClassType = this.Type.ToTypeScript();
-            yield return $"module {this.Type.Namespace} {{";
+            yield return $"namespace {this.Type.Namespace} {{";
             yield return $"export class {tsClassType} extends String {"{}"}";
             yield return "}";
         }

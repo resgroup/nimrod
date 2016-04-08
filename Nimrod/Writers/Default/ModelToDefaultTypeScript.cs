@@ -14,7 +14,7 @@ namespace Nimrod.Writers.Default
         }
         protected override IEnumerable<string> GetHeader()
         {
-            yield return string.Format("module {0} {1}", this.Type.Namespace, '{');
+            yield return string.Format("namespace {0} {1}", this.Type.Namespace, '{');
             yield return $"export interface {TsName} {{";
         }
 

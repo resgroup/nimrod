@@ -57,7 +57,7 @@ namespace Nimrod
             foreach (var method in TypeDiscovery.GetControllerActions(this.Type))
             {
                 var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
-                var parameters = method.GetParameters().AsEnumerable();
+                var parameters = method.GetParameters();
 
                 var signature = method.GetMethodSignature(NeedNameSpace);
                 yield return $"public {signature} {{";
@@ -78,16 +78,18 @@ namespace Nimrod
                 if (httpVerb == HttpMethodAttribute.Get || httpVerb == HttpMethodAttribute.Delete)
                 {
                     yield return "(config || (config = {})).params = {";
-                    foreach (var methodParameter in parameters)
+                    for (int i = 0; i < parameters.Length; i++)
                     {
-                        yield return $"{methodParameter.Name}: {methodParameter.Name},";
+                        var methodParameter = parameters[i];
+                        var needComma = i == parameters.Length - 1;
+                        yield return $"{methodParameter.Name}: {methodParameter.Name}{(needComma ? "," : "")}";
                     }
                     yield return "};";
                     yield return $"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', config);";
                 }
                 else
                 {
-                    yield return "var data = {";
+                    yield return "let data = {";
                     foreach (var methodParameter in parameters)
                     {
                         yield return $"{methodParameter.Name}: {methodParameter.Name},";

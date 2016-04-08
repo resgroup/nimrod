@@ -19,7 +19,7 @@ namespace Nimrod.Writers.Default
 
         protected override IEnumerable<string> GetHeader()
         {
-            yield return $"module {this.Type.Namespace} {{";
+            yield return $"namespace {this.Type.Namespace} {{";
         }
 
 
