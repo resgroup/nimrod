@@ -35,21 +35,21 @@ public class MovieController : Controller
 ```
 Generated TypeScript code
 ```ts
-module Nimrod.Test.ModelExamples {
+namespace Nimrod.Test.ModelExamples {
     export interface IMovie {
         Name: string;
         Rating: number;
         Actors: string[];
     }
 }
-module Nimrod.Test.ModelExamples {
+namespace Nimrod.Test.ModelExamples {
     export interface IMovieService {
         Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie>;
     }
     export class MovieService implements IMovieService {
         public Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie> {
             (config || (config = {})).params = {
-                id: id,
+                id: id
             };
             return restApi.Get<Nimrod.Test.ModelExamples.IMovie>('/Movie/Movie', config);
         }
@@ -61,7 +61,7 @@ module Nimrod.Test.ModelExamples {
 You will need to implemented interfaces `IRequestShortcutConfig` and `IPromise` according to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
 
 ```ts
-module Nimrod {
+namespace Nimrod {
     export interface IRequestShortcutConfig extends ng.IRequestShortcutConfig {
     }
 	export interface IPromise<T> extends ng.IPromise<T> {
