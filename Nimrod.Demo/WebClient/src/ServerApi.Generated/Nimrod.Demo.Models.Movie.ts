@@ -1,4 +1,4 @@
-module Nimrod.Demo.Models {
+namespace Nimrod.Demo.Models {
     export interface IMovie {
         Id: number;
         Name: string;

@@ -81,7 +81,7 @@ namespace Nimrod
                     for (int i = 0; i < parameters.Length; i++)
                     {
                         var methodParameter = parameters[i];
-                        var needComma = i == parameters.Length - 1;
+                        var needComma = i != parameters.Length - 1;
                         yield return $"{methodParameter.Name}: {methodParameter.Name}{(needComma ? "," : "")}";
                     }
                     yield return "};";
@@ -90,9 +90,11 @@ namespace Nimrod
                 else
                 {
                     yield return "let data = {";
-                    foreach (var methodParameter in parameters)
+                    for (int i = 0; i < parameters.Length; i++)
                     {
-                        yield return $"{methodParameter.Name}: {methodParameter.Name},";
+                        var methodParameter = parameters[i];
+                        var needComma = i != parameters.Length - 1;
+                        yield return $"{methodParameter.Name}: {methodParameter.Name}{(needComma ? "," : "")}";
                     }
                     yield return "};";
                     yield return $"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', data, config);";

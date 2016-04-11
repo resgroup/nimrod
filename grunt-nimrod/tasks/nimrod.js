@@ -9,7 +9,11 @@ module.exports = function (grunt) {
         if (options.verbose === true) {
             verbose = ' --verbose';
         }
-        var cmd = __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
+        var pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
+        var cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
+        if (options.verbose) {
+            console.log('Executing command : ' + cmd);
+        }
         var childProcess = child.exec(cmd);
         childProcess.stdout.on('data', function (data) {
             grunt.log.write(data);

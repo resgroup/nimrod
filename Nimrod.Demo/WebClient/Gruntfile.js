@@ -20,6 +20,8 @@ module.exports = function (grunt) {
         nimrod: {
             default_options: {
                 options: {
+                    // specify the dev executable for the demo
+                    exe: '..\\..\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe',
                     module: 'typescript',
                     output: '.\\src\\ServerApi.Generated',
                     files: ['..\\WebServer\\bin\\Nimrod.Demo.dll'],
@@ -29,7 +31,8 @@ module.exports = function (grunt) {
         },
         ts: {
             oneFile: {
-                src: ['typings/main/**/*.ts'].concat(customScripts), // the order of files is important for a one file compilation
+                // the order of files is important for a one file compilation
+                src: ['typings/main/**/*.ts'].concat(customScripts),
                 out: '../WebServer/dist/bundle.js',
                 options: {
                     target: 'es5',
