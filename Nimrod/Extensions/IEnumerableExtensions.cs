@@ -7,6 +7,11 @@ namespace Nimrod
 {
     public static class IEnumerableExtensions
     {
+        public static bool IsEmpty<T>(this IEnumerable<T> source)
+        {
+            return !source.Any();
+        }
+
         /// <summary>
         /// Return a list of lines indented, given the open and close context. default are braces '{' and '}'
         /// </summary>

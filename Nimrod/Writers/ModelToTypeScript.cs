@@ -19,18 +19,31 @@ namespace Nimrod
 
         public override IEnumerable<string> GetLines()
         {
-            foreach(var line in this.GetHeader())
+            foreach (var line in this.GetHeader())
             {
                 yield return line;
             }
             foreach (var property in this.Type.GetProperties())
             {
                 var attributes = Attribute.GetCustomAttributes(property);
-                var ignoreDataMemberAttributes = attributes.Where(attribute => attribute.GetType() == typeof(IgnoreDataMemberAttribute));
-                if (ignoreDataMemberAttributes.Any() == false)
+                var ignoreDataMemberAttributes = attributes.OfType<IgnoreDataMemberAttribute>();
+                if (ignoreDataMemberAttributes.IsEmpty())
                 {
+                    var dataMemberAttribute = attributes.OfType<DataMemberAttribute>().FirstOrDefault();
+                    string propertyName;
+                    if (dataMemberAttribute != null && !string.IsNullOrWhiteSpace(dataMemberAttribute.Name))
+                    {
+                        // the Name of the DataMember attribute is going to be used by serializer
+                        // this is the value we need to write into the file
+                        propertyName = dataMemberAttribute.Name;
+                    }
+                    else
+                    {
+                        propertyName = property.Name;
+                    }
+
                     var tsPropertyType = property.PropertyType.ToTypeScript(PrefixPropertyWithNamespace);
-                    yield return $"{property.Name}: {tsPropertyType};";
+                    yield return $"{propertyName}: {tsPropertyType};";
                 }
             }
 

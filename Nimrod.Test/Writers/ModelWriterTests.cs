@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Nimrod.Test
@@ -29,10 +30,22 @@ namespace Nimrod.Test
         public GenericFoo<T> Fuzzs { get; set; }
     }
 
+    public class DataMemberSpecificName
+    {
+        [DataMember(Name = "bar")]
+        public float Foo { get; set; }
+    }
 
-    [TestFixture]
     public class ModelWriterTests
     {
+        [Test]
+        public void WriteModel_UseDataMemberName()
+        {
+            var writer = new ModelToDefaultTypeScript(typeof(DataMemberSpecificName));
+            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
+            Assert.IsTrue(ts.Contains("bar"));
+            Assert.IsFalse(ts.Contains("Foo"));
+        }
 
         [Test]
         public void WriteModel_IgnoreDataMember()
