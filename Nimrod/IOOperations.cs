@@ -7,26 +7,26 @@ using System.Text;
 
 namespace Nimrod
 {
-    public class IOOperations
+    public class IoOperations
     {
         public string OutputFolderPath { get; }
         public IFileSystem FileSystem { get; }
-        private ILogger logger { get; }
+        private ILogger Logger { get; }
 
-        public IOOperations(IFileSystem fileSystem, string outputFolderPath, ILogger logger = null)
+        public IoOperations(IFileSystem fileSystem, string outputFolderPath, ILogger logger)
         {
             this.FileSystem = fileSystem.ThrowIfNull(nameof(fileSystem));
             this.OutputFolderPath = outputFolderPath;
-            this.logger = logger;
+            this.Logger = logger;
 
             this.WriteLog("outputFolderPath = " + outputFolderPath);
         }
 
         public void WriteLog(string log)
         {
-            if (this.logger != null)
+            if (this.Logger != null)
             {
-                this.logger.WriteLine(log);
+                this.Logger.WriteLine(log);
             }
         }
 

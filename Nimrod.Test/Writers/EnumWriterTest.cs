@@ -38,7 +38,7 @@ namespace Nimrod.Test
         public void EnumTypesNotIntNotSupported()
         {
             var writer = new EnumToDefaultTypeScript(typeof(SomeEnum));
-            var lines = writer.GetLines().ToList();
+            writer.GetLines().ToList();
         }
     }
 }

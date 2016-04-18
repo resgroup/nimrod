@@ -6,7 +6,7 @@ using System.IO.Abstractions;
 
 namespace Nimrod.Console
 {
-    class Program
+    static class Program
     {
         static int Main(string[] args)
         {
@@ -47,7 +47,7 @@ namespace Nimrod.Console
             else
             {
                 var logger = options.Verbose ? new ConsoleLogger() : null;
-                var ioOperations = new IOOperations(new FileSystem(), options.OutputPath, logger);
+                var ioOperations = new IoOperations(new FileSystem(), options.OutputPath, logger);
                 var generator = new Generator(ioOperations);
                 generator.Generate(options.Files, options.ModuleType);
             }

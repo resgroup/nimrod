@@ -8,38 +8,38 @@ namespace Nimrod
 {
     public class Generator
     {
-        public IOOperations IOOperations { get; }
-        public Generator(IOOperations ioOperations)
+        public IoOperations IoOperations { get; }
+        public Generator(IoOperations ioOperations)
         {
-            this.IOOperations = ioOperations.ThrowIfNull(nameof(ioOperations));
+            this.IoOperations = ioOperations.ThrowIfNull(nameof(ioOperations));
         }
 
         public void Generate(IEnumerable<string> dllPaths, ModuleType moduleType)
         {
-            this.IOOperations.RecreateOutputFolder();
+            this.IoOperations.RecreateOutputFolder();
 
-            this.IOOperations.WriteLog($"Writing static files...");
+            this.IoOperations.WriteLog($"Writing static files...");
             WriteStaticFiles(moduleType);
 
-            var assemblies = this.IOOperations.GetAssemblies(dllPaths);
+            var assemblies = this.IoOperations.GetAssemblies(dllPaths);
             var types = this.GetTypesToWrite(assemblies).ToList();
             this.WriteTypes(types, moduleType);
         }
 
         private void WriteTypes(IList<Type> types, ModuleType moduleType)
         {
-            this.IOOperations.WriteLog($"Writing {types.Count} files...");
-            foreach(var type in types)
+            this.IoOperations.WriteLog($"Writing {types.Count} files...");
+            foreach (var type in types)
             {
                 var content = this.GetContentText(type, moduleType);
-                this.IOOperations.WriteFile(content, type.GetTypeScriptFilename());
+                this.IoOperations.WriteFile(content, type.GetTypeScriptFilename());
             };
-            this.IOOperations.WriteLog($"Writing {types.Count} files...Done!");
+            this.IoOperations.WriteLog($"Writing {types.Count} files...Done!");
         }
 
         private IEnumerable<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
-            this.IOOperations.WriteLog($"Discovering types..");
+            this.IoOperations.WriteLog($"Discovering types..");
             var types = TypeDiscovery.GetControllerTypes(assemblies, true).ToList();
             // Write all types except the ones in System
             var toWrites = types
@@ -57,7 +57,7 @@ namespace Nimrod
         /// <returns></returns>
         private string GetContentText(Type type, ModuleType moduleType)
         {
-            this.IOOperations.WriteLog($"Writing {type.Name}...");
+            this.IoOperations.WriteLog($"Writing {type.Name}...");
 
             var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
             var toTypeScript = buildRules.GetToTypeScript(type);
@@ -71,7 +71,7 @@ namespace Nimrod
         private void WriteStaticFiles(ModuleType module)
         {
             var content = new StaticWriter().Write(module);
-            this.IOOperations.WriteFile(content, "IRestApi.ts");
+            this.IoOperations.WriteFile(content, "IRestApi.ts");
         }
 
     }

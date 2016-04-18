@@ -89,7 +89,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="ILogger.cs" />
-    <Compile Include="IOOperations.cs" />
+    <Compile Include="IoOperations.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="HttpMethodAttribute.cs" />
     <Compile Include="ModuleType.cs" />

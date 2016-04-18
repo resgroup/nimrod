@@ -11,18 +11,26 @@ namespace Nimrod
     {
         public static readonly Type[] NumberTypes = { typeof(short), typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal) };
 
+        public static readonly Dictionary<Type, HttpMethodAttribute> TypeToHttpMethodAttribute = new Dictionary<Type, HttpMethodAttribute> {
+            { typeof(HttpGetAttribute), HttpMethodAttribute.Get },
+            { typeof(HttpPostAttribute), HttpMethodAttribute.Post },
+            { typeof(HttpPutAttribute), HttpMethodAttribute.Put },
+            { typeof(HttpDeleteAttribute), HttpMethodAttribute.Delete },
+            { typeof(HttpHeadAttribute), HttpMethodAttribute.Head },
+            { typeof(HttpOptionsAttribute), HttpMethodAttribute.Options },
+            { typeof(HttpPatchAttribute), HttpMethodAttribute.Patch }
+        };
+
         public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)
         {
             foreach (var attribute in method.GetCustomAttributes(true))
             {
-                if (attribute is HttpGetAttribute) return HttpMethodAttribute.Get;
-                if (attribute is HttpPostAttribute) return HttpMethodAttribute.Post;
-                if (attribute is HttpPutAttribute) return HttpMethodAttribute.Put;
-                if (attribute is HttpDeleteAttribute) return HttpMethodAttribute.Delete;
-                if (attribute is HttpHeadAttribute) return HttpMethodAttribute.Head;
-                if (attribute is HttpOptionsAttribute) return HttpMethodAttribute.Options;
-                if (attribute is HttpPatchAttribute) return HttpMethodAttribute.Patch;
-
+                var attributeType = attribute.GetType();
+                HttpMethodAttribute enumAttribute;
+                if (TypeToHttpMethodAttribute.TryGetValue(attributeType, out enumAttribute))
+                {
+                    return enumAttribute;
+                }
             }
             return null;
         }
@@ -34,10 +42,22 @@ namespace Nimrod
 
         public static bool IsBuiltinType(this Type type)
         {
-            if (type == typeof(string)) return true;
-            if (type.IsNumber()) return true;
-            if (type == typeof(bool)) return true;
-            if (type == typeof(DateTime)) return true;
+            if (type == typeof(string))
+            {
+                return true;
+            }
+            if (type.IsNumber())
+            {
+                return true;
+            }
+            if (type == typeof(bool))
+            {
+                return true;
+            }
+            if (type == typeof(DateTime))
+            {
+                return true;
+            }
             return false;
         }
         public static bool IsSystem(this Type type)
@@ -66,7 +86,7 @@ namespace Nimrod
                 name = $"{type.Name.Replace("Controller", "Service")}";
             }
 
-            return $"{type.Namespace}.{name}.ts"; ;
+            return $"{type.Namespace}.{name}.ts";
         }
 
         static public IEnumerable<Type> ReferencedTypes(this Type type)
@@ -98,7 +118,15 @@ namespace Nimrod
             }
         }
 
-        static public string ToTypeScript(this Type inType, bool includeNamespace = false, bool includeGenericArguments = true)
+        static public string ToTypeScript(this Type inType)
+        {
+            return inType.ToTypeScript(false);
+        }
+        static public string ToTypeScript(this Type inType, bool includeNamespace)
+        {
+            return inType.ToTypeScript(includeNamespace, true);
+        }
+        static public string ToTypeScript(this Type inType, bool includeNamespace, bool includeGenericArguments)
         {
             var type = GetType(inType);
             if (type.IsArray)
@@ -157,7 +185,15 @@ namespace Nimrod
             return GenericTupleTypes.Contains(typeDefinition);
         }
 
-        public static string TupleToTypeScript(this Type type, bool includeNamespace = false, bool includeGenericArguments = true)
+        public static string TupleToTypeScript(this Type type)
+        {
+            return type.TupleToTypeScript(false);
+        }
+        public static string TupleToTypeScript(this Type type, bool includeNamespace)
+        {
+            return type.TupleToTypeScript(includeNamespace, true);
+        }
+        public static string TupleToTypeScript(this Type type, bool includeNamespace, bool includeGenericArguments)
         {
             if (!type.IsTuple())
             {
@@ -268,7 +304,7 @@ namespace Nimrod
         public static string TypeScriptModuleName(this Type type)
         {
             var fullTypeName = type.ToTypeScript(true, false);
-            var index = fullTypeName.LastIndexOf(".I") + 1;
+            var index = fullTypeName.LastIndexOf(".I", StringComparison.InvariantCulture) + 1;
             var moduleName = fullTypeName.Substring(0, index) + fullTypeName.Substring(index + 1);
             return moduleName;
         }
