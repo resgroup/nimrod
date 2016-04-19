@@ -15,12 +15,12 @@ namespace Nimrod.Demo
         {
             using (var stringWriter = new StringWriter())
             {
-                var settings = new JsonSerializerSettings()
+                var settings = new JsonSerializerSettings
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc
                 };
-                settings.Converters.Add(new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AdjustToUniversal });
+                settings.Converters.Add(new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AdjustToUniversal });
                 var serializer = JsonSerializer.Create(settings);
                 serializer.Serialize(stringWriter, obj);
                 return stringWriter.ToString();

@@ -13,7 +13,10 @@ namespace Nimrod.Test
     [TestFixture]
     public class BaseWriterTests
     {
-        public class GenericItem<T> { }
+        public class GenericItem<T>
+        {
+            public T Item { get; set; }
+        }
         public class GenericWrapper<T>
         {
             public GenericItem<T> Item
@@ -42,19 +45,6 @@ namespace Nimrod.Test
             Assert.AreEqual("import IGenericWrapper = require('./Nimrod.Test.GenericWrapper');", RequireModuleHelper.GetImportLine(typeof(GenericWrapper<>)));
         }
 
-        [Test]
-        public void GetTypescriptType_Generic()
-        {
-            var genericTypeDefinition = typeof(GenericFoo<int>).GetGenericTypeDefinition();
-            var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
-
-            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
-
-            Assert.IsTrue(ts.Contains("GenericFoo<T>"));
-            Assert.IsTrue(ts.Contains("GenericProperty: T"));
-            Assert.IsTrue(ts.Contains("GenericContainer: T[]"));
-            Assert.IsTrue(ts.Contains("NonGenericProperty: number"));
-        }
         [Test]
         public void GetTypescriptType_GenericListContainer()
         {

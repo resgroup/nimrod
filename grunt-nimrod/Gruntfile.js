@@ -2,11 +2,9 @@
  * nimrod
  * https://github.com/resgroup/nimrod
  *
- * Copyright (c) 2015 RES
+ * Copyright (c) 2016 RES
  * Licensed under the MIT license.
  */
-
-'use strict';
 
 module.exports = function (grunt) {
     grunt.initConfig({
@@ -23,9 +21,9 @@ module.exports = function (grunt) {
                         flatten: true,
                         src: '../Nimrod.Console/bin/Release/**/*',
                         dest: 'tasks/Release/'
-                    },
-                ],
-            },
+                    }
+                ]
+            }
         },
         nodeunit: {
             tests: ['test/*_test.js']
@@ -44,7 +42,7 @@ module.exports = function (grunt) {
                     declaration: 'true'
                 }
             }
-        },
+        }
     });
 
     grunt.loadTasks('tasks');

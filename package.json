@@ -1,0 +1,23 @@
+{
+  "name": "nimrod",
+  "version": "1.0.0",
+  "description": "[![Build Status](https://travis-ci.org/cyrilgandon/nimrod.svg)](https://travis-ci.org/cyrilgandon/nimrod) [![npm version](https://badge.fury.io/js/grunt-nimrod.svg)](https://badge.fury.io/js/grunt-nimrod)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/resgroup/nimrod.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/resgroup/nimrod/issues"
+  },
+  "homepage": "https://github.com/resgroup/nimrod#readme",
+  "devDependencies": {
+    "tslint": "^3.7.4",
+    "typescript": "^1.8.10"
+  }
+}

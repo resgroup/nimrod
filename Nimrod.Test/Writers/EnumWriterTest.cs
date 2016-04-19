@@ -14,7 +14,7 @@ namespace Nimrod.Test
         Orange = 5,
         Ananas
     }
-    enum SomeEnum : byte
+    enum SomeEnumHexa : byte
     {
         SomeValue = 0x01,
     }
@@ -37,8 +37,9 @@ namespace Nimrod.Test
         [ExpectedException(typeof(NotSupportedException))]
         public void EnumTypesNotIntNotSupported()
         {
-            var writer = new EnumToDefaultTypeScript(typeof(SomeEnum));
-            writer.GetLines().ToList();
+            var writer = new EnumToDefaultTypeScript(typeof(SomeEnumHexa));
+            var value = writer.GetLines().ToList();
+            Assert.Fail("Should not reach this point", value);
         }
     }
 }

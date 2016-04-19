@@ -19,14 +19,8 @@ namespace Nimrod
             var builder = new StringBuilder();
             builder.Append(method.Name);
 
-            if (needNamespace)
-            {
-                builder.Append("(restApi: Nimrod.IRestApi");
-            }
-            else
-            {
-                builder.Append("(restApi: IRestApi");
-            }
+            builder.Append($"(restApi: {(needNamespace ? "Nimrod." : "")}IRestApi");
+
             foreach (var methodParameter in method.GetParameters())
             {
                 var param = methodParameter.ParameterType.ToTypeScript(needNamespace);

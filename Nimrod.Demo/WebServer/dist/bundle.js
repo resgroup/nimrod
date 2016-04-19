@@ -40,7 +40,7 @@ var Nimrod;
                 }
                 MovieService.prototype.Movie = function (restApi, id, config) {
                     (config || (config = {})).params = {
-                        id: id,
+                        id: id
                     };
                     return restApi.Get('/Movie/Movie', config);
                 };
@@ -50,13 +50,13 @@ var Nimrod;
                 };
                 MovieService.prototype.Add = function (restApi, movie, config) {
                     var data = {
-                        movie: movie,
+                        movie: movie
                     };
                     return restApi.Post('/Movie/Add', data, config);
                 };
                 MovieService.prototype.Delete = function (restApi, id, config) {
                     var data = {
-                        id: id,
+                        id: id
                     };
                     return restApi.Post('/Movie/Delete', data, config);
                 };

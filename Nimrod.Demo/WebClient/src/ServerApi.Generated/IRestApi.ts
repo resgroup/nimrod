@@ -1,5 +1,5 @@
 
-module Nimrod {
+namespace Nimrod {
     export interface IRestApi {
         Delete<T>(url: string, config?: IRequestShortcutConfig): IPromise<T>;
         Get<T>(url: string, config?: IRequestShortcutConfig): IPromise<T>;

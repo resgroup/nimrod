@@ -7,9 +7,15 @@ using Very.Specific.NameSpace;
 
 namespace Very.Specific.NameSpace
 {
-    public class SomeClass { }
+    public class SomeClass
+    {
+        public int SomeProperty { get; set; }
+    }
 
-    public class SomeGenericClass<T> { }
+    public class SomeGenericClass<T>
+    {
+        public T SomeGenericProperty { get; set; }
+    }
 }
 
 namespace Nimrod.Test

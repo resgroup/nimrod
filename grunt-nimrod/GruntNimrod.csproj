@@ -52,7 +52,6 @@
     <Content Include="tasks\Nimrod.Console\bin\Release\System.Web.WebPages.Razor.xml" />
     <Content Include="tasks\Nimrod.Console\bin\Release\System.Web.WebPages.xml" />
     <Content Include="tasks\nimrod.js" />
-    <Content Include="test\nimrod_test.js" />
     <TypeScriptCompile Include="tasks\nimrod.d.ts" />
     <TypeScriptCompile Include="typings\gruntjs\gruntjs.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
@@ -60,8 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="test\expected\" />
-    <Folder Include="test\fixtures\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

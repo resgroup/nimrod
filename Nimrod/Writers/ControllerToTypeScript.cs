@@ -62,13 +62,9 @@ namespace Nimrod
                 var signature = method.GetMethodSignature(NeedNameSpace);
                 yield return $"public {signature} {{";
 
-                string genericArgString;
+                string genericArgString = "";
                 var genericArguments = method.ReturnType.GetGenericArguments();
-                if (genericArguments.Length == 0)
-                {
-                    genericArgString = "";
-                }
-                else
+                if (genericArguments.Length > 0)
                 {
                     genericArgString = $"<{genericArguments[0].ToTypeScript(this.NeedNameSpace)}>";
                 }

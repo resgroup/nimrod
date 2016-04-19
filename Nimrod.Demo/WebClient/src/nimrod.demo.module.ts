@@ -1,12 +1,11 @@
-﻿module Nimrod.Demo {
-    "use strict";
+﻿namespace Nimrod.Demo {
 
     // Create the module and define its dependencies.
-    angular.module("nimrod.demo", []);
+    angular.module('nimrod.demo', []);
 
 
     function ngModule(): ng.IModule {
-        return angular.module("nimrod.demo");
+        return angular.module('nimrod.demo');
     }
 
     export function controller(camelCaseName: string, controllerConstructor: Function) {

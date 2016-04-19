@@ -4,7 +4,6 @@ var Nimrod;
     (function (Demo) {
         var RestApi;
         (function (RestApi_1) {
-            "use strict";
             var RestApi = (function () {
                 function RestApi($http) {
                     this.$http = $http;
@@ -26,7 +25,7 @@ var Nimrod;
                 ];
                 return RestApi;
             }());
-            Demo.service("restApi", RestApi);
+            Demo.service('restApi', RestApi);
         })(RestApi = Demo.RestApi || (Demo.RestApi = {}));
     })(Demo = Nimrod.Demo || (Nimrod.Demo = {}));
 })(Nimrod || (Nimrod = {}));

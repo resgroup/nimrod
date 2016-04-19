@@ -52,6 +52,7 @@ namespace Nimrod.Test
 
         public class Generic<T>
         {
+            public T FooValue { get; set; }
         }
 
         [Test]
@@ -70,13 +71,6 @@ namespace Nimrod.Test
             Assert.AreEqual("Nimrod.Test.INonGenericClass", actual);
         }
 
-
-        [Test]
-        public void GetTypescriptType_Enum_Test()
-        {
-            Assert.AreEqual("IFooEnum", typeof(FooEnum).ToTypeScript());
-        }
-
         [Test]
 
         public void GetTypescriptType_BaseNumberType_Test()
@@ -93,9 +87,19 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_Nullable_Test()
         {
+            Assert.AreEqual("number", typeof(short?).ToTypeScript());
             Assert.AreEqual("number", typeof(int?).ToTypeScript());
+            Assert.AreEqual("number", typeof(long?).ToTypeScript());
             Assert.AreEqual("number", typeof(float?).ToTypeScript());
-            Assert.AreEqual("IFooEnum", typeof(FooEnum?).ToTypeScript());
+            Assert.AreEqual("number", typeof(double?).ToTypeScript());
+            Assert.AreEqual("number", typeof(decimal?).ToTypeScript());
+        }
+
+        [Test]
+        public void GetTypescriptType_Enum_Test()
+        {
+            Assert.AreEqual("IFooCountToThree", typeof(FooCountToThree?).ToTypeScript());
+            Assert.AreEqual("IFooCountToThree", typeof(FooCountToThree).ToTypeScript());
         }
 
         [Test]
@@ -120,7 +124,7 @@ namespace Nimrod.Test
 
     }
 
-    public enum FooEnum
+    public enum FooCountToThree
     {
         One, Two, Three
     }

@@ -90,15 +90,6 @@ namespace Nimrod.Test
             string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsTrue(ts.Contains("export = IFuzz;"));
         }
-
-        [Test]
-        public void WriteModel_Movie()
-        {
-            var writer = new ModelToDefaultTypeScript(typeof(Movie));
-            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
-            //string ts = builder.ToString();
-        }
-
     }
 }
 

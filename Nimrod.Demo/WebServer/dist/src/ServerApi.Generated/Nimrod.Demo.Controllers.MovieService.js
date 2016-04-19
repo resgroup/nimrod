@@ -7,9 +7,9 @@ var Nimrod;
             var MovieService = (function () {
                 function MovieService() {
                 }
-                MovieService.prototype.Movie = function (restApi, id, config) {
+                MovieService.prototype.Movie = function (restApi, guid, config) {
                     (config || (config = {})).params = {
-                        id: id,
+                        guid: guid
                     };
                     return restApi.Get('/Movie/Movie', config);
                 };
@@ -19,13 +19,13 @@ var Nimrod;
                 };
                 MovieService.prototype.Add = function (restApi, movie, config) {
                     var data = {
-                        movie: movie,
+                        movie: movie
                     };
                     return restApi.Post('/Movie/Add', data, config);
                 };
-                MovieService.prototype.Delete = function (restApi, id, config) {
+                MovieService.prototype.Delete = function (restApi, guid, config) {
                     var data = {
-                        id: id,
+                        guid: guid
                     };
                     return restApi.Post('/Movie/Delete', data, config);
                 };

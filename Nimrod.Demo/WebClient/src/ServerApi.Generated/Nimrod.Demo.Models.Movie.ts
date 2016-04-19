@@ -1,6 +1,6 @@
 namespace Nimrod.Demo.Models {
     export interface IMovie {
-        Id: number;
+        Guid: string;
         Name: string;
         Rating: number;
         Actors: string[];

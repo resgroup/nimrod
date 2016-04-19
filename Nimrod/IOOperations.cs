@@ -48,12 +48,20 @@ namespace Nimrod
                     this.WriteLog($"Reading dll {filePath}...");
                     if (this.FileSystem.File.Exists(filePath))
                     {
-                        return new { File = this.FileSystem.FileInfo.FromFileName(filePath), Success = true }; ;
+                        return new
+                        {
+                            File = this.FileSystem.FileInfo.FromFileName(filePath),
+                            Success = true
+                        };
                     }
                     else
                     {
                         this.WriteLog($"Warning! The specified dll {filePath} doesn't exist and will be skipped.");
-                        return new { File = null as FileInfoBase, Success = false };
+                        return new
+                        {
+                            File = null as FileInfoBase,
+                            Success = false
+                        };
                     }
                 })
                 .Where(file => file.Success)

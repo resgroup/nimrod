@@ -16,6 +16,10 @@ namespace Nimrod
         {
             return lines.IndentLines("    ", '{', '}');
         }
+        public static IEnumerable<string> IndentLines(this IEnumerable<string> lines, string indentationString)
+        {
+            return lines.IndentLines(indentationString, '{', '}');
+        }
         /// <summary>
         /// Return a list of lines indented, given the open and close context. default are braces '{' and '}'
         /// </summary>
@@ -29,7 +33,10 @@ namespace Nimrod
         //     Cannot outdent, level is already at zero. There is a problem in the indentation problem.
         public static IEnumerable<string> IndentLines(this IEnumerable<string> lines, string indentationString, char openContext, char closeContext)
         {
-            lines = lines.ThrowIfNull(nameof(lines));
+            if (lines == null)
+            {
+                yield break;
+            }
 
             int indentationLevel = 0;
             foreach (var line in lines)

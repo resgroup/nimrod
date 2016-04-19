@@ -33,7 +33,7 @@ namespace Nimrod
             {
                 var content = this.GetContentText(type, moduleType);
                 this.IoOperations.WriteFile(content, type.GetTypeScriptFilename());
-            };
+            }
             this.IoOperations.WriteLog($"Writing {types.Count} files...Done!");
         }
 
@@ -43,7 +43,7 @@ namespace Nimrod
             var types = TypeDiscovery.GetControllerTypes(assemblies, true).ToList();
             // Write all types except the ones in System
             var toWrites = types
-                .Where(t => t.IsSystem() == false)
+                .Where(t => !t.IsSystem())
                 .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
                 .Distinct();
             return toWrites;

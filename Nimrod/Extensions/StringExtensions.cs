@@ -9,7 +9,9 @@ namespace Nimrod
     {
         public static string Repeat(this string pattern, int count)
         {
-            return string.Concat(Enumerable.Repeat(pattern, count));
+            var strings = Enumerable.Repeat(pattern, count);
+            var join = string.Join(string.Empty, strings);
+            return join;
         }
     }
 }

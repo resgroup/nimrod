@@ -99,7 +99,6 @@
     <Compile Include="JsonNetResult.cs" />
     <Compile Include="ModelExamples\Controllers\MovieController.cs" />
     <Compile Include="ModelExamples\Controllers\TestController.cs" />
-    <Compile Include="ModelExamples\EnumViewModel.cs" />
     <Compile Include="ModelExamples\GenericClass.cs" />
     <Compile Include="ModelExamples\IgnoreDataMemberClass.cs" />
     <Compile Include="ModelExamples\ListViewModel.cs" />

@@ -11,24 +11,48 @@ namespace Nimrod.Test
     public class ExtensionsTest
     {
         [HttpGet]
-        public void GetMethod() { }
+        public void GetMethod()
+        {
+            // test the GET attribute
+        }
 
         [HttpPost]
-        public void PostMethod() { }
+        public void PostMethod()
+        {
+            // test the POST attribute
+        }
 
         [HttpPut]
-        public void PutMethod() { }
+        public void PutMethod()
+        {
+            // test the PUT attribute
+        }
 
         [HttpDelete]
-        public void DeleteMethod() { }
+        public void DeleteMethod()
+        {
+            // test the DELETE attribute
+        }
         [HttpOptions]
-        public void OptionsMethod() { }
+        public void OptionsMethod()
+        {
+            // test the OPTIONS attribute
+        }
         [HttpHead]
-        public void HeadMethod() { }
+        public void HeadMethod()
+        {
+            // test the HEAD attribute
+        }
         [HttpPatch]
-        public void PatchMethod() { }
+        public void PatchMethod()
+        {
+            // test the PATCH attribute
+        }
 
-        public void NoHttpMethod() { }
+        public void NoHttpMethod()
+        {
+            // test missing http method attribute
+        }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_NoHttp()
         {

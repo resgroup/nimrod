@@ -24,10 +24,10 @@ namespace Nimrod.Writers.Require
             }
             var propertyTypes = this.Type.GetProperties()
                                     .Select(p => p.PropertyType)
-                                    .Where(p => genericArguments.Contains(p) == false);
+                                    .Where(p => !genericArguments.Contains(p));
             var imports = RequireModuleHelper.GetTypesToImport(propertyTypes)
-                                .Where(t => genericArguments.Contains(t) == false)
-                                .Select(t=> RequireModuleHelper.GetImportLine(t));
+                                .Where(t => !genericArguments.Contains(t))
+                                .Select(t => RequireModuleHelper.GetImportLine(t));
 
             foreach (var import in imports)
             {

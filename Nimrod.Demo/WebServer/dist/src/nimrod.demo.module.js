@@ -2,11 +2,10 @@ var Nimrod;
 (function (Nimrod) {
     var Demo;
     (function (Demo) {
-        "use strict";
         // Create the module and define its dependencies.
-        angular.module("nimrod.demo", []);
+        angular.module('nimrod.demo', []);
         function ngModule() {
-            return angular.module("nimrod.demo");
+            return angular.module('nimrod.demo');
         }
         function controller(camelCaseName, controllerConstructor) {
             ngModule().controller(camelCaseName, controllerConstructor);

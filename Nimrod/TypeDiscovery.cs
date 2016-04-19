@@ -9,7 +9,7 @@ namespace Nimrod
     {
         static public IEnumerable<Type> EnumerateTypes(Type forType, HashSet<Type> typesEnumerated)
         {
-            if (typesEnumerated.Contains(forType) == false)
+            if (!typesEnumerated.Contains(forType))
             {
                 typesEnumerated.Add(forType);
                 if (forType == typeof(string))
@@ -79,15 +79,7 @@ namespace Nimrod
 
         static public IEnumerable<Type> GetControllerActionParameterTypes(MethodInfo method, HashSet<Type> typesEnumerated)
         {
-            Type returnType;
-            if (method.ReturnType.IsGenericType)
-            {
-                returnType = method.ReturnType.GetGenericArguments()[0];
-            }
-            else
-            {
-                returnType = method.ReturnType;
-            }
+            var returnType = method.ReturnType.IsGenericType ? method.ReturnType.GetGenericArguments()[0] : method.ReturnType;
 
             foreach (var type in EnumerateTypes(returnType, typesEnumerated))
             {

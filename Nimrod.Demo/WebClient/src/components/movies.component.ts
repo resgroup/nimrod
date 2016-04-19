@@ -1,4 +1,4 @@
-﻿module Nimrod.Demo {
+﻿namespace Nimrod.Demo {
 
     class MoviesController {
 
@@ -7,7 +7,7 @@
         static $inject = [
             'restApi',
             'serverApi.MovieService'
-        ]
+        ];
         constructor(
             private restApi: IRestApi,
             private moviesApi: Controllers.IMovieService
@@ -22,9 +22,9 @@
         }
 
         addMovie() {
-            var newMovie: Models.IMovie = {
-                Name: "The God Father",
-                Id: null,
+            let newMovie: Models.IMovie = {
+                Name: 'The God Father',
+                Guid: null,
                 Actors: [],
                 Rating: 8
             };
@@ -32,8 +32,8 @@
                 this.loadMovies();
             });
         }
-        deleteMovie(id: number) {
-            this.moviesApi.Delete(this.restApi, id).then(response => {
+        deleteMovie(movie: Models.IMovie) {
+            this.moviesApi.Delete(this.restApi, movie.Guid).then(response => {
                 this.loadMovies();
             });
         }
@@ -44,29 +44,29 @@
 
     }
 
-    component("ndMovies", {
+    component('ndMovies', {
         controller: MoviesController,
         bindings: {
         },
         template: `
-            <div ng-repeat="movie in $ctrl.movies">
+            <div ng-repeat='movie in $ctrl.movies'>
                 <h1>{{movie.Name}}
-                    <ul class="star-rating"> 
-                        <li ng-repeat="star in $ctrl.range(movie.Rating) track by $index" 
-                            class="star"> 
-                            <i class="glyphicon glyphicon-star"></i> 
+                    <ul class='star-rating'> 
+                        <li ng-repeat='star in $ctrl.range(movie.Rating) track by $index' 
+                            class='star'> 
+                            <i class='glyphicon glyphicon-star'></i> 
                         </li> 
                     </ul>
                 </h1>
-                <div ng-if="movie.Actors.length > 0">
+                <div ng-if='movie.Actors.length > 0'>
                     <h2>Actors</h2>
                     <ul>
-                        <li ng-repeat="actor in movie.Actors">{{actor}}</li>
+                        <li ng-repeat='actor in movie.Actors'>{{actor}}</li>
                     </ul>
                 </div>
-                <button ng-click="$ctrl.deleteMovie(movie.Id)">Delete</button>    
+                <button ng-click='$ctrl.deleteMovie(movie)'>Delete</button>    
             </div>
-            <button ng-click="$ctrl.addMovie()">Add One</button>
+            <button ng-click='$ctrl.addMovie()'>Add One</button>
         `
     });
 }

@@ -126,39 +126,18 @@ namespace Nimrod
         {
             return inType.ToTypeScript(includeNamespace, true);
         }
-        static public string ToTypeScript(this Type inType, bool includeNamespace, bool includeGenericArguments)
+        static public string ToTypeScript(this Type type, bool includeNamespace, bool includeGenericArguments)
         {
-            var type = GetType(inType);
-            if (type.IsArray)
+            string simpleTypeScript;
+            if (TryGetTypeScriptForSimpleType(type, includeNamespace, includeGenericArguments, out simpleTypeScript))
             {
-                var elementTypeName = type.GetElementType().ToTypeScript(includeNamespace);
-                return $"{elementTypeName}[]";
-            }
-            else if (type.IsTuple())
-            {
-                return TupleToTypeScript(inType, includeNamespace, includeGenericArguments);
-            }
-            else if (type == typeof(string))
-            {
-                return "string";
-            }
-            else if (type.IsNumber())
-            {
-                return "number";
-            }
-            else if (type == typeof(bool))
-            {
-                return "boolean";
-            }
-            else if (type == typeof(DateTime) || type == typeof(DateTimeOffset))
-            {
-                return "Date";
+                return simpleTypeScript;
             }
             else if (type.IsGenericParameter)
             {
                 return type.Name;
             }
-            else if (type.IsGenericType == false)
+            else if (!type.IsGenericType)
             {
                 return includeNamespace ? $"{type.Namespace}.I{type.Name}" : $"I{type.Name}";
             }
@@ -166,6 +145,37 @@ namespace Nimrod
             {
                 return ToTypeScriptForGenericClass(type, includeNamespace, includeGenericArguments);
             }
+        }
+
+        /// <summary>
+        /// Return TypeScript type for simple type like numbers, datetime, string, etc..
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="includeNamespace"></param>
+        /// <param name="includeGenericArguments"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static bool TryGetTypeScriptForSimpleType(this Type type, bool includeNamespace, bool includeGenericArguments, out string value)
+        {
+            var options = new Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> {
+                { t => t.IsArray(), (t, n, g) => ArrayToTypeScript(t, n)},
+                { t => t.IsTuple(), (t, n, g) => TupleToTypeScript(t, n, g) },
+                { t => t.IsString(), (t, n, g) => "string" },
+                { t => t.IsNumber(), (t, n, g) => "number" },
+                { t => t.IsBoolean(), (t, n, g) => "boolean" },
+                { t => t.IsDateTime(), (t, n, g) => "Date" }
+            };
+
+            foreach (var option in options)
+            {
+                if (option.Key(type))
+                {
+                    value = option.Value(type, includeNamespace, includeGenericArguments);
+                    return true;
+                }
+            }
+            value = "";
+            return false;
         }
 
         private static readonly HashSet<Type> GenericTupleTypes = new HashSet<Type>(new[]
@@ -184,7 +194,22 @@ namespace Nimrod
             var typeDefinition = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
             return GenericTupleTypes.Contains(typeDefinition);
         }
-
+        public static bool IsArray(this Type type)
+        {
+            return type.IsArray;
+        }
+        public static bool IsString(this Type type)
+        {
+            return type == typeof(string);
+        }
+        public static bool IsDateTime(this Type type)
+        {
+            return type == typeof(DateTime) || type == typeof(DateTimeOffset);
+        }
+        public static bool IsBoolean(this Type type)
+        {
+            return type == typeof(bool);
+        }
         public static string TupleToTypeScript(this Type type)
         {
             return type.TupleToTypeScript(false);
@@ -195,7 +220,9 @@ namespace Nimrod
         }
         public static string TupleToTypeScript(this Type type, bool includeNamespace, bool includeGenericArguments)
         {
-            if (!type.IsTuple())
+            // search the generic type definition so the method work for both Tuple<int> and Tuple<T>
+            var genericTypeDefinition = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
+            if (!genericTypeDefinition.IsTuple())
             {
                 throw new ArgumentException(nameof(type), "Type should be a Tuple");
             }
@@ -204,6 +231,12 @@ namespace Nimrod
                 .Select((s, i) => $"Item{i + 1}: {s}").ToArray());
 
             return $"{{ {content} }}";
+        }
+
+        public static string ArrayToTypeScript(this Type type, bool includeNamespace)
+        {
+            var elementTypeName = type.GetElementType().ToTypeScript(includeNamespace);
+            return $"{elementTypeName}[]";
         }
 
         /// <summary>
@@ -259,7 +292,7 @@ namespace Nimrod
                 bool first = true;
                 foreach (var genericArgument in type.GetGenericArguments())
                 {
-                    if (first == false)
+                    if (!first)
                     {
                         genericTypeName.Append(", ");
                         first = false;
@@ -282,23 +315,6 @@ namespace Nimrod
                         || type.GetGenericTypeDefinition() == typeof(List<>)
                         || type.GetGenericTypeDefinition() == typeof(IList<>)
                         || type.GetGenericTypeDefinition() == typeof(ICollection<>);
-        }
-
-        /// <summary>
-        /// Return the templated type if it is a generic one, else return the input type
-        /// </summary>
-        /// <param name="inType"></param>
-        /// <returns></returns>
-        private static Type GetType(Type inType)
-        {
-            if (inType.IsGenericType && inType.FullName == null && !inType.IsSystem())
-            {
-                return inType.GetGenericTypeDefinition();
-            }
-            else
-            {
-                return inType;
-            }
         }
 
         public static string TypeScriptModuleName(this Type type)

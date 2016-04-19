@@ -10,16 +10,20 @@ namespace Nimrod.Demo.Controllers
 
     public class MovieController : Controller
     {
-        private static int IdIncrement = 2;
-        public readonly static List<Movie> MoviesPersistence = new List<Movie>() {
-                new Movie { Id = 1, Name = "Pulp Fiction", Rating= 9, Actors = new List<string>() { "John Travolta", "Samuel L. Jackson"} }
+        // fake database
+        public readonly static List<Movie> MoviesPersistence = new List<Movie> {
+                new Movie {
+                    Guid = new Guid().ToString(),
+                    Name = "Pulp Fiction",
+                    Rating = 9,
+                    Actors = new List<string> { "John Travolta", "Samuel L. Jackson"}
+                }
             };
 
-
         [HttpGet]
-        public JsonNetResult<Movie> Movie(int id)
+        public JsonNetResult<Movie> Movie(string guid)
         {
-            var movie = MoviesPersistence.Where(m => m.Id == id).FirstOrDefault();
+            var movie = MoviesPersistence.FirstOrDefault(m => m.Guid == guid);
             return JsonNetResult.Create(movie);
         }
 
@@ -33,16 +37,16 @@ namespace Nimrod.Demo.Controllers
         [HttpPost]
         public JsonNetResult<Movie> Add(Movie movie)
         {
-            movie.Id = IdIncrement++;
+            movie.Guid = new Guid().ToString();
 
             MoviesPersistence.Add(movie);
             return JsonNetResult.Create(movie);
         }
 
         [HttpPost]
-        public JsonNetResult<bool> Delete(int id)
+        public JsonNetResult<bool> Delete(string guid)
         {
-            MoviesPersistence.RemoveAll(m => m.Id == id);
+            MoviesPersistence.RemoveAll(m => m.Guid == guid);
             return JsonNetResult.Create(true);
         }
     }

@@ -11,15 +11,6 @@ namespace Nimrod.Test
     [TestFixture]
     public class AutoIndentingTextWriterTests
     {
-        public class GenericItem<T> { }
-        public class GenericWrapper<T>
-        {
-            public GenericItem<T> Item
-            {
-                get; set;
-            }
-        }
-
         [Test]
         public void AutoIndentingTextWriter_StandardCase()
         {
@@ -43,12 +34,13 @@ _}
         [ExpectedException(typeof(InvalidOperationException))]
         public void AutoIndentingTextWriter_TooMuchOutdent()
         {
-                var lines = new[] {
+            var lines = new[] {
                         "{",
                          "}",
                         "}"
                  };
-            var indetedLines = lines.IndentLines().ToList();
+            var value = lines.IndentLines().ToList();
+            Assert.Fail("Should not reach this point", value);
         }
     }
 }

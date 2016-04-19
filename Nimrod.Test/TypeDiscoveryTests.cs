@@ -30,7 +30,7 @@ namespace Nimrod.Test
 
         public class GenericFoo<T>
         {
-            T Property { get; set; }
+            public T Property { get; set; }
         }
 
         public class GenericReturnController : Controller
@@ -88,18 +88,18 @@ namespace Nimrod.Test
 
 
 
-        public class nothing
+        public class Nothing
         {
         }
         public class GenericContainer
         {
-            public GenericFoo<nothing> Property { get; set; }
+            public GenericFoo<Nothing> Property { get; set; }
         }
         [Test]
         public void EnumerateTypes_ShouldReturnGenericContainer()
         {
             var result = TypeDiscovery.EnumerateTypes(typeof(GenericContainer), new HashSet<Type>()).ToList();
-            Assert.IsTrue(result.Contains(typeof(GenericFoo<nothing>)));
+            Assert.IsTrue(result.Contains(typeof(GenericFoo<Nothing>)));
         }
     }
 }

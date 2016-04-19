@@ -10,7 +10,7 @@ var customScripts = [
     'src/**/*.directive.ts',
     'src/**/*.component.ts',
     'src/**/*.filter.ts',
-    'src/**/*.controller.ts',
+    'src/**/*.controller.ts'
 ];
 
 module.exports = function (grunt) {

@@ -1,5 +1,4 @@
-﻿module Nimrod.Demo.RestApi {
-    "use strict";
+﻿namespace Nimrod.Demo.RestApi {
 
     class RestApi implements Nimrod.IRestApi {
         static $inject = [
@@ -27,5 +26,5 @@
         }
     }
 
-    service("restApi", RestApi);
+    service('restApi', RestApi);
 }

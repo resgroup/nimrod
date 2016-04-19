@@ -7,12 +7,7 @@ namespace Nimrod
 {
     public class StaticWriter
     {
-        public string Write(ModuleType module)
-        {
-            string content;
-            if (module == ModuleType.TypeScript)
-            {
-                content = @"
+        public static readonly string NamespaceStaticContent = @"
 namespace Nimrod {
     export interface IRestApi {
         Delete<T>(url: string, config?: IRequestShortcutConfig): IPromise<T>;
@@ -22,10 +17,7 @@ namespace Nimrod {
     }
 }
 ";
-            }
-            else
-            {
-                content = @"
+        public static readonly string ModuleStaticContent = @"
 import Nimrod = require('../Nimrod/Nimrod');
 interface IRestApi {
     Delete<T>(url: string, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<T>;
@@ -35,8 +27,7 @@ interface IRestApi {
 }
 export = IRestApi;
 ";
-            }
-            return content;
-        }
+
+        public string Write(ModuleType module) => module == ModuleType.TypeScript ? NamespaceStaticContent : ModuleStaticContent;
     }
 }

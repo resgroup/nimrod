@@ -5,7 +5,7 @@
  * Copyright (c) 2015 RES
  * Licensed under the MIT license.
  */
-import * as child from "child_process";
+import * as child from 'child_process';
 
 export interface IGruntNimrodOptions {
     exe?: string;
@@ -18,23 +18,23 @@ export interface IGruntNimrodOptions {
 module.exports = function (grunt: IGrunt) {
     grunt.registerMultiTask('nimrod', 'An ASP.NET MVC to TypeScript Converter', function () {
 
-        var task = <grunt.task.ITask>this;
-        var done = task.async();
+        let task = this as grunt.task.ITask;
+        let done = task.async();
 
-        var options = task.options<IGruntNimrodOptions>({});
+        let options = task.options<IGruntNimrodOptions>({});
 
-        var verbose = '';
+        let verbose = '';
         if (options.verbose === true) {
             verbose = ' --verbose';
         }
 
-        var pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
+        let pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
 
-        var cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
+        let cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
         if (options.verbose) {
-            console.log('Executing command : ' + cmd);
+            grunt.log.write('Executing command : ' + cmd);
         }
-        var childProcess = child.exec(cmd);
+        let childProcess = child.exec(cmd);
 
         childProcess.stdout.on('data', (data: any) => {
             grunt.log.write(data);
