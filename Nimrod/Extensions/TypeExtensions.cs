@@ -163,7 +163,8 @@ namespace Nimrod
                 { t => t.IsString(), (t, n, g) => "string" },
                 { t => t.IsNumber(), (t, n, g) => "number" },
                 { t => t.IsBoolean(), (t, n, g) => "boolean" },
-                { t => t.IsDateTime(), (t, n, g) => "Date" }
+                { t => t.IsDateTime(), (t, n, g) => "Date" },
+                { t => t.IsObject(), (t, n, g) => "any" }
             };
 
             foreach (var option in options)
@@ -201,6 +202,16 @@ namespace Nimrod
         public static bool IsString(this Type type)
         {
             return type == typeof(string);
+        }
+
+        /// <summary>
+        /// Return if the type is strictly equals to System.Object
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsObject(this Type type)
+        {
+            return type.UnderlyingSystemType.FullName == "System.Object";
         }
         public static bool IsDateTime(this Type type)
         {

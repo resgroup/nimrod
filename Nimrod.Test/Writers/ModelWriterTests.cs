@@ -30,17 +30,17 @@ namespace Nimrod.Test
         public GenericFoo<T> Fuzzs { get; set; }
     }
 
-    public class DataMemberSpecificName
-    {
-        [DataMember(Name = "bar")]
-        public float Foo { get; set; }
-    }
-
     public class ModelWriterTests
     {
+        private class DataMemberSpecificName
+        {
+            [DataMember(Name = "bar")]
+            public float Foo { get; set; }
+        }
         [Test]
         public void WriteModel_UseDataMemberName()
         {
+
             var writer = new ModelToDefaultTypeScript(typeof(DataMemberSpecificName));
             string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
             Assert.IsTrue(ts.Contains("bar"));

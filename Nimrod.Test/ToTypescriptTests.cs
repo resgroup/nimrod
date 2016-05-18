@@ -110,6 +110,13 @@ namespace Nimrod.Test
         }
 
         [Test]
+        public void GetTypescriptType_Object_Test()
+        {
+            Assert.AreEqual("any", typeof(System.Object).ToTypeScript());
+            Assert.AreEqual("any", typeof(object).ToTypeScript());
+        }
+
+        [Test]
         public void GetTypescriptType_GenericPropertyOfGenericClass()
         {
             var typeDefinition = typeof(GenericClass<int>).GetGenericTypeDefinition();

@@ -1,7 +1,7 @@
 {
   "name": "grunt-nimrod",
   "description": "An ASP.NET MVC to TypeScript Converter",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "homepage": "https://github.com/resgroup/nimrod",
   "contributors": [
     {
@@ -37,12 +37,12 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
+    "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-nodeunit": "^1.0.0",
-    "grunt-exec": "^0.4.6",
-    "grunt-ts": "^5.2.0"
+    "grunt-exec": "^0.4.7",
+    "grunt-ts": "^5.5.1"
   },
   "peerDependencies": {
     "grunt": "^0.4.5"
