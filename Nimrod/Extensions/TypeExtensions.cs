@@ -62,7 +62,9 @@ namespace Nimrod
         }
         public static bool IsSystem(this Type type)
         {
-            return type.Namespace.StartsWith("System") || type.IsBuiltinType();
+            return type.Namespace.StartsWith("System")
+                || type.Namespace.StartsWith("Microsoft")
+                || type.IsBuiltinType();
         }
         public static bool IsNumber(this Type type)
         {
@@ -89,6 +91,11 @@ namespace Nimrod
             return $"{type.Namespace}.{name}.ts";
         }
 
+        /// <summary>
+        /// Return every Type detected by Generics, so inside the <>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         static public IEnumerable<Type> ReferencedTypes(this Type type)
         {
             var seen = new HashSet<Type>();

@@ -15,7 +15,16 @@ namespace Nimrod.Writers.Default
         protected override IEnumerable<string> GetHeader()
         {
             yield return string.Format("namespace {0} {1}", this.Type.Namespace, '{');
-            yield return $"export interface {TsName} {{";
+
+            var baseType = Type.BaseType;
+            if (baseType != null && !baseType.IsSystem())
+            {
+                yield return $"export interface {TsName} extends {baseType.ToTypeScript(true)} {{";
+            }
+            else
+            {
+                yield return $"export interface {TsName} {{";
+            }
         }
 
         protected override IEnumerable<string> GetFooter()

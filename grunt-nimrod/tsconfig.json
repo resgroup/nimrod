@@ -1,4 +1,4 @@
-﻿{
+{
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
@@ -13,5 +13,4 @@
     "bower_components",
     "node_modules"
   ]
-
 }

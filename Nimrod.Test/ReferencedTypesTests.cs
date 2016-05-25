@@ -8,7 +8,7 @@ using System.Text;
 namespace Nimrod.Test
 {
     [TestFixture]
-    public class ToTReferencedTypesTests
+    public class ReferencedTypesTests
     {
         [Test]
         public void StandardTest()

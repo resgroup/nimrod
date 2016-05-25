@@ -45,7 +45,7 @@ namespace Nimrod.Test
         [Test]
         public void CheckGetControllerActionTypesForActionWithNonRecognizedHttpAttribute()
         {
-            var result = TypeDiscovery.GetControllerTypes(typeof(NoTypescriptDetactableController), true, new HashSet<Type>());
+            var result = TypeDiscovery.SeekTypesFromController(typeof(NoTypescriptDetactableController));
 
             Assert.IsFalse(result.Any());
         }
@@ -56,8 +56,10 @@ namespace Nimrod.Test
         {
             var testAction = typeof(TestController).GetMethod("TestAction");
 
-            var result = TypeDiscovery.GetControllerActionParameterTypes(testAction, new HashSet<Type>()).Distinct()
-                                      .OrderBy(t => t.Name).ToList();
+            var result = TypeDiscovery.GetControllerActionParameterTypes(testAction)
+                                      .Distinct()
+                                      .OrderBy(t => t.Name)
+                                      .ToList();
 
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual(typeof(bool), result[0]);
@@ -67,7 +69,8 @@ namespace Nimrod.Test
         [Test]
         public void CheckGetControllerTypes()
         {
-            var result = TypeDiscovery.GetControllerTypes(typeof(TestController), true, new HashSet<Type>()).Distinct()
+            var result = TypeDiscovery.SeekTypesFromController(typeof(TestController))
+                                      .Distinct()
                                       .OrderBy(t => t.Name)
                                       .ToList();
 
@@ -80,7 +83,7 @@ namespace Nimrod.Test
         [Test]
         public void EnumerateTypesTest_string()
         {
-            var result = TypeDiscovery.EnumerateTypes(typeof(string), new HashSet<Type>()).ToList();
+            var result = TypeDiscovery.EnumerateTypes(typeof(string)).ToList();
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(typeof(string), result[0]);
@@ -98,8 +101,27 @@ namespace Nimrod.Test
         [Test]
         public void EnumerateTypes_ShouldReturnGenericContainer()
         {
-            var result = TypeDiscovery.EnumerateTypes(typeof(GenericContainer), new HashSet<Type>()).ToList();
+            var result = TypeDiscovery.EnumerateTypes(typeof(GenericContainer)).ToList();
             Assert.IsTrue(result.Contains(typeof(GenericFoo<Nothing>)));
         }
+
+        [Test]
+        public void GetBaseTypesTests()
+        {
+            var result = TypeDiscovery.GetBaseTypes(typeof(Duck)).ToList();
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(typeof(Animal), result.Single());
+        }
     }
+    public abstract class Animal
+    {
+
+    }
+
+    public class Duck : Animal
+    {
+
+
+    }
+
 }

@@ -7,90 +7,136 @@ namespace Nimrod
 {
     public static class TypeDiscovery
     {
-        static public IEnumerable<Type> EnumerateTypes(Type forType, HashSet<Type> typesEnumerated)
+        /// <summary>
+        /// Get every type referenced by this type,
+        /// including Property, Generics and Inheritance
+        /// The list is guarranted to be unique
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> EnumerateTypes(Type type)
         {
-            if (!typesEnumerated.Contains(forType))
+            return EnumerateTypesRecursive(type, new HashSet<Type>())
+                                .Distinct();
+        }
+
+        private static IEnumerable<Type> EnumerateTypesRecursive(Type type, HashSet<Type> cache)
+        {
+            if (!cache.Contains(type))
             {
-                typesEnumerated.Add(forType);
-                if (forType == typeof(string))
+                cache.Add(type);
+                if (type == typeof(string))
                 {
                     // string is a reference type, but we don't want to generate property type Length
-                    yield return forType;
+                    yield return type;
                 }
                 else
                 {
-                    yield return forType;
+                    yield return type;
 
-                    foreach (var genericArgumentType in forType.GetGenericArguments())
+                    // generics
+                    foreach (var genericArgumentType in type.GetGenericArguments())
                     {
                         yield return genericArgumentType;
-                        foreach (var subType in EnumerateTypes(genericArgumentType, typesEnumerated))
+                        foreach (var subType in EnumerateTypesRecursive(genericArgumentType, cache))
                         {
                             yield return subType;
                         }
                     }
 
-                    foreach (var property in forType.GetProperties())
+                    // properties
+                    foreach (var property in type.GetProperties())
                     {
-                        foreach (var type in EnumerateTypes(property.PropertyType, typesEnumerated))
+                        foreach (var subType in EnumerateTypesRecursive(property.PropertyType, cache))
                         {
-                            yield return type;
+                            yield return subType;
+                        }
+                    }
+
+                    // inheritance
+                    foreach (var baseType in GetBaseTypes(type))
+                    {
+                        yield return baseType;
+                        foreach (var subType in EnumerateTypesRecursive(baseType, cache))
+                        {
+                            yield return subType;
                         }
                     }
                 }
             }
         }
 
-        static public IEnumerable<Type> GetControllerTypes(IEnumerable<Assembly> assemblies, bool expandDependencies)
+        /// <summary>
+        /// Return every Type referenced by the controller
+        /// and the controller itself if it has at least one action detected
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> SeekTypesFromController(Type controller)
         {
-            var typesEnumerated = new HashSet<Type>();
-            foreach (var assembly in assemblies)
+            if (!controller.IsWebMvcController())
             {
-                var controllers = assembly.GetExportedTypes().Where(type => type.IsWebMvcController());
-                foreach (var controller in controllers)
-                {
-                    foreach (var actionType in GetControllerTypes(controller, expandDependencies, typesEnumerated))
-                    {
-                        yield return actionType;
-                    }
-                }
+                string message = $"Type {controller.Name} MUST extends System.Web.Mvc.Controller";
+                throw new ArgumentOutOfRangeException(message, nameof(controller));
             }
-        }
-
-        static public IEnumerable<Type> GetControllerTypes(Type controller, bool expandDependencies, HashSet<Type> typesEnumerated)
-        {
             var actions = GetControllerActions(controller).ToList();
             if (actions.Any())
             {
                 // controller are take into account only if at least one action is typescriptable 
                 yield return controller;
-                if (expandDependencies)
+                foreach (var method in actions)
                 {
-                    foreach (var method in actions)
+                    foreach (var actionType in GetControllerActionParameterTypes(method))
                     {
-                        foreach (var actionType in GetControllerActionParameterTypes(method, typesEnumerated))
+                        foreach (var referencedType in EnumerateTypes(actionType))
                         {
-                            yield return actionType;
+                            yield return referencedType;
                         }
                     }
                 }
             }
         }
 
-        static public IEnumerable<Type> GetControllerActionParameterTypes(MethodInfo method, HashSet<Type> typesEnumerated)
+        static public IEnumerable<Type> GetControllers(IEnumerable<Assembly> assemblies)
+        {
+            foreach (var assembly in assemblies)
+            {
+                var controllers = assembly.GetExportedTypes()
+                                          .Where(type => type.IsWebMvcController());
+                foreach (var controller in controllers)
+                {
+                    yield return controller;
+                }
+            }
+        }
+
+        public static IEnumerable<Type> GetBaseTypes(Type type)
+        {
+            bool isValid;
+            Type loop = type;
+            do
+            {
+                loop = loop.BaseType;
+                isValid = loop != null && !loop.IsSystem();
+                if (isValid)
+                {
+                    yield return loop;
+                }
+            } while (isValid);
+        }
+
+        /// <summary>
+        /// Return the return type and the arguments type of the method
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        static public IEnumerable<Type> GetControllerActionParameterTypes(MethodInfo method)
         {
             var returnType = method.ReturnType.IsGenericType ? method.ReturnType.GetGenericArguments()[0] : method.ReturnType;
-
-            foreach (var type in EnumerateTypes(returnType, typesEnumerated))
-            {
-                yield return type;
-            }
+            yield return returnType;
             foreach (var parameter in method.GetParameters())
             {
-                foreach (var type in EnumerateTypes(parameter.ParameterType, typesEnumerated))
-                {
-                    yield return type;
-                }
+                yield return parameter.ParameterType;
             }
         }
 
