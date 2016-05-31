@@ -23,5 +23,16 @@ namespace Nimrod.Writers.Require
             yield return "}";
             yield return $"export = {TsName};";
         }
+
+        protected override IEnumerable<string> GetHeaderDescription()
+        {
+            yield return $"class {TsName}Utilities {{";
+        }
+
+        protected override IEnumerable<string> GetFooterDescription()
+        {
+            yield return "}";
+            yield return $"export = {TsName}Utilities;";
+        }
     }
 }

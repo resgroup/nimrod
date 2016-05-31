@@ -146,7 +146,9 @@ namespace Nimrod
             }
             else if (!type.IsGenericType)
             {
-                return includeNamespace ? $"{type.Namespace}.I{type.Name}" : $"I{type.Name}";
+                string iPrefix = type.IsEnum ? "" : "I";
+                string typeName = $"{iPrefix}{type.Name}";
+                return includeNamespace ? $"{type.Namespace}.{typeName}" : $"{typeName}";
             }
             else
             {
@@ -280,7 +282,19 @@ namespace Nimrod
 
                 if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                 {
-                    var keyTypescript = genericArguments[0].ToTypeScript(includeNamespace);
+                    var keyType = genericArguments[0];
+                    string keyTypescript;
+                    // we could allow only string or number for today
+                    // we plan to support enum indexer type when typescript will allow
+                    // please consider upvote the proposal : https://github.com/Microsoft/TypeScript/issues/2491
+                    if (keyType.IsString() || keyType.IsEnum)
+                    {
+                        keyTypescript = "string";
+                    }
+                    else
+                    {
+                        keyTypescript = "number";
+                    }
                     var valueTypescript = genericArguments[1].ToTypeScript(includeNamespace);
 
                     return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";

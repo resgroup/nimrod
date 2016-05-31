@@ -98,8 +98,8 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_Enum_Test()
         {
-            Assert.AreEqual("IFooCountToThree", typeof(FooCountToThree?).ToTypeScript());
-            Assert.AreEqual("IFooCountToThree", typeof(FooCountToThree).ToTypeScript());
+            Assert.AreEqual("FooCountToThree", typeof(FooCountToThree?).ToTypeScript());
+            Assert.AreEqual("FooCountToThree", typeof(FooCountToThree).ToTypeScript());
         }
 
         [Test]

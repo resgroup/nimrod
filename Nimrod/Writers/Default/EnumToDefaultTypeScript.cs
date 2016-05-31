@@ -25,5 +25,17 @@ namespace Nimrod.Writers.Default
             yield return "}";
             yield return "}";
         }
+
+        protected override IEnumerable<string> GetHeaderDescription()
+        {
+            yield return $"namespace {this.Type.Namespace} {{";
+            yield return $"export class {this.TsName}Utilities {{";
+        }
+
+        protected override IEnumerable<string> GetFooterDescription()
+        {
+            yield return "}";
+            yield return "}";
+        }
     }
 }
