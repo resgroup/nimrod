@@ -25,7 +25,7 @@ namespace Nimrod.Console
         public string OutputPath { get; set; }
 
         // Assemblies to retrieve, -f --files
-        [OptionList('f', "files", Required = true, Separator = ':', HelpText = "Specify files, separated by a colon. Example --files=bin\\Assembly1.dll:bin\\Assembly2.dll'")]
+        [OptionList('f', "files", Required = true, Separator = ',', HelpText = "Specify files, separated by a comma. Example --files=bin\\Assembly1.dll,bin\\Assembly2.dll")]
         public IList<string> Files { get; set; }
     }
 }
