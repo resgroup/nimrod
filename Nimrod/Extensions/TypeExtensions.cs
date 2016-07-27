@@ -13,12 +13,16 @@ namespace Nimrod
 
         public static readonly Dictionary<Type, HttpMethodAttribute> TypeToHttpMethodAttribute = new Dictionary<Type, HttpMethodAttribute> {
             { typeof(HttpGetAttribute), HttpMethodAttribute.Get },
+            { typeof(System.Web.Http.HttpGetAttribute), HttpMethodAttribute.Get },
             { typeof(HttpPostAttribute), HttpMethodAttribute.Post },
+            { typeof(System.Web.Http.HttpPostAttribute), HttpMethodAttribute.Post },
             { typeof(HttpPutAttribute), HttpMethodAttribute.Put },
+            { typeof(System.Web.Http.HttpPutAttribute), HttpMethodAttribute.Put },
             { typeof(HttpDeleteAttribute), HttpMethodAttribute.Delete },
+            { typeof(System.Web.Http.HttpDeleteAttribute), HttpMethodAttribute.Delete },
             { typeof(HttpHeadAttribute), HttpMethodAttribute.Head },
             { typeof(HttpOptionsAttribute), HttpMethodAttribute.Options },
-            { typeof(HttpPatchAttribute), HttpMethodAttribute.Patch }
+            { typeof(HttpPatchAttribute), HttpMethodAttribute.Patch },
         };
 
         public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)
@@ -35,9 +39,17 @@ namespace Nimrod
             return null;
         }
 
-        public static bool IsWebMvcController(this Type type)
+        public static bool IsController(this Type type)
         {
-            return typeof(Controller).IsAssignableFrom(type);
+            if (typeof(Controller).IsAssignableFrom(type))
+            {
+                return true;
+            }
+            if (typeof(System.Web.Http.Controllers.IHttpController).IsAssignableFrom(type))
+            {
+                return true;
+            }
+            return false;
         }
 
         public static bool IsBuiltinType(this Type type)
@@ -83,7 +95,7 @@ namespace Nimrod
                 name = type.Name;
             }
 
-            if (type.IsWebMvcController())
+            if (type.IsController())
             {
                 name = $"{type.Name.Replace("Controller", "Service")}";
             }

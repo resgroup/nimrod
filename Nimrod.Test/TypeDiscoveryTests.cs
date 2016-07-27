@@ -42,6 +42,15 @@ namespace Nimrod.Test
             }
         }
 
+        public class WebApiController : System.Web.Http.ApiController
+        {
+            [System.Web.Http.HttpGet]
+            public string TestAction()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         [Test]
         public void CheckGetControllerActionTypesForActionWithNonRecognizedHttpAttribute()
         {
@@ -78,6 +87,19 @@ namespace Nimrod.Test
             Assert.AreEqual(typeof(bool), result[0]);
             Assert.AreEqual(typeof(string), result[1]);
             Assert.AreEqual(typeof(TestController), result[2]);
+        }
+
+        [Test]
+        public void CheckGetWebApiControllerTypes()
+        {
+            var result = TypeDiscovery.SeekTypesFromController(typeof(WebApiController))
+                                      .Distinct()
+                                      .OrderBy(t => t.Name)
+                                      .ToList();
+
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(typeof(string), result[0]);
+            Assert.AreEqual(typeof(WebApiController), result[1]);
         }
 
         [Test]

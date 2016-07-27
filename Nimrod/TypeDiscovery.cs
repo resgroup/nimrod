@@ -74,9 +74,9 @@ namespace Nimrod
         /// <returns></returns>
         public static IEnumerable<Type> SeekTypesFromController(Type controller)
         {
-            if (!controller.IsWebMvcController())
+            if (!controller.IsController())
             {
-                string message = $"Type {controller.Name} MUST extends System.Web.Mvc.Controller";
+                string message = $"Type {controller.Name} MUST extend System.Web.Mvc.Controller or System.Web.Http.IHttpControler";
                 throw new ArgumentOutOfRangeException(message, nameof(controller));
             }
             var actions = GetControllerActions(controller).ToList();
@@ -102,7 +102,7 @@ namespace Nimrod
             foreach (var assembly in assemblies)
             {
                 var controllers = assembly.GetExportedTypes()
-                                          .Where(type => type.IsWebMvcController());
+                                          .Where(type => type.IsController());
                 foreach (var controller in controllers)
                 {
                     yield return controller;
@@ -142,9 +142,9 @@ namespace Nimrod
 
         static public IEnumerable<MethodInfo> GetControllerActions(this Type controllerType)
         {
-            if (!controllerType.IsWebMvcController())
+            if (!controllerType.IsController())
             {
-                throw new ArgumentOutOfRangeException($"Type {controllerType.Name} MUST extends System.Web.Mvc.Controller", nameof(controllerType));
+                throw new ArgumentOutOfRangeException($"Type {controllerType.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(controllerType));
             }
             foreach (var method in controllerType.GetMethods())
             {

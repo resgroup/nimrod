@@ -17,9 +17,9 @@ namespace Nimrod
 
         public ControllerToTypeScript(Type type) : base(type)
         {
-            if (!type.IsWebMvcController())
+            if (!type.IsController())
             {
-                throw new ArgumentOutOfRangeException($"Type {type.Name} MUST extends System.Web.Mvc.Controller", nameof(type));
+                throw new ArgumentOutOfRangeException($"Type {type.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(type));
             }
         }
 

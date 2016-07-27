@@ -15,7 +15,7 @@ namespace Nimrod
         public abstract Func<Type, ToTypeScript> ModelBuilder { get; }
 
         public IEnumerable<ToTypeScriptBuildRule> Rules => new[] {
-                new ToTypeScriptBuildRule(type => type.IsWebMvcController(), ControllerBuilder),
+                new ToTypeScriptBuildRule(type => type.IsController(), ControllerBuilder),
                 new ToTypeScriptBuildRule(type => type.IsEnum, EnumBuilder),
                 new ToTypeScriptBuildRule(type => type.IsValueType, StructBuilder),
                 new ToTypeScriptBuildRule(type => true, ModelBuilder)
