@@ -20,9 +20,6 @@ namespace Nimrod
             { typeof(System.Web.Http.HttpPutAttribute), HttpMethodAttribute.Put },
             { typeof(HttpDeleteAttribute), HttpMethodAttribute.Delete },
             { typeof(System.Web.Http.HttpDeleteAttribute), HttpMethodAttribute.Delete },
-            { typeof(HttpHeadAttribute), HttpMethodAttribute.Head },
-            { typeof(HttpOptionsAttribute), HttpMethodAttribute.Options },
-            { typeof(HttpPatchAttribute), HttpMethodAttribute.Patch },
         };
 
         public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)

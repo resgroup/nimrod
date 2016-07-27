@@ -82,19 +82,19 @@ namespace Nimrod.Test
             Assert.AreEqual(HttpMethodAttribute.Delete, typeof(ExtensionsTest).GetMethod(nameof(DeleteMethod)).FirstOrDefaultHttpMethodAttribute());
         }
         [Test]
-        public void FirstOrDefaultHttpMethodAttribute_Head()
+        public void FirstOrDefaultHttpMethodAttribute_Head_ReturnsNull()
         {
-            Assert.AreEqual(HttpMethodAttribute.Head, typeof(ExtensionsTest).GetMethod(nameof(HeadMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.IsNull(typeof(ExtensionsTest).GetMethod(nameof(HeadMethod)).FirstOrDefaultHttpMethodAttribute());
         }
         [Test]
-        public void FirstOrDefaultHttpMethodAttribute_Options()
+        public void FirstOrDefaultHttpMethodAttribute_Options_ReturnsNull()
         {
-            Assert.AreEqual(HttpMethodAttribute.Options, typeof(ExtensionsTest).GetMethod(nameof(OptionsMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.IsNull(typeof(ExtensionsTest).GetMethod(nameof(OptionsMethod)).FirstOrDefaultHttpMethodAttribute());
         }
         [Test]
-        public void FirstOrDefaultHttpMethodAttribute_Patch()
+        public void FirstOrDefaultHttpMethodAttribute_Patch_ReturnsNull()
         {
-            Assert.AreEqual(HttpMethodAttribute.Patch, typeof(ExtensionsTest).GetMethod(nameof(PatchMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.IsNull(typeof(ExtensionsTest).GetMethod(nameof(PatchMethod)).FirstOrDefaultHttpMethodAttribute());
         }
 
     }
