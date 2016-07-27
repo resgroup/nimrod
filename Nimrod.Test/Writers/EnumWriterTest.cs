@@ -27,7 +27,7 @@ namespace Nimrod.Test
             var writer = new EnumToDefaultTypeScript(typeof(Fruits));
             var lines = writer.GetLines();
             string ts = string.Join(Environment.NewLine, lines);
-            Assert.IsTrue(ts.Contains("enum IFruits"));
+            Assert.IsTrue(ts.Contains("enum Fruits"));
             Assert.IsTrue(ts.Contains("Apple = 0,"));
             Assert.IsTrue(ts.Contains("Orange = 5,"));
             Assert.IsTrue(ts.Contains("Ananas = 6,"));

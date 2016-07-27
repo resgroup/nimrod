@@ -51,7 +51,7 @@ namespace Nimrod
                     indentationLevel += lineIndentationLevel;
                     if (indentationLevel < 0)
                     {
-                        throw new InvalidOperationException("Cannot outdent, level is already at zero. There is a problem in the indentation problem.");
+                        throw new InvalidOperationException("Cannot outdent, level is already at zero. There is a problem in the indentation process.");
                     }
                 }
                 var indentation = indentationString.Repeat(indentationLevel);

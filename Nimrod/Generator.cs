@@ -76,7 +76,6 @@ namespace Nimrod
             var content = new StaticWriter().Write(module);
             this.IoOperations.WriteFile(content, "IRestApi.ts");
         }
-
     }
 }
 
