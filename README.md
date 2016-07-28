@@ -4,9 +4,9 @@
 Nimrod
 =========
 
-Nimrod is an ASP.NET MVC to TypeScript Converter. Now supports ApiControllers as well.
+Nimrod is an [ASP.NET MVC](http://www.asp.net/mvc)/[ASP.NET Web API](http://www.asp.net/web-api) to TypeScript Converter.
 
-That means that it will take all your exising ASP.NET MVC or Web Api application, and generate TypeScript models and services correponding to your C# code.
+That means that it will take all your exising MVC or Web API application, and generate TypeScript models and services correponding to your C# code.
 
 Normally, you have to write the model code two times, one time in the backend langage (Java, Ruby, PHP, C#), and one time in the frontend langage (JavaScript).
 
