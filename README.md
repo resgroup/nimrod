@@ -4,9 +4,9 @@
 Nimrod
 =========
 
-Nimrod is an ASP.NET MVC to TypeScript Converter.
+Nimrod is an ASP.NET MVC to TypeScript Converter. Now supports ApiControllers as well.
 
-That means that it will take all your exising ASP.NET MVC application, and generate TypeScript models and services correponding to your C# code.
+That means that it will take all your exising ASP.NET MVC or Web Api application, and generate TypeScript models and services correponding to your C# code.
 
 Normally, you have to write the model code two times, one time in the backend langage (Java, Ruby, PHP, C#), and one time in the frontend langage (JavaScript).
 
@@ -100,8 +100,8 @@ class RestApi implements Nimrod.IRestApi {
 
 When you launch Nimrod, the following steps happen:
 
- - Load the assembly and search for classes which inherit from [Web.Mvc.Controller](https://msdn.microsoft.com/library/system.web.mvc.controller)
- - From thoses classes, search for public methods which have one of the following attribute [HttpGet], [HttpPost], [HttpPut], [HttpDelete]
+ - Load the assembly and search for classes which inherit from [Web.Mvc.Controller](https://msdn.microsoft.com/library/system.web.mvc.controller) or [Web.Http.Controllers.IHttpController](https://msdn.microsoft.com/library/system.web.http.apicontroller)
+ - From thoses classes, search for public methods which have one of the following attribute [HttpGet], [HttpPost], [HttpPut], [HttpDelete], in either system.web.mvc or system.web.http namespaces.
  - Recursively search all classes referenced by the generic return of those methods (see below), and their arguments
  - Generate TypeScript files for all those classes
 
