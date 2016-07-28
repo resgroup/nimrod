@@ -1,7 +1,7 @@
 {
   "name": "grunt-nimrod",
-  "description": "An ASP.NET MVC to TypeScript Converter",
-  "version": "0.2.9",
+  "description": "An .NET Controller to TypeScript Converter",
+  "version": "0.2.11",
   "homepage": "https://github.com/resgroup/nimrod",
   "contributors": [
     {
