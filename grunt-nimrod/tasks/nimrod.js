@@ -10,7 +10,7 @@ module.exports = function (grunt) {
             verbose = ' --verbose';
         }
         var pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
-        var cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
+        var cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose;
         if (options.verbose) {
             grunt.log.write('Executing command : ' + cmd);
         }

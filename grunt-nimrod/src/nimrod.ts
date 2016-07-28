@@ -30,7 +30,7 @@ module.exports = function (grunt: IGrunt) {
 
         let pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
 
-        let cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(':') + verbose;
+        let cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose;
         if (options.verbose) {
             grunt.log.write('Executing command : ' + cmd);
         }
