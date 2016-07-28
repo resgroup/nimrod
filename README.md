@@ -111,7 +111,7 @@ When you launch Nimrod, the following steps happen:
 
 Use the Nimrod.Console utilities to generate files
 ```shell
-Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\assembly1.dll:..\\assembly2.dll',
+Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\assembly1.dll,..\\assembly2.dll',
 ```
 ###  Options
 
@@ -119,7 +119,7 @@ Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\asse
 |:----|:----|:-----|
 |--module|-m|Module mode, valid values are `typescript` for [typescript] modules style and `require` for [requirejs] modules|
 |--output|-o|Directory where files will be generated|
-|--files|-f|Assembly files to read, separated by a colon. Example : --files=bin\\Assembly1.dll:bin\\Assembly2.dll|
+|--files|-f|Assembly files to read, separated by a comma. Example : --files=bin\\Assembly1.dll,bin\\Assembly2.dll|
 |--verbose|-v|Prints all messages to standard output|
 |--help|-h|Prints a usage message showing the command line syntax|
 
