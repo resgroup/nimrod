@@ -182,7 +182,8 @@ namespace Nimrod
                 { t => t.IsNumber(), (t, n, g) => "number" },
                 { t => t.IsBoolean(), (t, n, g) => "boolean" },
                 { t => t.IsDateTime(), (t, n, g) => "Date" },
-                { t => t.IsObject(), (t, n, g) => "any" }
+                { t => t.IsObject(), (t, n, g) => "any" },
+                { t => t.IsVoid(), (t, n, g) => "void" }
             };
 
             foreach (var option in options)
@@ -230,6 +231,10 @@ namespace Nimrod
         public static bool IsObject(this Type type)
         {
             return type.UnderlyingSystemType.FullName == "System.Object";
+        }
+        public static bool IsVoid(this Type type)
+        {
+            return type == typeof(void);
         }
         public static bool IsDateTime(this Type type)
         {
