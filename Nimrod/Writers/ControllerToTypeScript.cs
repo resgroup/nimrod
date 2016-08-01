@@ -35,9 +35,14 @@ namespace Nimrod
             return new[] { headers, interface_, implementation, footer }.SelectMany(s => s);
         }
 
+        protected string GetControllerName()
+        {
+            return this.Type.Name.Replace("Controller", "Service");
+        }
+
         private IEnumerable<string> GetInterface()
         {
-            var controllerName = this.Type.Name.Replace("Controller", "Service");
+            var controllerName = GetControllerName();
             yield return $"export interface I{controllerName} {{";
 
             var actions = this.Type.GetControllerActions();
@@ -62,12 +67,7 @@ namespace Nimrod
                 var signature = method.GetMethodSignature(NeedNameSpace);
                 yield return $"public {signature} {{";
 
-                string genericArgString = "";
-                var genericArguments = method.ReturnType.GetGenericArguments();
-                if (genericArguments.Length > 0)
-                {
-                    genericArgString = $"<{genericArguments[0].ToTypeScript(this.NeedNameSpace)}>";
-                }
+                var genericArgString = $"<{method.ReturnType.ToTypeScript(NeedNameSpace, true)}>";
 
                 var entityName = this.Type.Name.Substring(0, this.Type.Name.Length - "Controller".Length);
 

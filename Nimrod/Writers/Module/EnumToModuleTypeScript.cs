@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Nimrod.Writers.Require
+namespace Nimrod.Writers.Module
 {
     public class EnumToModuleTypeScript : EnumToTypeScript
     {
@@ -21,18 +21,16 @@ namespace Nimrod.Writers.Require
         protected override IEnumerable<string> GetFooter()
         {
             yield return "}";
-            yield return $"export = {TsName};";
         }
 
         protected override IEnumerable<string> GetHeaderDescription()
         {
-            yield return $"class {TsName}Utilities {{";
+            yield return $"export default class {TsName}Utilities {{";
         }
 
         protected override IEnumerable<string> GetFooterDescription()
         {
             yield return "}";
-            yield return $"export = {TsName}Utilities;";
         }
     }
 }

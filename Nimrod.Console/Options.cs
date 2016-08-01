@@ -9,10 +9,18 @@ namespace Nimrod.Console
     public class Options
     {
         // -i -import
-        [Option('m', "module", Required = false, HelpText = "Module mode, valid values are 'typescript' for typescript namespaces style and 'require' for require style.")]
+        [Option('m', "module", Required = false, HelpText = "Module mode, valid values are 'typescript' for typescript namespaces style, 'require' for require style and 'module' for ECMAScript 2015 style imports.")]
         public string Module { get; set; } = "typescript";
 
-        public ModuleType ModuleType => Module.ToLowerInvariant() == "require" ? ModuleType.Require : ModuleType.TypeScript;
+        public ModuleType ModuleType
+        {
+            get
+            {
+                if (Module.ToLowerInvariant() == "require") return ModuleType.Require;
+                if (Module.ToLowerInvariant() == "module") return ModuleType.Module;
+                return ModuleType.TypeScript;
+            }
+        }
 
         // -v --verbose
         [Option('v', "verbose", Required = false, HelpText = "Prints all messages to standard output.")]

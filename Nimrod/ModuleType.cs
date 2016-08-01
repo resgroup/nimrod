@@ -4,6 +4,6 @@ namespace Nimrod
 {
     public enum ModuleType
     {
-        Require, TypeScript
+        Require, TypeScript, Module
     }
 }

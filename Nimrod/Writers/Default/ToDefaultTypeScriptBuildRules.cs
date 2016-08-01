@@ -11,5 +11,6 @@ namespace Nimrod.Writers.Default
         public override Func<Type, ToTypeScript> EnumBuilder => type => new EnumToDefaultTypeScript(type);
         public override Func<Type, ToTypeScript> StructBuilder => type => new StructToDefaultTypeScript(type);
         public override Func<Type, ToTypeScript> ModelBuilder => type => new ModelToDefaultTypeScript(type);
+        public override StaticToTypeScript StaticBuilder => new StaticToDefaultTypeScript();
     }
 }

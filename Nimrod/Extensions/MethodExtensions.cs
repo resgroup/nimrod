@@ -18,17 +18,17 @@ namespace Nimrod
         {
             var builder = new StringBuilder();
             builder.Append(method.Name);
-
-            builder.Append($"(restApi: {(needNamespace ? "Nimrod." : "")}IRestApi");
+            var namespaceInsert = needNamespace ? "Nimrod." : "";
+            builder.Append($"(restApi: {namespaceInsert}IRestApi");
 
             foreach (var methodParameter in method.GetParameters())
             {
                 var param = methodParameter.ParameterType.ToTypeScript(needNamespace);
                 builder.Append($", {methodParameter.Name}: {param}");
             }
-            builder.Append(", config?: Nimrod.IRequestShortcutConfig)");
+            builder.Append($", config?: {namespaceInsert}IRequestConfig)");
             string returnType;
-            if (method.ReturnType.GetGenericArguments().Length == 1)
+            if (method.ReturnType.GetGenericArguments().Length == 1 && method.ReturnType.Name.StartsWith("Json"))
             {
                 // the return type is generic, is should be something like Json<T>, so the promise will return a T
                 var genericArguments = method.ReturnType.GetGenericArguments()[0];
@@ -36,10 +36,10 @@ namespace Nimrod
             }
             else
             {
-                // the return type is not wrapped, we can't determine it, so just a basic object
-                returnType = "{}";
+                // the return type is not wrapped, assume it is ApiController and use the return type
+                returnType = method.ReturnType.ToTypeScript(needNamespace);
             }
-            builder.Append($": Nimrod.IPromise<{returnType}>");
+            builder.Append($": {namespaceInsert}IPromise<{returnType}>");
             return builder.ToString();
         }
     }

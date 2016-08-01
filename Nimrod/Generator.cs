@@ -65,16 +65,31 @@ namespace Nimrod
             var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
             var toTypeScript = buildRules.GetToTypeScript(type);
             var lines = toTypeScript.GetLines();
+            return PrettifyContent(lines);
+        }
+
+        private static string PrettifyContent(IEnumerable<string> lines)
+        {
             var indentedLines = lines.IndentLines();
             // add empty line, because it's prettier
             return string.Join(Environment.NewLine, indentedLines.Concat(new[] { "" }).ToArray());
         }
 
-
         private void WriteStaticFiles(ModuleType module)
         {
-            var content = new StaticWriter().Write(module);
-            this.IoOperations.WriteFile(content, "IRestApi.ts");
+            var buildRules = ToTypeScriptBuildRules.GetRules(module);
+            {
+                // IRestApi.ts
+                var lines = buildRules.StaticBuilder.GetRestApiLines();
+                var content = PrettifyContent(lines);
+                this.IoOperations.WriteFile(content, "IRestApi.ts");
+            }
+            {
+                // IRestApi.ts
+                var lines = buildRules.StaticBuilder.GetPromiseLines();
+                var content = PrettifyContent(lines);
+                this.IoOperations.WriteFile(content, "IPromise.ts");
+            }
         }
     }
 }
