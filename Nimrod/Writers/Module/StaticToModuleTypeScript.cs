@@ -10,8 +10,8 @@ namespace Nimrod.Writers.Module
     {
         public override IEnumerable<string> GetRestApiLines()
         {
-            yield return "import IRequestConfig from '../Nimrod/IRequestConfig'";
-            yield return "import IPromise from './IPromise'";
+            yield return "import IRequestConfig from '../Nimrod/IRequestConfig';";
+            yield return "import IPromise from './IPromise';";
             yield return "interface IRestApi {";
             yield return "    Delete<T>(url: string, config?: IRequestConfig): IPromise<T>;";
             yield return "    Get<T>(url: string, config?: IRequestConfig): IPromise<T>;";
