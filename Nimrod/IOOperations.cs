@@ -11,23 +11,20 @@ namespace Nimrod
     {
         public string OutputFolderPath { get; }
         public IFileSystem FileSystem { get; }
-        private ILogger Logger { get; }
+        public ILogger Logger { get; }
 
         public IoOperations(IFileSystem fileSystem, string outputFolderPath, ILogger logger)
         {
             this.FileSystem = fileSystem.ThrowIfNull(nameof(fileSystem));
             this.OutputFolderPath = outputFolderPath;
-            this.Logger = logger;
+            this.Logger = logger.ThrowIfNull(nameof(logger)); ;
 
             this.WriteLog("outputFolderPath = " + outputFolderPath);
         }
 
         public void WriteLog(string log)
         {
-            if (this.Logger != null)
-            {
-                this.Logger.WriteLine(log);
-            }
+            this.Logger.WriteLine(log);
         }
 
         public void RecreateOutputFolder()
@@ -71,7 +68,10 @@ namespace Nimrod
         }
 
 
-        // Load all assemblies in the folder
+        /// <summary>
+        /// Load all assemblies found in the same folder as the given DLL
+        /// </summary>
+        /// <param name="files"></param>
         public void LoadAssemblies(IEnumerable<FileInfoBase> files)
         {
             var directories = files.Select(f => f.DirectoryName).Distinct();
@@ -80,8 +80,9 @@ namespace Nimrod
             {
                 foreach (var assemblyFile in this.FileSystem.Directory.EnumerateFiles(directory, "*.dll"))
                 {
-                    this.WriteLog($"Loading assembly {assemblyFile}");
-                    Assembly.LoadFile(this.FileSystem.Path.Combine(directory, assemblyFile));
+                    this.WriteLog($"Trying to load assembly {assemblyFile}...");
+                    var assembly = Assembly.LoadFile(this.FileSystem.Path.Combine(directory, assemblyFile));
+                    this.WriteLog($"Loaded {assembly.FullName}");
                 }
             }
         }

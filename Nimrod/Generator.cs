@@ -41,7 +41,7 @@ namespace Nimrod
         {
             this.IoOperations.WriteLog($"Discovering types..");
             var assemblyTypes = TypeDiscovery.GetControllers(assemblies)
-                    .SelectMany(controller => TypeDiscovery.SeekTypesFromController(controller))
+                    .SelectMany(controller => TypeDiscovery.SeekTypesFromController(controller, this.IoOperations.Logger))
                     .ToList();
 
             // Write all types except the ones in System

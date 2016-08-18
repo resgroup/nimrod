@@ -11,6 +11,8 @@ namespace Nimrod.Console
     {
         static int Main(string[] args)
         {
+
+            args = @"-m typescript -o C:\SoftwareGit\software\WikiProject\WebClient\src\ServerApi.Generated --files=C:\SoftwareGit\software\WikiProject\WebServer\bin\RES.WikiProject.WebServer.dll,C:\SoftwareGit\software\WikiProject\WebServer\bin\RES.Insee.Wiki.dll --verbose".Split(' ');
             var tracer = new ConsoleTraceListener();
             try
             {
@@ -48,7 +50,11 @@ namespace Nimrod.Console
             }
             else
             {
-                var logger = options.Verbose ? new DateTimeConsoleTracer(tracer) : null;
+                ILogger logger = VoidLogger.Default;
+                if (options.Verbose)
+                {
+                    logger = new DateTimeConsoleTracer(tracer);
+                }
                 var ioOperations = new IoOperations(new FileSystem(), options.OutputPath, logger);
                 var generator = new Generator(ioOperations);
                 generator.Generate(options.Files, options.ModuleType);

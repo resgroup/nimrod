@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Web.Mvc;
 
 namespace Nimrod
 {
@@ -12,13 +11,13 @@ namespace Nimrod
         public static readonly Type[] NumberTypes = { typeof(short), typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal) };
 
         public static readonly Dictionary<Type, HttpMethodAttribute> TypeToHttpMethodAttribute = new Dictionary<Type, HttpMethodAttribute> {
-            { typeof(HttpGetAttribute), HttpMethodAttribute.Get },
+            { typeof(System.Web.Mvc.HttpGetAttribute), HttpMethodAttribute.Get },
             { typeof(System.Web.Http.HttpGetAttribute), HttpMethodAttribute.Get },
-            { typeof(HttpPostAttribute), HttpMethodAttribute.Post },
+            { typeof(System.Web.Mvc.HttpPostAttribute), HttpMethodAttribute.Post },
             { typeof(System.Web.Http.HttpPostAttribute), HttpMethodAttribute.Post },
-            { typeof(HttpPutAttribute), HttpMethodAttribute.Put },
+            { typeof(System.Web.Mvc.HttpPutAttribute), HttpMethodAttribute.Put },
             { typeof(System.Web.Http.HttpPutAttribute), HttpMethodAttribute.Put },
-            { typeof(HttpDeleteAttribute), HttpMethodAttribute.Delete },
+            { typeof(System.Web.Mvc.HttpDeleteAttribute), HttpMethodAttribute.Delete },
             { typeof(System.Web.Http.HttpDeleteAttribute), HttpMethodAttribute.Delete },
         };
 
@@ -38,7 +37,7 @@ namespace Nimrod
 
         public static bool IsController(this Type type)
         {
-            if (typeof(Controller).IsAssignableFrom(type))
+            if (typeof(System.Web.Mvc.Controller).IsAssignableFrom(type))
             {
                 return true;
             }

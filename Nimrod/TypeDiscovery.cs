@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -14,54 +15,54 @@ namespace Nimrod
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static IEnumerable<Type> EnumerateTypes(Type type)
+        public static HashSet<Type> EnumerateTypes(Type type) => EnumerateTypes(type, VoidLogger.Default);
+        public static HashSet<Type> EnumerateTypes(Type type, ILogger logger)
         {
-            return EnumerateTypesRecursive(type, new HashSet<Type>())
-                                .Distinct();
+            var types = new HashSet<Type>();
+            EnumerateTypesRecursive(type, types, logger);
+            return types;
         }
 
-        private static IEnumerable<Type> EnumerateTypesRecursive(Type type, HashSet<Type> cache)
+        private static void EnumerateTypesRecursive(Type type, HashSet<Type> cache, ILogger logger)
         {
             if (!cache.Contains(type))
             {
                 cache.Add(type);
-                if (type == typeof(string))
+                // string is a reference type, but we don't want to generate property type Length
+                if (type != typeof(string))
                 {
-                    // string is a reference type, but we don't want to generate property type Length
-                    yield return type;
-                }
-                else
-                {
-                    yield return type;
 
                     // generics
                     foreach (var genericArgumentType in type.GetGenericArguments())
                     {
-                        yield return genericArgumentType;
-                        foreach (var subType in EnumerateTypesRecursive(genericArgumentType, cache))
-                        {
-                            yield return subType;
-                        }
+                        EnumerateTypesRecursive(genericArgumentType, cache, logger);
                     }
 
                     // properties
                     foreach (var property in type.GetProperties())
                     {
-                        foreach (var subType in EnumerateTypesRecursive(property.PropertyType, cache))
+                        try
                         {
-                            yield return subType;
+                            EnumerateTypesRecursive(property.PropertyType, cache, logger);
+                        }
+                        catch (FileNotFoundException fileNotFoundException)
+                        {
+                            // during reflection, a type could be found without finding is corrsponding DLLs for reference
+                            string message = $@"
+Cannot understand the property {property.Name} of type {type.FullName}.
+The following DLL has not been found in the loaded assemblies: {fileNotFoundException.FileName}
+You should check that the DLLs exists in the folder, and version numbers are the sames.
+                            ";
+                            throw new FileNotFoundException(message, fileNotFoundException.FileName, fileNotFoundException);
                         }
                     }
 
                     // inheritance
                     foreach (var baseType in GetBaseTypes(type))
                     {
-                        yield return baseType;
-                        foreach (var subType in EnumerateTypesRecursive(baseType, cache))
-                        {
-                            yield return subType;
-                        }
+                        EnumerateTypesRecursive(baseType, cache, logger);
                     }
+
                 }
             }
         }
@@ -72,7 +73,8 @@ namespace Nimrod
         /// </summary>
         /// <param name="controller"></param>
         /// <returns></returns>
-        public static IEnumerable<Type> SeekTypesFromController(Type controller)
+        public static IEnumerable<Type> SeekTypesFromController(Type controller) => SeekTypesFromController(controller, VoidLogger.Default);
+        public static IEnumerable<Type> SeekTypesFromController(Type controller, ILogger logger)
         {
             if (!controller.IsController())
             {
@@ -88,7 +90,7 @@ namespace Nimrod
                 {
                     foreach (var actionType in GetControllerActionParameterTypes(method))
                     {
-                        foreach (var referencedType in EnumerateTypes(actionType))
+                        foreach (var referencedType in EnumerateTypes(actionType, logger))
                         {
                             yield return referencedType;
                         }
