@@ -11,8 +11,6 @@ namespace Nimrod.Console
     {
         static int Main(string[] args)
         {
-
-            args = @"-m typescript -o C:\SoftwareGit\software\WikiProject\WebClient\src\ServerApi.Generated --files=C:\SoftwareGit\software\WikiProject\WebServer\bin\RES.WikiProject.WebServer.dll,C:\SoftwareGit\software\WikiProject\WebServer\bin\RES.Insee.Wiki.dll --verbose".Split(' ');
             var tracer = new ConsoleTraceListener();
             try
             {
