@@ -22,7 +22,7 @@ namespace Nimrod.Writers.Default
         public override IEnumerable<string> GetPromiseLines()
         {
             yield return "namespace Nimrod {";
-            yield return "export interface IPromise<U> {";
+            yield return "export interface IPromise<T> {";
             yield return "    then<U>(onFulfilled ?: (value: T) => void, onRejected?: (error: any) => void): IPromise<U>;";
             yield return "    catch< U > (onRejected ?: (error: any) => void): IPromise<U>;";
             yield return "}}";
