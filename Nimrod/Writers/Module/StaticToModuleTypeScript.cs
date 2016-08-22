@@ -25,7 +25,7 @@ namespace Nimrod.Writers.Module
         {
             yield return "interface IPromise<T> {";
             yield return "    then<U>(onFulfilled ?: (value: T) => void, onRejected?: (error: any) => void): IPromise<U>;";
-            yield return "    catch< U > (onRejected ?: (error: any) => void): IPromise<U>;";
+            yield return "    catch<U>(onRejected ?: (error: any) => void): IPromise<U>;";
             yield return "}";
             yield return "export default IPromise;";
         }

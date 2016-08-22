@@ -67,9 +67,9 @@ namespace Nimrod
                 var signature = method.GetMethodSignature(NeedNameSpace);
                 yield return $"public {signature} {{";
 
-                var genericArgString = $"<{method.ReturnType.ToTypeScript(NeedNameSpace, true)}>";
 
                 var entityName = this.Type.Name.Substring(0, this.Type.Name.Length - "Controller".Length);
+                var genericArgString = method.GetReturnType().ToTypeScript(NeedNameSpace, true);
 
                 if (httpVerb == HttpMethodAttribute.Get || httpVerb == HttpMethodAttribute.Delete)
                 {
@@ -81,7 +81,7 @@ namespace Nimrod
                         yield return $"{methodParameter.Name}: {methodParameter.Name}{(needComma ? "," : "")}";
                     }
                     yield return "};";
-                    yield return $"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', config);";
+                    yield return $"return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', config);";
                 }
                 else
                 {
@@ -93,7 +93,7 @@ namespace Nimrod
                         yield return $"{methodParameter.Name}: {methodParameter.Name}{(needComma ? "," : "")}";
                     }
                     yield return "};";
-                    yield return $"return restApi.{httpVerb}{genericArgString}('/{entityName}/{method.Name}', data, config);";
+                    yield return $"return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);";
                 }
                 yield return "}";
             }

@@ -47,7 +47,7 @@ namespace Nimrod.Test
         {
             Assert.AreEqual("{ [id: number] : number; }", typeof(Dictionary<int, int>).ToTypeScript());
             Assert.AreEqual("{ [id: number] : string[]; }", typeof(Dictionary<int, List<string>>).ToTypeScript());
-            Assert.AreEqual("{ [id: string] : IException[]; }", typeof(Dictionary<string, List<Exception>>).ToTypeScript());
+            Assert.AreEqual("{ [id: string] : INonGenericClass[]; }", typeof(Dictionary<string, List<NonGenericClass>>).ToTypeScript());
         }
 
         public class Generic<T>

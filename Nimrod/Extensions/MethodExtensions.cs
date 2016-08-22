@@ -27,20 +27,33 @@ namespace Nimrod
                 builder.Append($", {methodParameter.Name}: {param}");
             }
             builder.Append($", config?: {namespaceInsert}IRequestConfig)");
-            string returnType;
-            if (method.ReturnType.GetGenericArguments().Length == 1 && method.ReturnType.Name.StartsWith("Json"))
+            var returnType = method.GetReturnType();
+            builder.Append($": {namespaceInsert}IPromise<{returnType.ToTypeScript(needNamespace)}>");
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Return method return's type of a controller
+        /// It can be the type itself, or the containing type
+        /// if it starts with 'Json' string
+        /// Example : JsonNetResult'SomeObject' will return SomeObject
+        /// </summary>
+        /// <param name="method">The method</param>
+        /// <returns></returns>
+        public static Type GetReturnType(this MethodInfo method)
+        {
+            var returnType = method.ReturnType;
+            if (returnType.Name.StartsWith("Json") && returnType.GetGenericArguments().Length == 1)
             {
                 // the return type is generic, is should be something like Json<T>, so the promise will return a T
-                var genericArguments = method.ReturnType.GetGenericArguments()[0];
-                returnType = genericArguments.ToTypeScript(needNamespace);
+                var type = returnType.GetGenericArguments()[0];
+                return type;
             }
             else
             {
                 // the return type is not wrapped, assume it is ApiController and use the return type
-                returnType = method.ReturnType.ToTypeScript(needNamespace);
+                return returnType;
             }
-            builder.Append($": {namespaceInsert}IPromise<{returnType}>");
-            return builder.ToString();
         }
     }
 }

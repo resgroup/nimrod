@@ -154,9 +154,16 @@ namespace Nimrod
             }
             else if (!type.IsGenericType)
             {
-                string iPrefix = type.IsEnum ? "" : "I";
-                string typeName = $"{iPrefix}{type.Name}";
-                return includeNamespace ? $"{type.Namespace}.{typeName}" : $"{typeName}";
+                if (type.IsSystem())
+                {
+                    return "{}";
+                }
+                else
+                {
+                    string iPrefix = type.IsEnum ? "" : "I";
+                    string typeName = $"{iPrefix}{type.Name}";
+                    return includeNamespace ? $"{type.Namespace}.{typeName}" : $"{typeName}";
+                }
             }
             else
             {

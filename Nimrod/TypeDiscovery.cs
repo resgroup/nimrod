@@ -132,7 +132,7 @@ You should check that the DLLs exists in the folder, and version numbers are the
         /// <returns></returns>
         static public IEnumerable<Type> GetControllerActionParameterTypes(MethodInfo method)
         {
-            var returnType = method.ReturnType.IsGenericType ? method.ReturnType.GetGenericArguments()[0] : method.ReturnType;
+            var returnType = method.GetReturnType();
             yield return returnType;
             foreach (var parameter in method.GetParameters())
             {
