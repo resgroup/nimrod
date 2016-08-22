@@ -37,18 +37,19 @@ namespace Nimrod
             this.IoOperations.WriteLog($"Writing {types.Count} files...Done!");
         }
 
-        private IEnumerable<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
+        private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
             this.IoOperations.WriteLog($"Discovering types..");
             var assemblyTypes = TypeDiscovery.GetControllers(assemblies)
-                    .SelectMany(controller => TypeDiscovery.SeekTypesFromController(controller, this.IoOperations.Logger))
+                    .SelectMany(controller => TypeDiscovery.SeekTypesFromController(controller))
                     .ToList();
 
             // Write all types except the ones in System
             var toWrites = assemblyTypes
                 .Where(t => !t.IsSystem())
                 .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
-                .Distinct();
+                .Distinct()
+                .ToList();
             return toWrites;
         }
 

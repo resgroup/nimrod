@@ -48,16 +48,19 @@ namespace Nimrod.Console
             }
             else
             {
-                ILogger logger = VoidLogger.Default;
+                ILogger logger;
                 if (options.Verbose)
                 {
                     logger = new DateTimeConsoleTracer(tracer);
+                }
+                else
+                {
+                    logger = VoidLogger.Default;
                 }
                 var ioOperations = new IoOperations(new FileSystem(), options.OutputPath, logger);
                 var generator = new Generator(ioOperations);
                 generator.Generate(options.Files, options.ModuleType);
             }
         }
-
     }
 }

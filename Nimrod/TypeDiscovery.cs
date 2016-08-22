@@ -15,15 +15,14 @@ namespace Nimrod
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static HashSet<Type> EnumerateTypes(Type type) => EnumerateTypes(type, VoidLogger.Default);
-        public static HashSet<Type> EnumerateTypes(Type type, ILogger logger)
+        public static HashSet<Type> EnumerateTypes(Type type)
         {
             var types = new HashSet<Type>();
-            EnumerateTypesRecursive(type, types, logger);
+            EnumerateTypesRecursive(type, types);
             return types;
         }
 
-        private static void EnumerateTypesRecursive(Type type, HashSet<Type> cache, ILogger logger)
+        private static void EnumerateTypesRecursive(Type type, HashSet<Type> cache)
         {
             if (!cache.Contains(type))
             {
@@ -35,7 +34,7 @@ namespace Nimrod
                     // generics
                     foreach (var genericArgumentType in type.GetGenericArguments())
                     {
-                        EnumerateTypesRecursive(genericArgumentType, cache, logger);
+                        EnumerateTypesRecursive(genericArgumentType, cache);
                     }
 
                     // properties
@@ -43,7 +42,7 @@ namespace Nimrod
                     {
                         try
                         {
-                            EnumerateTypesRecursive(property.PropertyType, cache, logger);
+                            EnumerateTypesRecursive(property.PropertyType, cache);
                         }
                         catch (FileNotFoundException fileNotFoundException)
                         {
@@ -60,7 +59,7 @@ You should check that the DLLs exists in the folder, and version numbers are the
                     // inheritance
                     foreach (var baseType in GetBaseTypes(type))
                     {
-                        EnumerateTypesRecursive(baseType, cache, logger);
+                        EnumerateTypesRecursive(baseType, cache);
                     }
 
                 }
@@ -73,8 +72,7 @@ You should check that the DLLs exists in the folder, and version numbers are the
         /// </summary>
         /// <param name="controller"></param>
         /// <returns></returns>
-        public static IEnumerable<Type> SeekTypesFromController(Type controller) => SeekTypesFromController(controller, VoidLogger.Default);
-        public static IEnumerable<Type> SeekTypesFromController(Type controller, ILogger logger)
+        public static IEnumerable<Type> SeekTypesFromController(Type controller)
         {
             if (!controller.IsController())
             {
@@ -90,7 +88,7 @@ You should check that the DLLs exists in the folder, and version numbers are the
                 {
                     foreach (var actionType in GetControllerActionParameterTypes(method))
                     {
-                        foreach (var referencedType in EnumerateTypes(actionType, logger))
+                        foreach (var referencedType in EnumerateTypes(actionType))
                         {
                             yield return referencedType;
                         }
