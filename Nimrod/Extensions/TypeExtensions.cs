@@ -104,33 +104,15 @@ namespace Nimrod
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        static public IEnumerable<Type> ReferencedTypes(this Type type)
+        static public HashSet<Type> GetGenericArgumentsRecursively(this Type type) => GetGenericArgumentsRecursivelyImpl(type).ToHashSet();
+        static private IEnumerable<Type> GetGenericArgumentsRecursivelyImpl(this Type type)
         {
-            var seen = new HashSet<Type>();
-            foreach (var genericArgument in type.GetGenericArguments())
-            {
-                if (genericArgument.IsGenericType)
-                {
-                    if (seen.Add(genericArgument.GetGenericTypeDefinition()))
-                    {
-                        yield return genericArgument.GetGenericTypeDefinition();
-                    }
-                }
-                else
-                {
-                    if (seen.Add(genericArgument))
-                    {
-                        yield return genericArgument;
-                    }
-                }
-                foreach (var referencedType in genericArgument.ReferencedTypes())
-                {
-                    if (seen.Add(referencedType))
-                    {
-                        yield return referencedType;
-                    }
-                }
-            }
+            var genericArguments = type.GetGenericArguments();
+
+            // for each argument in its generics, find recursively its types
+            var recursiveSearchResult = genericArguments.Select(t => GetGenericArgumentsRecursivelyImpl(t));
+
+            return recursiveSearchResult.SelectMany(list => list).Union(genericArguments);
         }
 
         static public string ToTypeScript(this Type inType)

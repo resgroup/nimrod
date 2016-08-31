@@ -123,7 +123,7 @@
     <Compile Include="ModelExamples\IgnoreDataMemberClass.cs" />
     <Compile Include="ModelExamples\ListViewModel.cs" />
     <Compile Include="ModelExamples\Paginator.cs" />
-    <Compile Include="ReferencedTypesTests.cs" />
+    <Compile Include="GetGenericArgumentsRecursivelyTests.cs" />
     <Compile Include="TypeDiscoveryTests.cs" />
     <Compile Include="TypeExtensionsTest.cs" />
     <Compile Include="Writers\AutoIndentingTextWriterTests.cs" />

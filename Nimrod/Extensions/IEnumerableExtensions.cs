@@ -12,6 +12,8 @@ namespace Nimrod
             return !source.Any();
         }
 
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source) => new HashSet<T>(source);
+
         public static IEnumerable<string> IndentLines(this IEnumerable<string> lines)
         {
             return lines.IndentLines("    ", '{', '}');

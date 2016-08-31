@@ -13,7 +13,10 @@ namespace Nimrod.Writers.Module
             // when a type is generic, we want the template of it, not the particular template instance
             var genericTypes = types.Where(t => t.IsGenericType)
                 .Select(t => t.GetGenericTypeDefinition());
-            var referencedType = types.SelectMany(t => t.ReferencedTypes());
+            var referencedType = types
+                .SelectMany(t => t.GetGenericArgumentsRecursively()
+                .Select(arg => arg.IsGenericType ? arg.GetGenericTypeDefinition() : arg))
+                .Distinct();
 
             return baseTypes.Union(genericTypes).Union(referencedType).Where(type => !type.IsSystem());
         }
