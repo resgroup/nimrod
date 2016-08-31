@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace Nimrod.Writers.Require
 {
@@ -14,14 +13,7 @@ namespace Nimrod.Writers.Require
 
         protected override IEnumerable<string> GetHeader()
         {
-            var genericArguments = new HashSet<Type>();
-            if (this.Type.IsGenericTypeDefinition)
-            {
-                foreach (var t in this.Type.GetGenericArguments())
-                {
-                    genericArguments.Add(t);
-                }
-            }
+            var genericArguments = this.Type.GetGenericArguments().ToHashSet();
             var propertyTypes = this.Type.GetProperties()
                                     .Select(p => p.PropertyType)
                                     .Where(p => !genericArguments.Contains(p));
@@ -29,19 +21,15 @@ namespace Nimrod.Writers.Require
                                 .Where(t => !genericArguments.Contains(t))
                                 .Select(t => RequireModuleHelper.GetImportLine(t));
 
-            foreach (var import in imports)
-            {
-                yield return import;
-            }
-            yield return $"interface {TsName} {{";
+            return imports.Union(new[] {
+                $"interface {TsName} {{"
+            });
         }
 
-        protected override IEnumerable<string> GetFooter()
-        {
-            yield return "}";
-            // no generic for export on require mode
-            var nonGenericTypescriptClass = this.Type.ToTypeScript(false, false);
-            yield return $"export = {nonGenericTypescriptClass};";
-        }
+        protected override IEnumerable<string> GetFooter() =>
+            new[] {
+                $"}}",
+                $"export = { this.Type.ToTypeScript(false, false) };"
+            };
     }
 }
