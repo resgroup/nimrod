@@ -8,28 +8,55 @@ namespace Nimrod
 {
     public static class MethodExtensions
     {
+        public static readonly Dictionary<Type, HttpMethodAttribute> TypeToHttpMethodAttribute = new Dictionary<Type, HttpMethodAttribute> {
+            { typeof(System.Web.Mvc.HttpGetAttribute), HttpMethodAttribute.Get },
+            { typeof(System.Web.Http.HttpGetAttribute), HttpMethodAttribute.Get },
+            { typeof(System.Web.Mvc.HttpPostAttribute), HttpMethodAttribute.Post },
+            { typeof(System.Web.Http.HttpPostAttribute), HttpMethodAttribute.Post },
+            { typeof(System.Web.Mvc.HttpPutAttribute), HttpMethodAttribute.Put },
+            { typeof(System.Web.Http.HttpPutAttribute), HttpMethodAttribute.Put },
+            { typeof(System.Web.Mvc.HttpDeleteAttribute), HttpMethodAttribute.Delete },
+            { typeof(System.Web.Http.HttpDeleteAttribute), HttpMethodAttribute.Delete },
+        };
+
+        /// <summary>
+        /// returns the first Attribut of type HttpMethod found
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)
+            => method.GetCustomAttributes(true)
+                .Select(attribute =>
+                {
+                    var attributeType = attribute.GetType();
+                    HttpMethodAttribute enumAttribute;
+                    bool success = TypeToHttpMethodAttribute.TryGetValue(attributeType, out enumAttribute);
+                    return new { Success = success, Attribute = enumAttribute };
+
+                }).FirstOrDefault(a => a.Success)
+                ?.Attribute;
+
+        /// <summary>
+        /// Returns the return type and the arguments type of the method
+        /// </summary>
+        static public IEnumerable<Type> GetReturnTypeAndParameterTypes(this MethodInfo method)
+            => new[] { method.GetReturnType() }
+                .Union(method.GetParameters().Select(p => p.ParameterType));
+
         /// <summary>
         /// Return method signature in typescript of a C# method
         /// </summary>
         /// <param name="method">The method</param>
         /// <param name="needNamespace">Do we need to add namespace information on types?</param>
-        /// <returns></returns>
         public static string GetMethodSignature(this MethodInfo method, bool needNamespace)
         {
-            var builder = new StringBuilder();
-            builder.Append(method.Name);
-            var namespaceInsert = needNamespace ? "Nimrod." : "";
-            builder.Append($"(restApi: {namespaceInsert}IRestApi");
+            var ns = needNamespace ? "Nimrod." : "";
+            var arguments = method.GetParameters()
+                    .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript(needNamespace)}")
+                    .Join("");
+            var returnType = method.GetReturnType().ToTypeScript(needNamespace);
 
-            foreach (var methodParameter in method.GetParameters())
-            {
-                var param = methodParameter.ParameterType.ToTypeScript(needNamespace);
-                builder.Append($", {methodParameter.Name}: {param}");
-            }
-            builder.Append($", config?: {namespaceInsert}IRequestConfig)");
-            var returnType = method.GetReturnType();
-            builder.Append($": {namespaceInsert}IPromise<{returnType.ToTypeScript(needNamespace)}>");
-            return builder.ToString();
+            return $"{method.Name}(restApi: {ns}IRestApi{arguments}, config?: {ns}IRequestConfig): {ns}IPromise<{returnType}>";
         }
 
         /// <summary>

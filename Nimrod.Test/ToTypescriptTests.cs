@@ -54,6 +54,10 @@ namespace Nimrod.Test
         {
             public T FooValue { get; set; }
         }
+        public class Generic1<T>
+        {
+            public T FooValue { get; set; }
+        }
 
         [Test]
         public void GetTypescriptType_Generic_Test()
@@ -62,6 +66,12 @@ namespace Nimrod.Test
             Assert.AreEqual("Nimrod.Test.IGeneric", typeof(Generic<string>).ToTypeScript(true, false));
             Assert.AreEqual("IGeneric<string>", typeof(Generic<string>).ToTypeScript(false, true));
             Assert.AreEqual("IGeneric", typeof(Generic<string>).ToTypeScript(false, false));
+        }
+
+        [Test]
+        public void GetTypescriptType_GenericWithNumber_Test()
+        {
+            Assert.AreEqual("Nimrod.Test.IGeneric1<string>", typeof(Generic1<string>).ToTypeScript(true, true));
         }
 
         [Test]
@@ -121,12 +131,9 @@ namespace Nimrod.Test
         {
             var typeDefinition = typeof(GenericClass<int>).GetGenericTypeDefinition();
 
-            foreach (var property in typeDefinition.GetProperties())
-            {
-                var ts = property.PropertyType.ToTypeScript();
-                Assert.AreEqual("TFoo[]", ts);
-            }
-
+            typeDefinition.GetProperties().ToList().ForEach(property =>
+                Assert.AreEqual("TFoo[]", property.PropertyType.ToTypeScript())
+            );
         }
 
     }

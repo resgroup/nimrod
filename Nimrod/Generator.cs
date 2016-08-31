@@ -51,15 +51,34 @@ namespace Nimrod
 
         private IEnumerable<Tuple<string, IEnumerable<string>>> GetDynamicContent(IList<Type> types, ModuleType moduleType)
         {
-            return types.AsParallel().Select(type =>
+            return types.AsDebugFriendlyParallel().Select(type =>
             {
                 var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
                 var toTypeScript = buildRules.GetToTypeScript(type);
                 var lines = toTypeScript.GetLines();
-                return Tuple.Create(type.GetTypeScriptFilename(), lines);
+                return Tuple.Create(GetTypeScriptFilename(type), lines);
             });
         }
+        public static string GetTypeScriptFilename(Type type)
+        {
+            string name;
+            if (type.IsGenericType)
+            {
+                var genericType = type.GetGenericTypeDefinition();
+                name = genericType.Name.Remove(genericType.Name.IndexOf('`'));
+            }
+            else
+            {
+                name = type.Name;
+            }
 
+            if (type.IsController())
+            {
+                name = $"{type.Name.Replace("Controller", "Service")}";
+            }
+
+            return $"{type.Namespace}.{name}.ts";
+        }
         private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
             this.IoOperations.WriteLog($"Discovering types..");

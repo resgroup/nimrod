@@ -54,25 +54,10 @@ namespace Nimrod.Test
         [Test]
         public void CheckGetControllerActionTypesForActionWithNonRecognizedHttpAttribute()
         {
-            var result = TypeDiscovery.SeekTypesFromController(typeof(NoTypescriptDetactableController));
+            var result = TypeDiscovery.SeekTypesFromController(typeof(NoTypescriptDetactableController)).ToList();
 
-            Assert.IsFalse(result.Any());
-        }
-
-
-        [Test]
-        public void CheckGetControllerActionTypesForActionWithHttpAttribute()
-        {
-            var testAction = typeof(TestController).GetMethod("TestAction");
-
-            var result = TypeDiscovery.GetControllerActionParameterTypes(testAction)
-                                      .Distinct()
-                                      .OrderBy(t => t.Name)
-                                      .ToList();
-
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(typeof(bool), result[0]);
-            Assert.AreEqual(typeof(string), result[1]);
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(typeof(NoTypescriptDetactableController), result[0]);
         }
 
         [Test]

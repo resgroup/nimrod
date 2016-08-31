@@ -114,7 +114,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\MethodExtensionsTests.cs" />
     <Compile Include="Extensions\ObjectExtensionsTests.cs" />
+    <Compile Include="GeneratorTests.cs" />
     <Compile Include="ToTypeScriptBuildRulesTests.cs" />
     <Compile Include="TupleToTypeScriptTests.cs" />
     <Compile Include="HttpMethodAttributeTests.cs" />

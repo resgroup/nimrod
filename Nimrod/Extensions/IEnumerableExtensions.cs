@@ -7,6 +7,18 @@ namespace Nimrod
 {
     public static class IEnumerableExtensions
     {
+        /// <summary>
+        /// Set the Degree of parallelisme to 1 if in debug
+        /// </summary>
+        public static ParallelQuery<TSource> AsDebugFriendlyParallel<TSource>(this IEnumerable<TSource> source)
+        {
+            var query = source.AsParallel();
+#if DEBUG
+            query = query.WithDegreeOfParallelism(1);
+#endif
+            return query;
+        }
+
         public static bool IsEmpty<T>(this IEnumerable<T> source)
         {
             return !source.Any();

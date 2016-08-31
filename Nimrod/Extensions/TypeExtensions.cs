@@ -8,96 +8,45 @@ namespace Nimrod
 {
     public static class TypeExtensions
     {
-        public static readonly Type[] NumberTypes = { typeof(short), typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal) };
+        public static readonly HashSet<Type> NumberTypes =
+            new[] { typeof(short), typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal) }
+            .ToHashSet();
 
-        public static readonly Dictionary<Type, HttpMethodAttribute> TypeToHttpMethodAttribute = new Dictionary<Type, HttpMethodAttribute> {
-            { typeof(System.Web.Mvc.HttpGetAttribute), HttpMethodAttribute.Get },
-            { typeof(System.Web.Http.HttpGetAttribute), HttpMethodAttribute.Get },
-            { typeof(System.Web.Mvc.HttpPostAttribute), HttpMethodAttribute.Post },
-            { typeof(System.Web.Http.HttpPostAttribute), HttpMethodAttribute.Post },
-            { typeof(System.Web.Mvc.HttpPutAttribute), HttpMethodAttribute.Put },
-            { typeof(System.Web.Http.HttpPutAttribute), HttpMethodAttribute.Put },
-            { typeof(System.Web.Mvc.HttpDeleteAttribute), HttpMethodAttribute.Delete },
-            { typeof(System.Web.Http.HttpDeleteAttribute), HttpMethodAttribute.Delete },
-        };
+        public static readonly HashSet<Type> BuiltinTypes =
+            new[] { typeof(string), typeof(bool), typeof(DateTime) }.Union(NumberTypes).ToHashSet();
 
-        public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)
+        private static readonly HashSet<Type> TupleTypes = new[]
         {
-            foreach (var attribute in method.GetCustomAttributes(true))
-            {
-                var attributeType = attribute.GetType();
-                HttpMethodAttribute enumAttribute;
-                if (TypeToHttpMethodAttribute.TryGetValue(attributeType, out enumAttribute))
-                {
-                    return enumAttribute;
-                }
-            }
-            return null;
-        }
+            typeof(Tuple<>),
+            typeof(Tuple<,>),
+            typeof(Tuple<,,>),
+            typeof(Tuple<,,,>),
+            typeof(Tuple<,,,,>),
+            typeof(Tuple<,,,,,>),
+            typeof(Tuple<,,,,,,>),
+            typeof(Tuple<,,,,,,,>)
+        }.ToHashSet();
+
+        public static readonly HashSet<Type> GenericArrayTypes = new[] {
+                typeof(IEnumerable<>),
+                typeof(List<>),
+                typeof(IList<>),
+                typeof(ICollection<>)
+            }.ToHashSet();
 
         public static bool IsController(this Type type)
-        {
-            if (typeof(System.Web.Mvc.Controller).IsAssignableFrom(type))
-            {
-                return true;
-            }
-            if (typeof(System.Web.Http.Controllers.IHttpController).IsAssignableFrom(type))
-            {
-                return true;
-            }
-            return false;
-        }
+            => typeof(System.Web.Mvc.Controller).IsAssignableFrom(type)
+            || typeof(System.Web.Http.Controllers.IHttpController).IsAssignableFrom(type);
 
-        public static bool IsBuiltinType(this Type type)
-        {
-            if (type == typeof(string))
-            {
-                return true;
-            }
-            if (type.IsNumber())
-            {
-                return true;
-            }
-            if (type == typeof(bool))
-            {
-                return true;
-            }
-            if (type == typeof(DateTime))
-            {
-                return true;
-            }
-            return false;
-        }
+
+        public static bool IsBuiltinType(this Type type) => BuiltinTypes.Contains(type);
         public static bool IsSystem(this Type type)
-        {
-            return type.Namespace.StartsWith("System")
-                || type.Namespace.StartsWith("Microsoft")
-                || type.IsBuiltinType();
-        }
-        public static bool IsNumber(this Type type)
-        {
-            return NumberTypes.Contains(type);
-        }
-        public static string GetTypeScriptFilename(this Type type)
-        {
-            string name;
-            if (type.IsGenericType)
-            {
-                var genericType = type.GetGenericTypeDefinition();
-                name = genericType.Name.Remove(genericType.Name.IndexOf('`'));
-            }
-            else
-            {
-                name = type.Name;
-            }
+            => type.Namespace.StartsWith("System")
+            || type.Namespace.StartsWith("Microsoft")
+            || type.IsBuiltinType();
 
-            if (type.IsController())
-            {
-                name = $"{type.Name.Replace("Controller", "Service")}";
-            }
+        public static bool IsNumber(this Type type) => NumberTypes.Contains(type);
 
-            return $"{type.Namespace}.{name}.ts";
-        }
 
         /// <summary>
         /// Return every Type detected by Generics, so inside the <>
@@ -116,13 +65,9 @@ namespace Nimrod
         }
 
         static public string ToTypeScript(this Type inType)
-        {
-            return inType.ToTypeScript(false);
-        }
+            => inType.ToTypeScript(false);
         static public string ToTypeScript(this Type inType, bool includeNamespace)
-        {
-            return inType.ToTypeScript(includeNamespace, true);
-        }
+            => inType.ToTypeScript(includeNamespace, true);
         static public string ToTypeScript(this Type type, bool includeNamespace, bool includeGenericArguments)
         {
             string simpleTypeScript;
@@ -157,14 +102,14 @@ namespace Nimrod
         // usage of Dictionary is to simplify the type inference
         // use list of tuples when real tuples will be there in C#7
         private static readonly Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> PredicateToTypescriptStringMap = new Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> {
-                { t => t.IsArray(), (t, n, g) => ArrayToTypeScript(t, n)},
-                { t => t.IsTuple(), (t, n, g) => TupleToTypeScript(t, n, g) },
-                { t => t.IsString(), (t, n, g) => "string" },
+                { t => t.IsArray, (t, n, g) => t.ArrayToTypeScript(n)},
+                { t => t.IsTuple(), (t, n, g) => t.TupleToTypeScript(n, g) },
+                { t => t == typeof(string), (t, n, g) => "string" },
                 { t => t.IsNumber(), (t, n, g) => "number" },
-                { t => t.IsBoolean(), (t, n, g) => "boolean" },
+                { t => t == typeof(bool), (t, n, g) => "boolean" },
                 { t => t.IsDateTime(), (t, n, g) => "Date" },
                 { t => t.IsObject(), (t, n, g) => "any" },
-                { t => t.IsVoid(), (t, n, g) => "void" }
+                { t => t == typeof(void), (t, n, g) => "void" }
             };
 
         /// <summary>
@@ -181,60 +126,23 @@ namespace Nimrod
             return value != null;
         }
 
-        private static readonly HashSet<Type> GenericTupleTypes = new HashSet<Type>(new[]
-        {
-            typeof(Tuple<>),
-            typeof(Tuple<,>),
-            typeof(Tuple<,,>),
-            typeof(Tuple<,,,>),
-            typeof(Tuple<,,,,>),
-            typeof(Tuple<,,,,,>),
-            typeof(Tuple<,,,,,,>),
-            typeof(Tuple<,,,,,,,>)
-        });
         public static bool IsTuple(this Type type)
         {
             var typeDefinition = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
-            return GenericTupleTypes.Contains(typeDefinition);
+            return TupleTypes.Contains(typeDefinition);
         }
-        public static bool IsArray(this Type type)
-        {
-            return type.IsArray;
-        }
-        public static bool IsString(this Type type)
-        {
-            return type == typeof(string);
-        }
+
 
         /// <summary>
         /// Return if the type is strictly equals to System.Object
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
         public static bool IsObject(this Type type)
-        {
-            return type.UnderlyingSystemType.FullName == "System.Object";
-        }
-        public static bool IsVoid(this Type type)
-        {
-            return type == typeof(void);
-        }
+            => type.UnderlyingSystemType.FullName == "System.Object";
+
+
         public static bool IsDateTime(this Type type)
-        {
-            return type == typeof(DateTime) || type == typeof(DateTimeOffset);
-        }
-        public static bool IsBoolean(this Type type)
-        {
-            return type == typeof(bool);
-        }
-        public static string TupleToTypeScript(this Type type)
-        {
-            return type.TupleToTypeScript(false);
-        }
-        public static string TupleToTypeScript(this Type type, bool includeNamespace)
-        {
-            return type.TupleToTypeScript(includeNamespace, true);
-        }
+            => type == typeof(DateTime) || type == typeof(DateTimeOffset);
+
         public static string TupleToTypeScript(this Type type, bool includeNamespace, bool includeGenericArguments)
         {
             // search the generic type definition so the method work for both Tuple<int> and Tuple<T>
@@ -260,10 +168,6 @@ namespace Nimrod
         /// <summary>
         /// Complicated stuff for returning the name of a generic class
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="includeNamespace"></param>
-        /// <param name="includeGenericArguments"></param>
-        /// <returns></returns>
         static private string ToTypeScriptForGenericClass(Type type, bool includeNamespace, bool includeGenericArguments)
         {
             var genericArguments = type.GetGenericArguments();
@@ -277,15 +181,14 @@ namespace Nimrod
                 {
                     return genericArguments[0].ToTypeScript(includeNamespace) + "[]";
                 }
-
-                if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                else if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                 {
                     var keyType = genericArguments[0];
                     string keyTypescript;
-                    // we could allow only string or number for today
+                    // Today we allow only string or number a for key in a TypeScript Dictionary
                     // we plan to support enum indexer type when typescript will allow
                     // please consider upvote the proposal : https://github.com/Microsoft/TypeScript/issues/2491
-                    if (keyType.IsString() || keyType.IsEnum)
+                    if (keyType == typeof(string) || keyType.IsEnum)
                     {
                         keyTypescript = "string";
                     }
@@ -297,55 +200,43 @@ namespace Nimrod
 
                     return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";
                 }
-
-                return GenericTypeToTypeScript(type, includeNamespace, includeGenericArguments);
+                else
+                {
+                    return GenericTypeToTypeScript(type, includeNamespace, includeGenericArguments);
+                }
             }
         }
         /// <summary>
         /// Generic type, emit GenericType`2<A, B> as GenericType<A, B> 
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="includeNamespace"></param>
-        /// <param name="includeGenericArguments"></param>
-        /// <returns></returns>
         private static string GenericTypeToTypeScript(Type type, bool includeNamespace, bool includeGenericArguments)
         {
-            var genericTypeName = new StringBuilder();
+            var result = new StringBuilder();
             if (includeNamespace)
             {
-                genericTypeName.Append($"{type.GetGenericTypeDefinition().Namespace}.");
+                result.Append($"{type.GetGenericTypeDefinition().Namespace}.");
             }
-            genericTypeName.Append($"I{type.GetGenericTypeDefinition().Name.TrimEnd("`1234567890".ToCharArray())}");
+
+            var genericTypeDefinitionName = type.GetGenericTypeDefinition().Name;
+            // generics type got a name like Foo`2, we parse only before the `
+            var withoutAfterBacktick = genericTypeDefinitionName.Substring(0, genericTypeDefinitionName.IndexOf('`'));
+            result.Append($"I{withoutAfterBacktick}");
             if (includeGenericArguments)
             {
-                genericTypeName.Append('<');
-                bool first = true;
-                foreach (var genericArgument in type.GetGenericArguments())
-                {
-                    if (!first)
-                    {
-                        genericTypeName.Append(", ");
-                        first = false;
-                    }
-                    genericTypeName.Append(genericArgument.ToTypeScript(includeNamespace));
-                }
-                genericTypeName.Append('>');
+                var args = type.GetGenericArguments()
+                    .Select(t => t.ToTypeScript(includeNamespace))
+                    .Join(", ");
+                result.Append($"<{args}>");
             }
-            return genericTypeName.ToString();
+            return result.ToString();
         }
 
         private static bool IsGeneric1DArray(Type type, Type[] genericArguments)
-        {
-            return type.IsGenericArray() && genericArguments.Length == 1;
-        }
+            => type.IsGenericArray() && genericArguments.Length == 1;
+
 
         public static bool IsGenericArray(this Type type)
-        {
-            return type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-                        || type.GetGenericTypeDefinition() == typeof(List<>)
-                        || type.GetGenericTypeDefinition() == typeof(IList<>)
-                        || type.GetGenericTypeDefinition() == typeof(ICollection<>);
-        }
+            => GenericArrayTypes.Contains(type.GetGenericTypeDefinition());
 
         public static string TypeScriptModuleName(this Type type)
         {
@@ -354,6 +245,5 @@ namespace Nimrod
             var moduleName = fullTypeName.Substring(0, index) + fullTypeName.Substring(index + 1);
             return moduleName;
         }
-
     }
 }

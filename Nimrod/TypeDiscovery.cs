@@ -10,11 +10,9 @@ namespace Nimrod
     {
         /// <summary>
         /// Get every type referenced by this type,
-        /// including Property, Generics and Inheritance
+        /// including itself, Properties, Generics and Inheritance
         /// The list is guarranted to be unique
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
         public static HashSet<Type> EnumerateTypes(Type type)
         {
             var types = new HashSet<Type>();
@@ -22,6 +20,9 @@ namespace Nimrod
             return types;
         }
 
+        /// <summary>
+        /// Fill the cache object until no more new types are discovered
+        /// </summary>
         private static void EnumerateTypesRecursive(Type type, HashSet<Type> cache)
         {
             if (!cache.Contains(type))
@@ -30,7 +31,6 @@ namespace Nimrod
                 // string is a reference type, but we don't want to generate property type Length
                 if (type != typeof(string))
                 {
-
                     // generics
                     foreach (var genericArgumentType in type.GetGenericArguments())
                     {
@@ -79,36 +79,19 @@ You should check that the DLLs exists in the folder, and version numbers are the
                 string message = $"Type {controller.Name} MUST extend System.Web.Mvc.Controller or System.Web.Http.IHttpControler";
                 throw new ArgumentOutOfRangeException(message, nameof(controller));
             }
-            var actions = GetControllerActions(controller).ToList();
-            if (actions.Any())
-            {
-                // controller are take into account only if at least one action is typescriptable 
-                yield return controller;
-                foreach (var method in actions)
-                {
-                    foreach (var actionType in GetControllerActionParameterTypes(method))
-                    {
-                        foreach (var referencedType in EnumerateTypes(actionType))
-                        {
-                            yield return referencedType;
-                        }
-                    }
-                }
-            }
+            var referencedType = GetControllerActions(controller).Select(action =>
+                           action.GetReturnTypeAndParameterTypes()
+                                 .Select(type => EnumerateTypes(type))
+                                 .SelectMany(type => type)
+                        );
+            return new[] { controller }.Union(referencedType.SelectMany(type => type));
         }
 
         static public IEnumerable<Type> GetControllers(IEnumerable<Assembly> assemblies)
-        {
-            foreach (var assembly in assemblies)
-            {
-                var controllers = assembly.GetExportedTypes()
-                                          .Where(type => type.IsController());
-                foreach (var controller in controllers)
-                {
-                    yield return controller;
-                }
-            }
-        }
+            => assemblies.Select(assembly => assembly.GetExportedTypes())
+                         .SelectMany(type => type)
+                         .Where(type => type.IsController());
+
 
         public static IEnumerable<Type> GetBaseTypes(Type type)
         {
@@ -125,35 +108,14 @@ You should check that the DLLs exists in the folder, and version numbers are the
             } while (isValid);
         }
 
-        /// <summary>
-        /// Return the return type and the arguments type of the method
-        /// </summary>
-        /// <param name="method"></param>
-        /// <returns></returns>
-        static public IEnumerable<Type> GetControllerActionParameterTypes(MethodInfo method)
-        {
-            var returnType = method.GetReturnType();
-            yield return returnType;
-            foreach (var parameter in method.GetParameters())
-            {
-                yield return parameter.ParameterType;
-            }
-        }
-
         static public IEnumerable<MethodInfo> GetControllerActions(this Type controllerType)
         {
             if (!controllerType.IsController())
             {
                 throw new ArgumentOutOfRangeException($"Type {controllerType.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(controllerType));
             }
-            foreach (var method in controllerType.GetMethods())
-            {
-                var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
-                if (httpVerb != null)
-                {
-                    yield return method;
-                }
-            }
+            return controllerType.GetMethods()
+                                 .Where(method => method.FirstOrDefaultHttpMethodAttribute().HasValue);
         }
 
     }

@@ -12,13 +12,6 @@ namespace Nimrod.Test
     [TestFixture]
     public class TypeExtensionsTest
     {
-        [Test]
-        public void GetFileName()
-        {
-            var filename = typeof(GenericClass<int>).GetTypeScriptFilename();
-
-            Assert.AreEqual("Nimrod.Test.ModelExamples.GenericClass.ts", filename);
-        }
 
         [Test]
         public void IsSystem()
