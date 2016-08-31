@@ -78,14 +78,14 @@ namespace Nimrod
             var directories = files.Select(f => f.DirectoryName).Distinct();
             AssemblyLocator.Init();
 
-            var assemblyPaths = directories.Select(directory =>
+            var assemblyPaths = directories.SelectMany(directory =>
                 this.FileSystem.Directory.EnumerateFiles(directory, "*.dll")
                     .Select(assemblyFile => this.FileSystem.Path.Combine(directory, assemblyFile))
-            ).SelectMany(a => a).ToList();
+            ).ToList();
 
             // this step is time consuming (around 1 second for 100 assemblies)
             // the parallelization doesn't seems to help much
-            assemblyPaths.AsParallel().ForAll(assemblyPath =>
+            assemblyPaths.AsDebugFriendlyParallel().ForAll(assemblyPath =>
             {
                 this.WriteLog($"Trying to load assembly {assemblyPath}...");
                 var assembly = Assembly.LoadFile(assemblyPath);

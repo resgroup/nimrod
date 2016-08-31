@@ -54,8 +54,8 @@ namespace Nimrod
 
             int indentationLevel = 0;
             // split lines based on standard new line for both unix and windows
-            var splitted = lines.Select(line => line.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None))
-                .SelectMany(line => line)
+            var splitted = lines
+                .SelectMany(line => line.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None))
                 .Select(line => line.Trim());
             foreach (var line in splitted)
             {

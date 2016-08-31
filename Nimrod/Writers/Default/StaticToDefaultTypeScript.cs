@@ -8,24 +8,25 @@ namespace Nimrod.Writers.Default
 {
     public class StaticToDefaultTypeScript : StaticToTypeScript
     {
-        public override IEnumerable<string> GetRestApiLines()
-        {
-            yield return "namespace Nimrod {";
-            yield return "export interface IRestApi {";
-            yield return "    Delete<T>(url: string, config?: IRequestConfig): IPromise<T>;";
-            yield return "    Get<T>(url: string, config?: IRequestConfig): IPromise<T>;";
-            yield return "    Post<T>(url: string, data: any, config?: IRequestConfig): IPromise<T>;";
-            yield return "    Put<T>(url: string, data: any, config?: IRequestConfig): IPromise<T>;";
-            yield return "}}";
-        }
+        public override IEnumerable<string> GetRestApiLines() => new[] {
+            $@"namespace Nimrod {{
+                export interface IRestApi {{
+                Delete<T>(url: string, config?: IRequestConfig): IPromise<T>;
+                Get<T>(url: string, config?: IRequestConfig): IPromise<T>;
+                Post<T>(url: string, data: any, config?: IRequestConfig): IPromise<T>;
+                Put<T>(url: string, data: any, config?: IRequestConfig): IPromise<T>;
+              }}
+            }}"
+        };
 
-        public override IEnumerable<string> GetPromiseLines()
-        {
-            yield return "namespace Nimrod {";
-            yield return "export interface IPromise<T> {";
-            yield return "    then<U>(onFulfilled ?: (value: T) => void, onRejected?: (error: any) => void): IPromise<U>;";
-            yield return "    catch< U > (onRejected ?: (error: any) => void): IPromise<U>;";
-            yield return "}}";
-        }
+
+        public override IEnumerable<string> GetPromiseLines() => new[] {
+            $@"namespace Nimrod {{
+                export interface IPromise<T> {{
+                    then<U>(onFulfilled ?: (value: T) => void, onRejected?: (error: any) => void): IPromise<U>;
+                    catch< U > (onRejected ?: (error: any) => void): IPromise<U>;
+                }}
+            }}"
+        };
     }
 }

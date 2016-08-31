@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nimrod.Writers.Default
 {
@@ -11,16 +9,12 @@ namespace Nimrod.Writers.Default
     /// </summary>
     public class StructToDefaultTypeScript : StructToTypeScript
     {
-        public StructToDefaultTypeScript(Type type) : base(type)
-        {
-        }
+        public StructToDefaultTypeScript(Type type) : base(type) { }
 
-        public override IEnumerable<string> GetLines()
-        {
-            var tsClassType = this.Type.ToTypeScript();
-            yield return $"namespace {this.Type.Namespace} {{";
-            yield return $"export class {tsClassType} extends String {"{}"}";
-            yield return "}";
-        }
+        public override IEnumerable<string> GetLines() => new[] {
+            $@"namespace {this.Type.Namespace} {{
+                export class {this.Type.ToTypeScript()} extends String {{}}
+            }}"
+        };
     }
 }

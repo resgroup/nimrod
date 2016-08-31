@@ -21,7 +21,7 @@ namespace Nimrod.Writers.Require
                                 .Where(t => !genericArguments.Contains(t))
                                 .Select(t => RequireModuleHelper.GetImportLine(t));
 
-            return imports.Union(new[] {
+            return imports.Concat(new[] {
                 $"interface {TsName} {{"
             });
         }

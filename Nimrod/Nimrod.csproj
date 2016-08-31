@@ -109,6 +109,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="FileToWrite.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IoOperations.cs" />
     <Compile Include="Generator.cs" />

@@ -29,14 +29,12 @@ namespace Nimrod
 
         public override IEnumerable<string> GetLines()
         {
-            return new[] {
-                this.GetHeader(),
-                this.GetBody(),
-                this.GetFooter(),
-                this.GetHeaderDescription(),
-                this.GetBodyDescription(),
-                this.GetFooterDescription()
-            }.SelectMany(line => line);
+            return this.GetHeader()
+                .Concat(this.GetBody())
+                .Concat(this.GetFooter())
+                .Concat(this.GetHeaderDescription())
+                .Concat(this.GetBodyDescription())
+                .Concat(this.GetFooterDescription());
         }
 
         public IEnumerable<string> GetBodyDescription() => new[] {

@@ -79,17 +79,15 @@ You should check that the DLLs exists in the folder, and version numbers are the
                 string message = $"Type {controller.Name} MUST extend System.Web.Mvc.Controller or System.Web.Http.IHttpControler";
                 throw new ArgumentOutOfRangeException(message, nameof(controller));
             }
-            var referencedType = GetControllerActions(controller).Select(action =>
+            var referencedType = GetControllerActions(controller).SelectMany(action =>
                            action.GetReturnTypeAndParameterTypes()
-                                 .Select(type => EnumerateTypes(type))
-                                 .SelectMany(type => type)
+                                 .SelectMany(type => EnumerateTypes(type))
                         );
-            return new[] { controller }.Union(referencedType.SelectMany(type => type));
+            return new[] { controller }.Union(referencedType);
         }
 
         static public IEnumerable<Type> GetControllers(IEnumerable<Assembly> assemblies)
-            => assemblies.Select(assembly => assembly.GetExportedTypes())
-                         .SelectMany(type => type)
+            => assemblies.SelectMany(assembly => assembly.GetExportedTypes())
                          .Where(type => type.IsController());
 
 

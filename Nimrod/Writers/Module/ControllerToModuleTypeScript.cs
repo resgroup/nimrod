@@ -13,13 +13,12 @@ namespace Nimrod.Writers.Module
         protected override IEnumerable<string> GetHeader()
         {
             var actions = TypeDiscovery.GetControllerActions(this.Type);
-            var importedTypes = actions.Select(action => action.GetReturnTypeAndParameterTypes())
-                                       .SelectMany(t => t)
+            var importedTypes = actions.SelectMany(action => action.GetReturnTypeAndParameterTypes())
                                        .Distinct();
 
             var imports = ModuleHelper.GetTypesToImport(importedTypes)
                                  .Select(t => ModuleHelper.GetImportLine(t));
-            return imports.Union(new[] {
+            return imports.Concat(new[] {
                 $"import IRestApi from './IRestApi';",
                 $"import IPromise from './IPromise';",
                 $"import IRequestConfig from '../Nimrod/IRequestConfig';"

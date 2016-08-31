@@ -23,40 +23,26 @@ namespace Nimrod
 
             var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
             var types = this.GetTypesToWrite(assemblies).ToList();
-            var contents = new[] {
-                this.GetDynamicContent(types, moduleType),
-                this.GetStaticContent(moduleType)
-            }.SelectMany(t => t)
-                .Select(file =>
-                {
-                    // add empty line, because it's prettier
-                    var content = file.Item2.IndentLines().Concat(new[] { "" }).JoinNewLine();
-                    return new
-                    {
-                        FileName = file.Item1,
-                        Content = content
-                    };
-                })
-                .ToList();
+            var toWrites = this.GetDynamicContent(types, moduleType).Union(this.GetStaticContent(moduleType)).ToList();
             this.IoOperations.RecreateOutputFolder();
 
-            this.IoOperations.WriteLog($"Writing {contents.Count} files...");
-            contents.AsParallel().ForAll(content =>
+            this.IoOperations.WriteLog($"Writing {toWrites.Count} files...");
+            toWrites.AsDebugFriendlyParallel().ForAll(content =>
             {
-                this.IoOperations.WriteLog($"Writing {content.FileName}...");
-                this.IoOperations.WriteFile(content.Content, content.FileName);
+                this.IoOperations.WriteLog($"Writing {content.Name}...");
+                this.IoOperations.WriteFile(content.Content, content.Name);
             });
             this.IoOperations.WriteLog($"Writing {types.Count} files...Done!");
         }
 
-        private IEnumerable<Tuple<string, IEnumerable<string>>> GetDynamicContent(IList<Type> types, ModuleType moduleType)
+        private IEnumerable<FileToWrite> GetDynamicContent(IList<Type> types, ModuleType moduleType)
         {
             return types.AsDebugFriendlyParallel().Select(type =>
             {
                 var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
                 var toTypeScript = buildRules.GetToTypeScript(type);
                 var lines = toTypeScript.GetLines();
-                return Tuple.Create(GetTypeScriptFilename(type), lines);
+                return new FileToWrite(GetTypeScriptFilename(type), lines);
             });
         }
         public static string GetTypeScriptFilename(Type type)
@@ -95,17 +81,13 @@ namespace Nimrod
             return toWrites;
         }
 
-        private IEnumerable<Tuple<string, IEnumerable<string>>> GetStaticContent(ModuleType module)
+        private IEnumerable<FileToWrite> GetStaticContent(ModuleType module)
         {
             var buildRules = ToTypeScriptBuildRules.GetRules(module);
-            {
-                var lines = buildRules.StaticBuilder.GetRestApiLines();
-                yield return Tuple.Create("IRestApi.ts", lines);
-            }
-            {
-                var lines = buildRules.StaticBuilder.GetPromiseLines();
-                yield return Tuple.Create("IPromise.ts", lines);
-            }
+            return new[] {
+                new FileToWrite("IRestApi.ts", buildRules.StaticBuilder.GetRestApiLines()),
+                new FileToWrite("IPromise.ts", buildRules.StaticBuilder.GetPromiseLines())
+            };
         }
     }
 }

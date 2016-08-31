@@ -59,9 +59,9 @@ namespace Nimrod
             var genericArguments = type.GetGenericArguments();
 
             // for each argument in its generics, find recursively its types
-            var recursiveSearchResult = genericArguments.Select(t => GetGenericArgumentsRecursivelyImpl(t));
+            var recursiveSearchResult = genericArguments.SelectMany(t => GetGenericArgumentsRecursivelyImpl(t));
 
-            return recursiveSearchResult.SelectMany(list => list).Union(genericArguments);
+            return recursiveSearchResult.Union(genericArguments);
         }
 
         static public string ToTypeScript(this Type inType)

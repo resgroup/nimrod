@@ -31,10 +31,9 @@ namespace Nimrod
                         return $"{propertyName}: {a.TypeScriptProperty};";
                     });
 
-        public override IEnumerable<string> GetLines() => new[] {
-            this.GetHeader(),
-            this.GetBody(),
-            this.GetFooter()
-        }.SelectMany(line => line);
+        public override IEnumerable<string> GetLines() =>
+            this.GetHeader()
+            .Concat(this.GetBody())
+            .Concat(this.GetFooter());
     }
 }

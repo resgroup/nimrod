@@ -19,7 +19,7 @@ namespace Nimrod.Writers.Module
                                 .Where(t => !genericArguments.Contains(t))
                                 .Select(t => ModuleHelper.GetImportLine(t));
 
-            return imports.Union(new[] {
+            return imports.Concat(new[] {
                 $"interface {TsName} {{"
             });
         }

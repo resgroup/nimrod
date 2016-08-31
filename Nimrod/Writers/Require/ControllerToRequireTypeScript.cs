@@ -14,15 +14,15 @@ namespace Nimrod.Writers.Require
         {
             var actions = TypeDiscovery.GetControllerActions(this.Type);
 
-            var typesInParameters = actions.Select(method => method.GetParameters().Select(p => p.ParameterType));
+            var typesInParameters = actions.SelectMany(method => method.GetParameters().Select(p => p.ParameterType));
             var typesInReturns = actions.Select(method => method.GetReturnType());
 
-            var importedTypes = typesInParameters.SelectMany(t => t).Union(typesInReturns).ToHashSet();
+            var importedTypes = typesInParameters.Union(typesInReturns).ToHashSet();
 
             var imports = RequireModuleHelper.GetTypesToImport(importedTypes)
                                              .Select(t => RequireModuleHelper.GetImportLine(t));
 
-            return imports.Union(new[] {
+            return imports.Concat(new[] {
                 $"import Nimrod = require('../Nimrod/Nimrod');",
                 $"import IRestApi = require('./IRestApi');"
             });

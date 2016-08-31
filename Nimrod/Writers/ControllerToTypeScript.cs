@@ -32,7 +32,7 @@ namespace Nimrod
             var interface_ = GetInterface();
             var implementation = GetImplementation();
             var footer = GetFooter();
-            return new[] { headers, interface_, implementation, footer }.SelectMany(s => s);
+            return headers.Concat(interface_).Concat(implementation).Concat(footer);
         }
 
         protected string GetControllerName() => this.Type.Name.Replace("Controller", "Service");
@@ -51,7 +51,7 @@ namespace Nimrod
 
         private IEnumerable<string> GetImplementation()
         {
-            var body = TypeDiscovery.GetControllerActions(this.Type).Select(method =>
+            var body = TypeDiscovery.GetControllerActions(this.Type).SelectMany(method =>
             {
                 var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
                 var parameters = method.GetParameters();
@@ -78,8 +78,8 @@ namespace Nimrod
                     }};
                     return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);",
                     $"}}"
-            };
-            }).SelectMany(t => t).JoinNewLine();
+                };
+            }).JoinNewLine();
             return new[] {
                 $"export class {ServiceName} implements I{ServiceName} {{",
                 body,

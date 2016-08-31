@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace Nimrod.Writers.Default
 {
@@ -13,17 +12,14 @@ namespace Nimrod.Writers.Default
 
         protected override IEnumerable<string> GetHeader()
         {
-            yield return string.Format("namespace {0} {1}", this.Type.Namespace, '{');
-
             var baseType = Type.BaseType;
-            if (baseType != null && !baseType.IsSystem())
-            {
-                yield return $"export interface {TsName} extends {baseType.ToTypeScript(true)} {{";
-            }
-            else
-            {
-                yield return $"export interface {TsName} {{";
-            }
+            bool hasExtension = baseType != null && !baseType.IsSystem();
+            string extension = hasExtension ? $" extends {baseType.ToTypeScript(true)}" : "";
+
+            return new[] {
+                $"namespace {this.Type.Namespace} {{",
+                $"export interface {TsName}{extension} {{"
+            };
         }
 
         protected override IEnumerable<string> GetFooter() => new[] { "}", "}" };
