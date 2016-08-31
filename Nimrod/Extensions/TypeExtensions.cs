@@ -171,17 +171,10 @@ namespace Nimrod
             }
         }
 
-        /// <summary>
-        /// Return TypeScript type for simple type like numbers, datetime, string, etc..
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="includeNamespace"></param>
-        /// <param name="includeGenericArguments"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private static bool TryGetTypeScriptForSimpleType(this Type type, bool includeNamespace, bool includeGenericArguments, out string value)
-        {
-            var options = new Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> {
+        // Map predicate on a type to its representation in typescript
+        // usage of Dictionary is to simplify the type inference
+        // use list of tuples when real tuples will be there in C#7
+        private static readonly Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> PredicateToTypescriptStringMap = new Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> {
                 { t => t.IsArray(), (t, n, g) => ArrayToTypeScript(t, n)},
                 { t => t.IsTuple(), (t, n, g) => TupleToTypeScript(t, n, g) },
                 { t => t.IsString(), (t, n, g) => "string" },
@@ -192,16 +185,18 @@ namespace Nimrod
                 { t => t.IsVoid(), (t, n, g) => "void" }
             };
 
-            foreach (var option in options)
-            {
-                if (option.Key(type))
-                {
-                    value = option.Value(type, includeNamespace, includeGenericArguments);
-                    return true;
-                }
-            }
-            value = "";
-            return false;
+        /// <summary>
+        /// Return TypeScript type for simple type like numbers, datetime, string, etc..
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="includeNamespace"></param>
+        /// <param name="includeGenericArguments"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static bool TryGetTypeScriptForSimpleType(this Type type, bool includeNamespace, bool includeGenericArguments, out string value)
+        {
+            value = PredicateToTypescriptStringMap.Where(kvp => kvp.Key(type)).Select(kvp => kvp.Value(type, includeNamespace, includeGenericArguments)).FirstOrDefault();
+            return value != null;
         }
 
         private static readonly HashSet<Type> GenericTupleTypes = new HashSet<Type>(new[]
