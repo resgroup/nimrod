@@ -44,9 +44,6 @@ namespace Nimrod.Writers.Require
         }
 
 
-        protected override IEnumerable<string> GetFooter()
-        {
-            return Enumerable.Empty<string>();
-        }
+        protected override IEnumerable<string> GetFooter() => new string[0];
     }
 }

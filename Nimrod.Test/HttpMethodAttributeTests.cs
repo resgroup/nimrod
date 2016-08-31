@@ -8,7 +8,7 @@ using System.Web.Mvc;
 namespace Nimrod.Test
 {
     [TestFixture]
-    public class ExtensionsTest
+    public class HttpMethodAttributeTests
     {
         [HttpGet]
         public void GetMethod()
@@ -56,45 +56,45 @@ namespace Nimrod.Test
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_NoHttp()
         {
-            Assert.AreEqual(null, typeof(ExtensionsTest).GetMethod(nameof(NoHttpMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.AreEqual(null, typeof(HttpMethodAttributeTests).GetMethod(nameof(NoHttpMethod)).FirstOrDefaultHttpMethodAttribute());
         }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_Get()
         {
-            Assert.AreEqual(HttpMethodAttribute.Get, typeof(ExtensionsTest).GetMethod(nameof(GetMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.AreEqual(HttpMethodAttribute.Get, typeof(HttpMethodAttributeTests).GetMethod(nameof(GetMethod)).FirstOrDefaultHttpMethodAttribute());
 
         }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_Post()
         {
-            Assert.AreEqual(HttpMethodAttribute.Post, typeof(ExtensionsTest).GetMethod(nameof(PostMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.AreEqual(HttpMethodAttribute.Post, typeof(HttpMethodAttributeTests).GetMethod(nameof(PostMethod)).FirstOrDefaultHttpMethodAttribute());
 
         }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_Put()
         {
-            Assert.AreEqual(HttpMethodAttribute.Put, typeof(ExtensionsTest).GetMethod(nameof(PutMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.AreEqual(HttpMethodAttribute.Put, typeof(HttpMethodAttributeTests).GetMethod(nameof(PutMethod)).FirstOrDefaultHttpMethodAttribute());
 
         }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_Delete()
         {
-            Assert.AreEqual(HttpMethodAttribute.Delete, typeof(ExtensionsTest).GetMethod(nameof(DeleteMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.AreEqual(HttpMethodAttribute.Delete, typeof(HttpMethodAttributeTests).GetMethod(nameof(DeleteMethod)).FirstOrDefaultHttpMethodAttribute());
         }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_Head_ReturnsNull()
         {
-            Assert.IsNull(typeof(ExtensionsTest).GetMethod(nameof(HeadMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.IsNull(typeof(HttpMethodAttributeTests).GetMethod(nameof(HeadMethod)).FirstOrDefaultHttpMethodAttribute());
         }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_Options_ReturnsNull()
         {
-            Assert.IsNull(typeof(ExtensionsTest).GetMethod(nameof(OptionsMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.IsNull(typeof(HttpMethodAttributeTests).GetMethod(nameof(OptionsMethod)).FirstOrDefaultHttpMethodAttribute());
         }
         [Test]
         public void FirstOrDefaultHttpMethodAttribute_Patch_ReturnsNull()
         {
-            Assert.IsNull(typeof(ExtensionsTest).GetMethod(nameof(PatchMethod)).FirstOrDefaultHttpMethodAttribute());
+            Assert.IsNull(typeof(HttpMethodAttributeTests).GetMethod(nameof(PatchMethod)).FirstOrDefaultHttpMethodAttribute());
         }
 
     }

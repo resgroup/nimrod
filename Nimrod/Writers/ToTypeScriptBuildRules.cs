@@ -35,13 +35,14 @@ namespace Nimrod
             return item;
         }
 
-        internal static ToTypeScriptBuildRules GetRules(ModuleType moduleType)
+        public static ToTypeScriptBuildRules GetRules(ModuleType moduleType)
         {
             switch (moduleType)
             {
                 case ModuleType.Require: return new ToRequireTypeScriptBuildRules();
                 case ModuleType.Module: return new ToModuleTypeScriptBuildRules();
-                default: return new ToDefaultTypeScriptBuildRules();
+                case ModuleType.TypeScript: return new ToDefaultTypeScriptBuildRules();
+                default: throw new NotImplementedException($"The module type [{moduleType}] doesn't have build rules");
             }
         }
     }

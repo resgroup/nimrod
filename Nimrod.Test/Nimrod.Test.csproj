@@ -114,8 +114,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ObjectExtensionsTests.cs" />
+    <Compile Include="ToTypeScriptBuildRulesTests.cs" />
     <Compile Include="TupleToTypeScriptTests.cs" />
-    <Compile Include="ExtensionsTest.cs" />
+    <Compile Include="HttpMethodAttributeTests.cs" />
     <Compile Include="JsonNetResult.cs" />
     <Compile Include="ModelExamples\Controllers\MovieController.cs" />
     <Compile Include="ModelExamples\Controllers\TestController.cs" />
