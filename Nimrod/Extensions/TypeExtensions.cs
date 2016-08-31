@@ -243,9 +243,10 @@ namespace Nimrod
             {
                 throw new ArgumentException(nameof(type), "Type should be a Tuple");
             }
-            var content = string.Join(", ", type.GetGenericArguments()
+            var content = type.GetGenericArguments()
                 .Select(a => a.ToTypeScript(includeNamespace, includeGenericArguments))
-                .Select((s, i) => $"Item{i + 1}: {s}").ToArray());
+                .Select((s, i) => $"Item{i + 1}: {s}")
+                .Join(", ");
 
             return $"{{ {content} }}";
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
@@ -76,22 +77,20 @@ namespace Nimrod
         {
             var directories = files.Select(f => f.DirectoryName).Distinct();
             AssemblyLocator.Init();
-            foreach (var directory in directories)
+
+            var assemblyPaths = directories.Select(directory =>
+                this.FileSystem.Directory.EnumerateFiles(directory, "*.dll")
+                    .Select(assemblyFile => this.FileSystem.Path.Combine(directory, assemblyFile))
+            ).SelectMany(a => a).ToList();
+
+            // this step is time consuming (around 1 second for 100 assemblies)
+            // the parallelization doesn't seems to help much
+            assemblyPaths.AsParallel().ForAll(assemblyPath =>
             {
-                foreach (var assemblyFile in this.FileSystem.Directory.EnumerateFiles(directory, "*.dll"))
-                {
-                    this.WriteLog($"Trying to load assembly {assemblyFile}...");
-                    var assembly = Assembly.LoadFile(this.FileSystem.Path.Combine(directory, assemblyFile));
-                    this.WriteLog($"Loaded {assembly.FullName}");
-                }
-            }
-        }
-        public IEnumerable<Assembly> GetAssemblies(IEnumerable<string> files)
-        {
-            var fileInfos = this.GetFileInfos(files);
-            this.LoadAssemblies(fileInfos);
-            var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
-            return assemblies;
+                this.WriteLog($"Trying to load assembly {assemblyPath}...");
+                var assembly = Assembly.LoadFile(assemblyPath);
+                this.WriteLog($"Loaded {assembly.FullName}");
+            });
         }
 
         /// <summary>
@@ -102,10 +101,7 @@ namespace Nimrod
         public void WriteFile(string content, string fileName)
         {
             var filePath = this.FileSystem.Path.Combine(this.OutputFolderPath, fileName);
-            using (var fileWriter = this.FileSystem.File.CreateText(filePath))
-            {
-                fileWriter.Write(content);
-            }
+            this.FileSystem.File.WriteAllText(filePath, content);
         }
     }
 }

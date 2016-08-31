@@ -42,7 +42,7 @@ namespace Nimrod
                 case ModuleType.Require: return new ToRequireTypeScriptBuildRules();
                 case ModuleType.Module: return new ToModuleTypeScriptBuildRules();
                 case ModuleType.TypeScript: return new ToDefaultTypeScriptBuildRules();
-                default: throw new NotImplementedException($"The module type [{moduleType}] doesn't have build rules");
+                default: throw new NotImplementedException($"The module type [{moduleType}] doesn't have build rules. You need to write a new class inheriting ToTypeScriptBuildRules");
             }
         }
     }

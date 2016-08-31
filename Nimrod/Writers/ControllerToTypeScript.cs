@@ -42,17 +42,14 @@ namespace Nimrod
 
         private IEnumerable<string> GetInterface()
         {
-            var controllerName = GetControllerName();
-            yield return $"export interface I{controllerName} {{";
-
             var actions = this.Type.GetControllerActions();
-            foreach (var method in actions)
-            {
-                var signature = method.GetMethodSignature(NeedNameSpace);
-                yield return $"{signature};";
-            }
+            var signatures = actions.Select(a => a.GetMethodSignature(NeedNameSpace));
 
-            yield return "}";
+            return new[] {
+                $"export interface I{GetControllerName()} {{",
+                signatures.Select(signature => $"{signature};").JoinNewLine(),
+                $"}}"
+            };
         }
 
         private IEnumerable<string> GetImplementation()
@@ -67,31 +64,23 @@ namespace Nimrod
                 var signature = method.GetMethodSignature(NeedNameSpace);
                 yield return $"public {signature} {{";
 
-
                 var entityName = this.Type.Name.Substring(0, this.Type.Name.Length - "Controller".Length);
                 var genericArgString = method.GetReturnType().ToTypeScript(NeedNameSpace, true);
 
+                var beautifulParamList = parameters
+                            .Select(p => $"{p.Name}: {p.Name}")
+                            .Join($",{Environment.NewLine}");
                 if (httpVerb == HttpMethodAttribute.Get || httpVerb == HttpMethodAttribute.Delete)
                 {
                     yield return "(config || (config = {})).params = {";
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
-                        var methodParameter = parameters[i];
-                        var needComma = i != parameters.Length - 1;
-                        yield return $"{methodParameter.Name}: {methodParameter.Name}{(needComma ? "," : "")}";
-                    }
+                    yield return beautifulParamList;
                     yield return "};";
                     yield return $"return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', config);";
                 }
                 else
                 {
                     yield return "let data = {";
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
-                        var methodParameter = parameters[i];
-                        var needComma = i != parameters.Length - 1;
-                        yield return $"{methodParameter.Name}: {methodParameter.Name}{(needComma ? "," : "")}";
-                    }
+                    yield return beautifulParamList;
                     yield return "};";
                     yield return $"return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);";
                 }

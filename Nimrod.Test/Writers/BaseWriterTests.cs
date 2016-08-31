@@ -50,7 +50,7 @@ namespace Nimrod.Test
         {
             var genericTypeDefinition = typeof(BarWrapper<int>).GetGenericTypeDefinition();
             var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
-            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
+            string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Bars: T[];"));
         }
 
@@ -60,7 +60,7 @@ namespace Nimrod.Test
             var genericTypeDefinition = typeof(Fuzz<int>).GetGenericTypeDefinition();
             var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
 
-            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
+            string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T>;"));
         }
 

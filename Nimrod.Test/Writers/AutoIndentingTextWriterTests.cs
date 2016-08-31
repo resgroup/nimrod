@@ -21,7 +21,7 @@ namespace Nimrod.Test
                           "}",
                            "}"
                  };
-            string actual = string.Join(Environment.NewLine, lines.IndentLines("_"));
+            string actual = lines.IndentLines("_").JoinNewLine();
             var expected =
 @"{
 _{}

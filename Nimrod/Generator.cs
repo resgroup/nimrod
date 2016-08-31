@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Nimrod
 {
@@ -16,25 +18,46 @@ namespace Nimrod
 
         public void Generate(IEnumerable<string> dllPaths, ModuleType moduleType)
         {
+            var fileInfos = this.IoOperations.GetFileInfos(dllPaths);
+            this.IoOperations.LoadAssemblies(fileInfos);
+
+            var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
+            var types = this.GetTypesToWrite(assemblies).ToList();
+            var contents = new[] {
+                this.GetDynamicContent(types, moduleType),
+                this.GetStaticContent(moduleType)
+            }.SelectMany(t => t)
+                .Select(file =>
+                {
+                    // add empty line, because it's prettier
+                    var content = file.Item2.IndentLines().Concat(new[] { "" }).JoinNewLine();
+                    return new
+                    {
+                        FileName = file.Item1,
+                        Content = content
+                    };
+                })
+                .ToList();
             this.IoOperations.RecreateOutputFolder();
 
-            this.IoOperations.WriteLog($"Writing static files...");
-            WriteStaticFiles(moduleType);
-
-            var assemblies = this.IoOperations.GetAssemblies(dllPaths);
-            var types = this.GetTypesToWrite(assemblies).ToList();
-            this.WriteTypes(types, moduleType);
+            this.IoOperations.WriteLog($"Writing {contents.Count} files...");
+            contents.AsParallel().ForAll(content =>
+            {
+                this.IoOperations.WriteLog($"Writing {content.FileName}...");
+                this.IoOperations.WriteFile(content.Content, content.FileName);
+            });
+            this.IoOperations.WriteLog($"Writing {types.Count} files...Done!");
         }
 
-        private void WriteTypes(IList<Type> types, ModuleType moduleType)
+        private IEnumerable<Tuple<string, IEnumerable<string>>> GetDynamicContent(IList<Type> types, ModuleType moduleType)
         {
-            this.IoOperations.WriteLog($"Writing {types.Count} files...");
-            foreach (var type in types)
+            return types.AsParallel().Select(type =>
             {
-                var content = this.GetContentText(type, moduleType);
-                this.IoOperations.WriteFile(content, type.GetTypeScriptFilename());
-            }
-            this.IoOperations.WriteLog($"Writing {types.Count} files...Done!");
+                var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
+                var toTypeScript = buildRules.GetToTypeScript(type);
+                var lines = toTypeScript.GetLines();
+                return Tuple.Create(type.GetTypeScriptFilename(), lines);
+            });
         }
 
         private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
@@ -53,43 +76,16 @@ namespace Nimrod
             return toWrites;
         }
 
-        /// <summary>
-        /// Get content of a type script for a given type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="moduleType"></param>
-        /// <returns></returns>
-        private string GetContentText(Type type, ModuleType moduleType)
-        {
-            this.IoOperations.WriteLog($"Writing {type.Name}...");
-
-            var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
-            var toTypeScript = buildRules.GetToTypeScript(type);
-            var lines = toTypeScript.GetLines();
-            return PrettifyContent(lines);
-        }
-
-        private static string PrettifyContent(IEnumerable<string> lines)
-        {
-            var indentedLines = lines.IndentLines();
-            // add empty line, because it's prettier
-            return string.Join(Environment.NewLine, indentedLines.Concat(new[] { "" }).ToArray());
-        }
-
-        private void WriteStaticFiles(ModuleType module)
+        private IEnumerable<Tuple<string, IEnumerable<string>>> GetStaticContent(ModuleType module)
         {
             var buildRules = ToTypeScriptBuildRules.GetRules(module);
             {
-                // IRestApi.ts
                 var lines = buildRules.StaticBuilder.GetRestApiLines();
-                var content = PrettifyContent(lines);
-                this.IoOperations.WriteFile(content, "IRestApi.ts");
+                yield return Tuple.Create("IRestApi.ts", lines);
             }
             {
-                // IRestApi.ts
                 var lines = buildRules.StaticBuilder.GetPromiseLines();
-                var content = PrettifyContent(lines);
-                this.IoOperations.WriteFile(content, "IPromise.ts");
+                yield return Tuple.Create("IPromise.ts", lines);
             }
         }
     }

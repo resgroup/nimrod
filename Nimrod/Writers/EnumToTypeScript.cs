@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -30,68 +29,38 @@ namespace Nimrod
 
         public override IEnumerable<string> GetLines()
         {
-            foreach (var line in this.GetHeader())
-            {
-                yield return line;
-            }
-            foreach (var line in this.GetBody())
-            {
-                yield return line;
-            }
-            foreach (var line in this.GetFooter())
-            {
-                yield return line;
-            }
-
-            foreach (var line in this.GetHeaderDescription())
-            {
-                yield return line;
-            }
-            foreach (var line in this.GetBodyDescription())
-            {
-                yield return line;
-            }
-            foreach (var line in this.GetFooterDescription())
-            {
-                yield return line;
-            }
+            return new[] {
+                this.GetHeader(),
+                this.GetBody(),
+                this.GetFooter(),
+                this.GetHeaderDescription(),
+                this.GetBodyDescription(),
+                this.GetFooterDescription()
+            }.SelectMany(line => line);
         }
 
-        public IEnumerable<string> GetBodyDescription()
-        {
-            yield return $"static getDescription(item: {this.TsName}): string {{";
-            yield return "switch (item) {";
-            foreach (var enumValue in this.Type.GetEnumValues())
-            {
-                var description = GetEnumDescription(enumValue);
-                var enumName = this.Type.GetEnumName(enumValue);
-                yield return $"case {this.TsName}.{enumName}: return '{description}';";
-            }
-            yield return "default: return item.toString();";
-            yield return "}";
-            yield return "}";
-        }
-        public static string GetEnumDescription(object value)
-        {
-            var fi = value.GetType().GetField(value.ToString());
-            DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-            if (attributes != null && attributes.Length > 0)
-            {
-                return attributes[0].Description;
-            }
-            else
-            {
-                return value.ToString();
-            }
-        }
+        public IEnumerable<string> GetBodyDescription() => new[] {
+            $@"static getDescription(item: {this.TsName}): string {{
+                switch (item) {{{
+                    this.Type.GetEnumValues()
+                        .OfType<object>()
+                        .Select(enumValue =>
+                        {
+                            var description = EnumExtensions.GetDescription(enumValue);
+                            var enumName = this.Type.GetEnumName(enumValue);
+                            return $"case {this.TsName}.{enumName}: return '{description}';";
+                        }).JoinNewLine()}
+                    default: return item.toString();
+                }}
+            }}"
+        };
 
-        public IEnumerable<string> GetBody()
-        {
-            foreach (var enumValue in this.Type.GetEnumValues())
-            {
-                var enumName = this.Type.GetEnumName(enumValue);
-                yield return $"{enumName} = {(int)enumValue},";
-            }
-        }
+        public IEnumerable<string> GetBody() =>
+            this.Type.GetEnumValues().OfType<object>()
+                     .Select(enumValue =>
+                     {
+                         var enumName = this.Type.GetEnumName(enumValue);
+                         return $"{enumName} = {(int)enumValue},";
+                     });
     }
 }

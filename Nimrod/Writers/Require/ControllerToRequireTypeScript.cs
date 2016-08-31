@@ -17,21 +17,12 @@ namespace Nimrod.Writers.Require
 
         protected override IEnumerable<string> GetHeader()
         {
-            var importedTypes = new HashSet<Type>();
             var actions = TypeDiscovery.GetControllerActions(this.Type);
-            foreach (var method in actions)
-            {
-                // get types in parameter list
-                foreach (var parameter in method.GetParameters())
-                {
-                    importedTypes.Add(parameter.ParameterType);
-                }
-                // get types in return type which has to be a generic type
-                foreach (var arg in method.ReturnType.GetGenericArguments())
-                {
-                    importedTypes.Add(arg);
-                }
-            }
+
+            var typesInParameters = actions.Select(method => method.GetParameters().Select(p => p.ParameterType));
+            var typesInReturns = actions.Select(method => method.GetReturnType());
+
+            var importedTypes = typesInParameters.SelectMany(t => t).Union(typesInReturns).ToHashSet();
 
             var imports = RequireModuleHelper.GetTypesToImport(importedTypes)
                                              .Select(t => RequireModuleHelper.GetImportLine(t));

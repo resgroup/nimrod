@@ -26,19 +26,9 @@ namespace Nimrod.Writers.Module
                 {
                     importedTypes.Add(parameter.ParameterType);
                 }
-                if (method.ReturnType.GetGenericArguments().Length == 1)
-                {
-                    // get types in return type which has to be a generic type
-                    foreach (var arg in method.ReturnType.GetGenericArguments())
-                    {
-                        importedTypes.Add(arg);
-                    }
-                }
-                else
-                {
-                    // ApiController
-                    importedTypes.Add(method.ReturnType);
-                }
+
+                var returnType = method.GetReturnType();
+                importedTypes.Add(returnType);
             }
 
             var imports = ModuleHelper.GetTypesToImport(importedTypes)

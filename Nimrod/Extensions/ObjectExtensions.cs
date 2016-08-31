@@ -16,9 +16,8 @@ namespace Nimrod
             return obj;
         }
 
-        public static T[] GetEnumValues<T>() where T : struct
-        {
-            return (T[])Enum.GetValues(typeof(T));
-        }
+        public static T[] GetEnumValues<T>() where T : struct => (T[])Enum.GetValues(typeof(T));
+
+        public static IEnumerable<T> SingleAsEnumerable<T>(T value) => new[] { value };
     }
 }

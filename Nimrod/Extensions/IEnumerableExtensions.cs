@@ -32,7 +32,7 @@ namespace Nimrod
         /// <returns>The indented lines</returns>
         // Exceptions:
         //   T:System.InvalidOperationException:
-        //     Cannot outdent, level is already at zero. There is a problem in the indentation problem.
+        //     Cannot outdent, level is already at zero. There is a problem in the indentation process.
         public static IEnumerable<string> IndentLines(this IEnumerable<string> lines, string indentationString, char openContext, char closeContext)
         {
             if (lines == null)
@@ -41,7 +41,11 @@ namespace Nimrod
             }
 
             int indentationLevel = 0;
-            foreach (var line in lines)
+            // split lines based on standard new line for both unix and windows
+            var splitted = lines.Select(line => line.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None))
+                .SelectMany(line => line)
+                .Select(line => line.Trim());
+            foreach (var line in splitted)
             {
                 var opened = line.Count(c => c == openContext);
                 var closed = line.Count(c => c == closeContext);

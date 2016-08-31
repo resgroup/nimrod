@@ -10,47 +10,31 @@ namespace Nimrod
         public virtual bool PrefixPropertyWithNamespace => false;
         public string TsName => this.Type.ToTypeScript();
 
-        public ModelToTypeScript(Type type) : base(type)
-        {
-        }
+        public ModelToTypeScript(Type type) : base(type) { }
 
         protected abstract IEnumerable<string> GetHeader();
         protected abstract IEnumerable<string> GetFooter();
 
-        public override IEnumerable<string> GetLines()
-        {
-            foreach (var line in this.GetHeader())
-            {
-                yield return line;
-            }
-            foreach (var property in this.Type.GetProperties())
-            {
-                var attributes = Attribute.GetCustomAttributes(property);
-                var ignoreDataMemberAttributes = attributes.OfType<IgnoreDataMemberAttribute>();
-                if (ignoreDataMemberAttributes.IsEmpty())
-                {
-                    var dataMemberAttribute = attributes.OfType<DataMemberAttribute>().FirstOrDefault();
-                    string propertyName;
-                    if (dataMemberAttribute != null && !string.IsNullOrWhiteSpace(dataMemberAttribute.Name))
+        private IEnumerable<string> GetBody() => this.Type.GetProperties()
+                    .Select(property => new
                     {
-                        // the Name of the DataMember attribute is going to be used by serializer
-                        // this is the value we need to write into the file
-                        propertyName = dataMemberAttribute.Name;
-                    }
-                    else
+                        Attributes = Attribute.GetCustomAttributes(property),
+                        Property = property,
+                        TypeScriptProperty = property.PropertyType.ToTypeScript(PrefixPropertyWithNamespace)
+                    })
+                    // do not write attribute that are not serialize throught the [IgnoreDataMember] attribute
+                    .Where(a => a.Attributes.OfType<IgnoreDataMemberAttribute>().IsEmpty())
+                    .Select(a =>
                     {
-                        propertyName = property.Name;
-                    }
+                        var attributeName = a.Attributes.OfType<DataMemberAttribute>().FirstOrDefault()?.Name;
+                        string propertyName = string.IsNullOrWhiteSpace(attributeName) ? a.Property.Name : attributeName;
+                        return $"{propertyName}: {a.TypeScriptProperty};";
+                    });
 
-                    var tsPropertyType = property.PropertyType.ToTypeScript(PrefixPropertyWithNamespace);
-                    yield return $"{propertyName}: {tsPropertyType};";
-                }
-            }
-
-            foreach (var line in this.GetFooter())
-            {
-                yield return line;
-            }
-        }
+        public override IEnumerable<string> GetLines() => new[] {
+            this.GetHeader(),
+            this.GetBody(),
+            this.GetFooter()
+        }.SelectMany(line => line);
     }
 }

@@ -17,7 +17,7 @@ namespace Nimrod.Test
         public void Write_SimpleController()
         {
             var writer = new ControllerToDefaultTypeScript(typeof(MovieController));
-            string ts = string.Join(Environment.NewLine, writer.GetLines().ToArray());
+            string ts = writer.GetLines().JoinNewLine();
             Assert.IsFalse(ts.Contains("Foo"));
         }
     }

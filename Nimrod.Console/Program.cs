@@ -11,6 +11,8 @@ namespace Nimrod.Console
     {
         static int Main(string[] args)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var tracer = new ConsoleTraceListener();
             try
             {
@@ -23,6 +25,7 @@ namespace Nimrod.Console
                 {
                     OnOptionsFailed(args, tracer);
                 }
+                tracer.WriteLine($"Runs in {stopwatch.ElapsedMilliseconds}ms");
                 return 0;
             }
             catch (Exception exception)
@@ -34,7 +37,7 @@ namespace Nimrod.Console
 
         private static void OnOptionsFailed(string[] args, TraceListener tracer)
         {
-            tracer.WriteLine($"Error in the command line arguments {string.Join(" ", args)}");
+            tracer.WriteLine($"Error in the command line arguments {args.Join(" ")}");
             string helpText = CommandLine.Text.HelpText.AutoBuild(new Options()).ToString();
             tracer.WriteLine(helpText);
         }

@@ -8,10 +8,9 @@ namespace Nimrod.Writers.Default
     public class ModelToDefaultTypeScript : ModelToTypeScript
     {
         public override bool PrefixPropertyWithNamespace => true;
-        public ModelToDefaultTypeScript(Type type) : base(type)
-        {
 
-        }
+        public ModelToDefaultTypeScript(Type type) : base(type) { }
+
         protected override IEnumerable<string> GetHeader()
         {
             yield return string.Format("namespace {0} {1}", this.Type.Namespace, '{');
@@ -27,10 +26,6 @@ namespace Nimrod.Writers.Default
             }
         }
 
-        protected override IEnumerable<string> GetFooter()
-        {
-            yield return "}";
-            yield return "}";
-        }
+        protected override IEnumerable<string> GetFooter() => new[] { "}", "}" };
     }
 }
