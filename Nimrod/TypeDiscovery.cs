@@ -26,8 +26,7 @@ namespace Nimrod
                 try
                 {
                     var referencedTypes = type.ReferencedTypes();
-                    var recursiveReferencedTypes = referencedTypes.AsDebugFriendlyParallel()
-                                .SelectMany(memoizedEnumerateTypes);
+                    var recursiveReferencedTypes = referencedTypes.SelectMany(memoizedEnumerateTypes);
                     return referencedTypes.Union(recursiveReferencedTypes).ToList();
                 }
                 catch (FileNotFoundException fileNotFoundException)
