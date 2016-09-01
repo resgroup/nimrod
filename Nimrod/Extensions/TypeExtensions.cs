@@ -219,7 +219,7 @@ namespace Nimrod
 
             var genericTypeDefinitionName = type.GetGenericTypeDefinition().Name;
             // generics type got a name like Foo`2, we parse only before the `
-            var withoutAfterBacktick = genericTypeDefinitionName.Substring(0, genericTypeDefinitionName.IndexOf('`'));
+            var withoutAfterBacktick = genericTypeDefinitionName.Remove(genericTypeDefinitionName.IndexOf('`'));
             result.Append($"I{withoutAfterBacktick}");
             if (includeGenericArguments)
             {

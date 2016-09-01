@@ -130,9 +130,10 @@ namespace Nimrod.Test
         {
             var typeDefinition = typeof(GenericClass<int>).GetGenericTypeDefinition();
 
-            typeDefinition.GetProperties().ToList().ForEach(property =>
-                Assert.AreEqual("TFoo[]", property.PropertyType.ToTypeScript())
-            );
+            var result = typeDefinition.GetProperties()
+                                       .Select(property => property.PropertyType.ToTypeScript())
+                                       .ToList();
+            Assert.IsTrue(result.All(s => s == "TFoo[]"));
         }
 
     }
