@@ -10,7 +10,7 @@ namespace Nimrod
     {
         public string Name { get; }
         public IEnumerable<string> Lines { get; }
-        public string Content => this.Lines.IndentLines().Concat(new[] { "" }).JoinNewLine();
+        public string Content => this.Lines.IndentLines().Concat("").JoinNewLine();
         public FileToWrite(string name, IEnumerable<string> lines)
         {
             this.Name = name;

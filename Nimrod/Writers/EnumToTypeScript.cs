@@ -39,8 +39,8 @@ namespace Nimrod
 
         public IEnumerable<string> GetBodyDescription() => new[] {
             $@"static getDescription(item: {this.TsName}): string {{
-                switch (item) {{{
-                    this.Type.GetEnumValues()
+                switch (item) {{
+                        {this.Type.GetEnumValues()
                         .OfType<object>()
                         .Select(enumValue =>
                         {

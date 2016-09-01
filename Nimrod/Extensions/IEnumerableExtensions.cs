@@ -19,7 +19,16 @@ namespace Nimrod
             return query;
         }
 
+
+        /// <summary>
+        /// Return the source enumerable concatenate with the single item
+        /// </summary>
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item) => source.Concat(new[] { item });
+
+        /// <summary>
+        /// Return the source enumerable union with the single item
+        /// </summary>
+        public static IEnumerable<T> Union<T>(this IEnumerable<T> source, T item) => source.Union(new[] { item });
 
         public static bool IsEmpty<T>(this IEnumerable<T> source) => !source.Any();
 
@@ -45,7 +54,7 @@ namespace Nimrod
         public static IEnumerable<string> IndentLines(this IEnumerable<string> lines, string indentationString, char openContext, char closeContext)
                 => lines
                 // split lines based on standard new line for both unix and windows
-                .SelectMany(line => line.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None))
+                .SelectMany(line => line.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
                 .Select(line => new
                 {
                     Line = line.Trim(),

@@ -68,12 +68,16 @@ namespace Nimrod
         private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
             this.IoOperations.WriteLog($"Discovering types..");
-            var assemblyTypes = TypeDiscovery.GetControllers(assemblies)
-                    .SelectMany(controller => TypeDiscovery.SeekTypesFromController(controller))
-                    .ToList();
+            var controllers = TypeDiscovery.GetControllers(assemblies).ToList();
+            var assemblyTypes = controllers.SelectMany(TypeDiscovery.GetControllerActions)
+                                           .SelectMany(MethodExtensions.GetReturnTypeAndParameterTypes)
+                                           .ToList();
+            var referencedTypes = TypeDiscovery.EnumerateTypes(assemblyTypes)
+                                               .Union(assemblyTypes)
+                                               .Union(controllers);
 
             // Write all types except the ones in System
-            var toWrites = assemblyTypes
+            var toWrites = referencedTypes
                 .Where(t => !t.IsSystem())
                 .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
                 .Distinct()

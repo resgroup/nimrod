@@ -51,56 +51,41 @@ namespace Nimrod.Test
             }
         }
 
-        [Test]
-        public void CheckGetControllerActionTypesForActionWithNonRecognizedHttpAttribute()
-        {
-            var result = TypeDiscovery.SeekTypesFromController(typeof(NoTypescriptDetactableController)).ToList();
-
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(typeof(NoTypescriptDetactableController), result[0]);
-        }
+        public class Cat { public Dog Dog { get; } }
+        public class Dog { public Cat Cat { get; } }
 
         [Test]
-        public void CheckGetControllerTypes()
+        public void EnumerateTypesTest_LoopReference()
         {
-            var result = TypeDiscovery.SeekTypesFromController(typeof(TestController))
-                                      .Distinct()
-                                      .OrderBy(t => t.Name)
-                                      .ToList();
+            var result = TypeDiscovery.EnumerateTypes(typeof(Cat))
+                         .OrderBy(t => t.Name)
+                         .ToList();
 
             Assert.AreEqual(3, result.Count);
-            Assert.AreEqual(typeof(bool), result[0]);
-            Assert.AreEqual(typeof(string), result[1]);
-            Assert.AreEqual(typeof(TestController), result[2]);
+
+            Assert.AreEqual(typeof(Cat), result[0]);
+            Assert.AreEqual(typeof(Dog), result[1]);
+            Assert.AreEqual(typeof(object), result[2]);
         }
 
-        [Test]
-        public void CheckGetWebApiControllerTypes()
-        {
-            var result = TypeDiscovery.SeekTypesFromController(typeof(WebApiController))
-                                      .Distinct()
-                                      .OrderBy(t => t.Name)
-                                      .ToList();
-
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(typeof(string), result[0]);
-            Assert.AreEqual(typeof(WebApiController), result[1]);
-        }
 
         [Test]
         public void EnumerateTypesTest_string()
         {
-            var result = TypeDiscovery.EnumerateTypes(typeof(string)).ToList();
+            var result = TypeDiscovery.EnumerateTypes(typeof(string))
+                         .OrderBy(t => t.Name)
+                         .ToList();
 
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(typeof(string), result[0]);
+            Assert.AreEqual(4, result.Count);
+
+            Assert.AreEqual(typeof(int), result[0]);
+            Assert.AreEqual(typeof(object), result[1]);
+            Assert.AreEqual(typeof(string), result[2]);
+            Assert.AreEqual(typeof(ValueType), result[3]);
         }
 
+        public class Nothing { }
 
-
-        public class Nothing
-        {
-        }
         public class GenericContainer
         {
             public GenericFoo<Nothing> Property { get; set; }

@@ -12,7 +12,6 @@ namespace Nimrod.Test
     [TestFixture]
     public class ToTypescriptTests
     {
-
         [Test]
         public void IsTupleTest()
         {
