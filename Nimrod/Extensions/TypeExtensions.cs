@@ -245,5 +245,13 @@ namespace Nimrod
             var moduleName = fullTypeName.Substring(0, index) + fullTypeName.Substring(index + 1);
             return moduleName;
         }
+
+        /// <summary>
+        /// Get every types in the inheritance tree of this type,
+        /// ie: return type.BaseType recursively.
+        /// </summary>
+        public static IEnumerable<Type> GetBaseTypes(this Type type) => type.BaseType == null ? new Type[0] :
+            new[] { type.BaseType }.Concat(GetBaseTypes(type.BaseType));
+
     }
 }

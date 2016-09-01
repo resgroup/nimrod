@@ -129,7 +129,7 @@
     <Compile Include="ModelExamples\Paginator.cs" />
     <Compile Include="GetGenericArgumentsRecursivelyTests.cs" />
     <Compile Include="TypeDiscoveryTests.cs" />
-    <Compile Include="TypeExtensionsTest.cs" />
+    <Compile Include="Extensions\TypeExtensionsTests.cs" />
     <Compile Include="Writers\AutoIndentingTextWriterTests.cs" />
     <Compile Include="Writers\BaseWriterTests.cs" />
     <Compile Include="Writers\EnumWriterTest.cs" />

@@ -57,7 +57,7 @@ You should check that the DLLs exists in the folder, and version numbers are the
                     }
 
                     // inheritance
-                    foreach (var baseType in GetBaseTypes(type))
+                    foreach (var baseType in type.GetBaseTypes().Where(baseType => !baseType.IsSystem()))
                     {
                         EnumerateTypesRecursive(baseType, cache);
                     }
@@ -90,21 +90,6 @@ You should check that the DLLs exists in the folder, and version numbers are the
             => assemblies.SelectMany(assembly => assembly.GetExportedTypes())
                          .Where(type => type.IsController());
 
-
-        public static IEnumerable<Type> GetBaseTypes(Type type)
-        {
-            bool isValid;
-            Type loop = type;
-            do
-            {
-                loop = loop.BaseType;
-                isValid = loop != null && !loop.IsSystem();
-                if (isValid)
-                {
-                    yield return loop;
-                }
-            } while (isValid);
-        }
 
         static public IEnumerable<MethodInfo> GetControllerActions(this Type controllerType)
         {

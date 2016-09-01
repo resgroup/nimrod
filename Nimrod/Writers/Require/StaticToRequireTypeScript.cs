@@ -1,32 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nimrod.Writers.Require
 {
     public class StaticToRequireTypeScript : StaticToTypeScript
     {
-        public override IEnumerable<string> GetRestApiLines()
+        public override IEnumerable<string> GetRestApiLines() => new[]
         {
-            yield return "import Nimrod = require('../Nimrod/Nimrod');";
-            yield return "interface IRestApi {";
-            yield return "    Delete<T>(url: string, config?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;";
-            yield return "    Get<T>(url: string, config?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;";
-            yield return "    Post<T>(url: string, data: any, config?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;";
-            yield return "    Put<T>(url: string, data: any, config?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;";
-            yield return "    }";
-            yield return "export = IRestApi;";
-        }
+            $@"import Nimrod = require('../Nimrod/Nimrod');
+            interface IRestApi {{
+                Delete<T>(url: string, config ?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;
+                Get<T>(url: string, config?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;
+                Post<T>(url: string, data: any, config?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;
+                Put<T>(url: string, data: any, config?: Nimrod.IRequestConfig): Nimrod.IPromise<T>;
+                }}
+            export = IRestApi;"
+        };
 
-        public override IEnumerable<string> GetPromiseLines()
+        public override IEnumerable<string> GetPromiseLines() => new[]
         {
-            yield return "interface IPromise<T> {";
-            yield return "    then<U>(onFulfilled ?: (value: T) => void, onRejected?: (error: any) => void): IPromise<U>;";
-            yield return "    catch< U > (onRejected ?: (error: any) => void): IPromise<U>;";
-            yield return "}";
-            yield return "export = IRestApi;";
-        }
+            $@"interface IPromise<T> {{
+                then<U>(onFulfilled ?: (value: T) => void, onRejected?: (error: any) => void): IPromise<U>;
+                catch< U > (onRejected ?: (error: any) => void): IPromise<U>;
+            }}
+            export = IRestApi;"
+        };
     }
 }

@@ -111,24 +111,5 @@ namespace Nimrod.Test
             var result = TypeDiscovery.EnumerateTypes(typeof(GenericContainer)).ToList();
             Assert.IsTrue(result.Contains(typeof(GenericFoo<Nothing>)));
         }
-
-        [Test]
-        public void GetBaseTypesTests()
-        {
-            var result = TypeDiscovery.GetBaseTypes(typeof(Duck)).ToList();
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(typeof(Animal), result.Single());
-        }
     }
-    public abstract class Animal
-    {
-
-    }
-
-    public class Duck : Animal
-    {
-
-
-    }
-
 }
