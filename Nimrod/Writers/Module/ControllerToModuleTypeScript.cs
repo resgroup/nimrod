@@ -12,7 +12,7 @@ namespace Nimrod.Writers.Module
 
         protected override IEnumerable<string> GetHeader()
         {
-            var actions = TypeDiscovery.GetControllerActions(this.Type);
+            var actions = TypeDiscovery.GetWebControllerActions(this.Type);
             var importedTypes = actions.SelectMany(action => action.GetReturnTypeAndParameterTypes())
                                        .Distinct();
 

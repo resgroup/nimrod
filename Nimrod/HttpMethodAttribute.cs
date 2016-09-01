@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Nimrod
+﻿namespace Nimrod
 {
     /// <summary>
     /// List of valid verbs for generating type script action controller
@@ -11,6 +6,6 @@ namespace Nimrod
     /// </summary>
     public enum HttpMethodAttribute
     {
-        Get, Post, Put, Delete, Head, Options, Patch
+        Get, Post, Put, Delete
     }
 }

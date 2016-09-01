@@ -17,7 +17,7 @@ namespace Nimrod
         public abstract StaticToTypeScript StaticBuilder { get; }
 
         public IEnumerable<ToTypeScriptBuildRule> Rules => new[] {
-                new ToTypeScriptBuildRule(type => type.IsController(), ControllerBuilder),
+                new ToTypeScriptBuildRule(type => type.IsWebController(), ControllerBuilder),
                 new ToTypeScriptBuildRule(type => type.IsEnum, EnumBuilder),
                 new ToTypeScriptBuildRule(type => type.IsValueType, StructBuilder),
                 new ToTypeScriptBuildRule(type => true, ModelBuilder)

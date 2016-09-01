@@ -12,7 +12,7 @@ namespace Nimrod.Writers.Require
 
         protected override IEnumerable<string> GetHeader()
         {
-            var actions = TypeDiscovery.GetControllerActions(this.Type);
+            var actions = TypeDiscovery.GetWebControllerActions(this.Type);
 
             var typesInParameters = actions.SelectMany(method => method.GetParameters().Select(p => p.ParameterType));
             var typesInReturns = actions.Select(method => method.GetReturnType());

@@ -28,14 +28,12 @@ namespace Nimrod
         }
 
         public override IEnumerable<string> GetLines()
-        {
-            return this.GetHeader()
-                .Concat(this.GetBody())
-                .Concat(this.GetFooter())
-                .Concat(this.GetHeaderDescription())
-                .Concat(this.GetBodyDescription())
-                .Concat(this.GetFooterDescription());
-        }
+            => this.GetHeader()
+                    .Concat(this.GetBody())
+                    .Concat(this.GetFooter())
+                    .Concat(this.GetHeaderDescription())
+                    .Concat(this.GetBodyDescription())
+                    .Concat(this.GetFooterDescription());
 
         public IEnumerable<string> GetBodyDescription() => new[] {
             $@"static getDescription(item: {this.TsName}): string {{

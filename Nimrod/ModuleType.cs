@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Nimrod
+﻿namespace Nimrod
 {
     public enum ModuleType
     {

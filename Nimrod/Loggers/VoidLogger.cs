@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Nimrod
+﻿namespace Nimrod
 {
     public class VoidLogger : ILogger
     {

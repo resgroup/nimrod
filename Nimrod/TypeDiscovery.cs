@@ -65,14 +65,14 @@ You should check that the DLLs exists in the folder, and version numbers are the
             return generics.Union(properties).Union(baseTypes).Union(type).ToHashSet();
         }
 
-        static public IEnumerable<Type> GetControllers(IEnumerable<Assembly> assemblies)
+        static public IEnumerable<Type> GetWebControllers(IEnumerable<Assembly> assemblies)
             => assemblies.SelectMany(assembly => assembly.GetExportedTypes())
-                         .Where(type => type.IsController());
+                         .Where(type => type.IsWebController());
 
 
-        static public IEnumerable<MethodInfo> GetControllerActions(this Type controllerType)
+        static public IEnumerable<MethodInfo> GetWebControllerActions(this Type controllerType)
         {
-            if (!controllerType.IsController())
+            if (!controllerType.IsWebController())
             {
                 throw new ArgumentOutOfRangeException($"Type {controllerType.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(controllerType));
             }

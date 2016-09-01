@@ -34,7 +34,7 @@ namespace Nimrod
                 typeof(ICollection<>)
             }.ToHashSet();
 
-        public static bool IsController(this Type type)
+        public static bool IsWebController(this Type type)
             => typeof(System.Web.Mvc.Controller).IsAssignableFrom(type)
             || typeof(System.Web.Http.Controllers.IHttpController).IsAssignableFrom(type);
 

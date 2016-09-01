@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Nimrod.Console
+namespace Nimrod
 {
-    public class DateTimeConsoleTracer : ILogger, IDisposable
+    public class DateTimeLogger : ILogger, IDisposable
     {
         public TraceListener Tracer { get; }
-        public DateTimeConsoleTracer(TraceListener tracer)
+        public DateTimeLogger(TraceListener tracer)
         {
             this.Tracer = tracer.ThrowIfNull(nameof(tracer));
         }

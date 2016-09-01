@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
@@ -39,9 +38,26 @@ namespace Nimrod
             this.FileSystem.Directory.CreateDirectory(this.OutputFolderPath);
         }
 
-        public IEnumerable<FileInfoBase> GetFileInfos(IEnumerable<string> filePaths)
+        /// <summary>
+        /// Take a list of files, and write in the output folder.
+        /// Overwrites any existing files.
+        /// </summary>
+        /// <param name="files"></param>
+        public void Dump(IList<FileToWrite> files)
         {
-            var files = filePaths.Select(filePath =>
+            this.RecreateOutputFolder();
+
+            this.WriteLog($"Writing {files.Count} files...");
+            files.AsDebugFriendlyParallel().ForAll(content =>
+            {
+                this.WriteLog($"Writing {content.Name}...");
+                this.WriteFile(content.Content, content.Name);
+            });
+            this.WriteLog($"Writing {files.Count} files...Done!");
+        }
+
+        public IEnumerable<FileInfoBase> GetFileInfos(IEnumerable<string> filePaths)
+            => filePaths.Select(filePath =>
                 {
                     this.WriteLog($"Reading dll {filePath}...");
                     if (this.FileSystem.File.Exists(filePath))
@@ -63,10 +79,7 @@ namespace Nimrod
                     }
                 })
                 .Where(file => file.Success)
-                .Select(file => file.File)
-                .ToList();
-            return files;
-        }
+                .Select(file => file.File);
 
 
         /// <summary>

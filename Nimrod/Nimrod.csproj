@@ -111,12 +111,13 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FileToWrite.cs" />
-    <Compile Include="ILogger.cs" />
+    <Compile Include="Loggers\DateTimeLogger.cs" />
+    <Compile Include="Loggers\ILogger.cs" />
     <Compile Include="IoOperations.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="HttpMethodAttribute.cs" />
     <Compile Include="ModuleType.cs" />
-    <Compile Include="VoidLogger.cs" />
+    <Compile Include="Loggers\VoidLogger.cs" />
     <Compile Include="Writers\Default\ControllerToDefaultTypeScript.cs" />
     <Compile Include="Writers\Default\StaticToDefaultTypeScript.cs" />
     <Compile Include="Writers\Default\ToDefaultTypeScriptBuildRules.cs" />

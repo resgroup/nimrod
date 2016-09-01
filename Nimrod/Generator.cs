@@ -16,56 +16,22 @@ namespace Nimrod
 
         public void Generate(IEnumerable<string> dllPaths, ModuleType moduleType)
         {
-            var fileInfos = this.IoOperations.GetFileInfos(dllPaths);
+            var fileInfos = this.IoOperations.GetFileInfos(dllPaths).ToList();
             this.IoOperations.LoadAssemblies(fileInfos);
 
             var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
             var types = this.GetTypesToWrite(assemblies).ToList();
-            var toWrites = this.GetDynamicContent(types, moduleType).Union(this.GetStaticContent(moduleType)).ToList();
-            this.IoOperations.RecreateOutputFolder();
+            var files = this.GetDynamicFiles(types, moduleType)
+                 .Union(this.GetStaticFiles(moduleType))
+                 .ToList();
 
-            this.IoOperations.WriteLog($"Writing {toWrites.Count} files...");
-            toWrites.AsDebugFriendlyParallel().ForAll(content =>
-            {
-                this.IoOperations.WriteLog($"Writing {content.Name}...");
-                this.IoOperations.WriteFile(content.Content, content.Name);
-            });
-            this.IoOperations.WriteLog($"Writing {types.Count} files...Done!");
-        }
-
-        private IEnumerable<FileToWrite> GetDynamicContent(IList<Type> types, ModuleType moduleType)
-        {
-            return types.AsDebugFriendlyParallel().Select(type =>
-            {
-                var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
-                var toTypeScript = buildRules.GetToTypeScript(type);
-                var lines = toTypeScript.GetLines();
-                return new FileToWrite(GetTypeScriptFilename(type), lines);
-            });
-        }
-        public static string GetTypeScriptFilename(Type type)
-        {
-            string name;
-            if (type.IsGenericType)
-            {
-                var genericType = type.GetGenericTypeDefinition();
-                name = genericType.Name.Remove(genericType.Name.IndexOf('`'));
-            }
-            else if (type.IsController())
-            {
-                name = $"{type.Name.Replace("Controller", "Service")}";
-            }
-            else
-            {
-                name = type.Name;
-            }
-            return $"{type.Namespace}.{name}.ts";
+            this.IoOperations.Dump(files);
         }
         private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
             this.IoOperations.WriteLog($"Discovering types..");
-            var controllers = TypeDiscovery.GetControllers(assemblies).ToList();
-            var assemblyTypes = controllers.SelectMany(TypeDiscovery.GetControllerActions)
+            var controllers = TypeDiscovery.GetWebControllers(assemblies).ToList();
+            var assemblyTypes = controllers.SelectMany(TypeDiscovery.GetWebControllerActions)
                                            .SelectMany(MethodExtensions.GetReturnTypeAndParameterTypes)
                                            .ToList();
             var referencedTypes = TypeDiscovery.EnumerateTypes(assemblyTypes)
@@ -81,7 +47,36 @@ namespace Nimrod
             return toWrites;
         }
 
-        private IEnumerable<FileToWrite> GetStaticContent(ModuleType module)
+        private IEnumerable<FileToWrite> GetDynamicFiles(IEnumerable<Type> types, ModuleType moduleType)
+            => types.AsDebugFriendlyParallel().Select(type =>
+            {
+                var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
+                var toTypeScript = buildRules.GetToTypeScript(type);
+                var lines = toTypeScript.GetLines();
+                return new FileToWrite(GetTypeScriptFilename(type), lines);
+            });
+
+        public static string GetTypeScriptFilename(Type type)
+        {
+            string name;
+            if (type.IsGenericType)
+            {
+                var genericType = type.GetGenericTypeDefinition();
+                name = genericType.Name.Remove(genericType.Name.IndexOf('`'));
+            }
+            else if (type.IsWebController())
+            {
+                name = $"{type.Name.Replace("Controller", "Service")}";
+            }
+            else
+            {
+                name = type.Name;
+            }
+            return $"{type.Namespace}.{name}.ts";
+        }
+
+
+        private IEnumerable<FileToWrite> GetStaticFiles(ModuleType module)
         {
             var buildRules = ToTypeScriptBuildRules.GetRules(module);
             return new[] {

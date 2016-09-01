@@ -54,7 +54,7 @@ namespace Nimrod.Console
                 ILogger logger;
                 if (options.Verbose)
                 {
-                    logger = new DateTimeConsoleTracer(tracer);
+                    logger = new DateTimeLogger(tracer);
                 }
                 else
                 {

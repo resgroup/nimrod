@@ -17,7 +17,7 @@ namespace Nimrod
 
         public ControllerToTypeScript(Type type) : base(type)
         {
-            if (!type.IsController())
+            if (!type.IsWebController())
             {
                 throw new ArgumentOutOfRangeException($"Type {type.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(type));
             }
@@ -39,7 +39,7 @@ namespace Nimrod
 
         private IEnumerable<string> GetInterface()
         {
-            var actions = this.Type.GetControllerActions();
+            var actions = this.Type.GetWebControllerActions();
             var signatures = actions.Select(a => a.GetMethodSignature(NeedNameSpace));
 
             return new[] {
@@ -51,7 +51,7 @@ namespace Nimrod
 
         private IEnumerable<string> GetImplementation()
         {
-            var body = TypeDiscovery.GetControllerActions(this.Type).SelectMany(method =>
+            var body = TypeDiscovery.GetWebControllerActions(this.Type).SelectMany(method =>
             {
                 var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
                 var parameters = method.GetParameters();
