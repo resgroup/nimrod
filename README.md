@@ -190,6 +190,11 @@ So we looked at who built Babel, and it was a dude called [Nimrod], that's it!
  - Docs
  - Limitations on generics, specifically return embed generics. IE : a method returning a `Json<List<Tuple<int, string>>>` is not going to work
 
+# Quality
+
+Nimrod uses SonarQube to analyse the quality of the code. [Find the full analysis on the public server of Sonarqube](https://sonarqube.com/dashboard/index/Nimrod).
+
+
    [Nimrod]: <https://en.wikipedia.org/wiki/Nimrod>
    [search]: <https://www.npmjs.com/search?q=babel>
    [typescript]: <http://www.johnpapa.net/typescriptpost4>
