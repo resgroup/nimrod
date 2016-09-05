@@ -65,9 +65,11 @@ namespace Nimrod
                             .Select(p => $"{p.Name}: {p.Name}")
                             .Join($",{Environment.NewLine}");
 
+
+
                 bool isGetOrDelete = httpVerb == HttpMethodAttribute.Get || httpVerb == HttpMethodAttribute.Delete;
-                return new[] {
-                    $"public {signature} {{", isGetOrDelete ?
+
+                var paramsBody = isGetOrDelete ?
                     $@"(config || (config = {{}})).params = {{
                     {beautifulParamList}
                     }};
@@ -76,7 +78,10 @@ namespace Nimrod
                    $@"let data = {{
                     {beautifulParamList}
                     }};
-                    return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);",
+                    return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);";
+                return new[] {
+                    $"public {signature} {{",
+                    paramsBody,
                     $"}}"
                 };
             }).JoinNewLine();

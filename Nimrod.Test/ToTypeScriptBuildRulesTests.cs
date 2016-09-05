@@ -20,6 +20,7 @@ namespace Nimrod.Test
             var result = ObjectExtensions.GetEnumValues<ModuleType>()
                     .Select(type => ToTypeScriptBuildRules.GetRules(type))
                     .ToList();
+            Assert.NotNull(result);
         }
 
     }

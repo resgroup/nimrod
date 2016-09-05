@@ -66,10 +66,10 @@ namespace Nimrod
                     var appliedIndentation = previous.Level + (line.Level < 0 ? line.Level : 0);
                     if (appliedIndentation < 0)
                     {
-                        string message = $@"Cannot outdent, level is already at zero. 
+                        throw new InvalidOperationException($@"
+Cannot outdent, level is already at zero. 
 There is a problem in the indentation process.
-Line is [{line}]";
-                        throw new InvalidOperationException(message);
+Line is [{line}]");
                     }
                     return new
                     {

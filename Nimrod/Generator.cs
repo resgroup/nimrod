@@ -6,30 +6,24 @@ using System.Text;
 
 namespace Nimrod
 {
-    public class Generator
+    static public class Generator
     {
-        public IoOperations IoOperations { get; }
-        public Generator(IoOperations ioOperations)
+        static public void Generate(IEnumerable<string> dllPaths, ModuleType moduleType, IoOperations ioOperations)
         {
-            this.IoOperations = ioOperations.ThrowIfNull(nameof(ioOperations));
-        }
-
-        public void Generate(IEnumerable<string> dllPaths, ModuleType moduleType)
-        {
-            var fileInfos = this.IoOperations.GetFileInfos(dllPaths).ToList();
-            this.IoOperations.LoadAssemblies(fileInfos);
+            var fileInfos = ioOperations.GetFileInfos(dllPaths).ToList();
+            ioOperations.LoadAssemblies(fileInfos);
 
             var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
-            var types = this.GetTypesToWrite(assemblies).ToList();
-            var files = this.GetDynamicFiles(types, moduleType)
-                 .Union(this.GetStaticFiles(moduleType))
+            ioOperations.WriteLog($"Discovering types..");
+            var types = GetTypesToWrite(assemblies).ToList();
+            var files = GetDynamicFiles(types.AsDebugFriendlyParallel(), moduleType)
+                 .Union(GetStaticFiles(moduleType))
                  .ToList();
 
-            this.IoOperations.Dump(files);
+            ioOperations.Dump(files);
         }
-        private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
+        static private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
-            this.IoOperations.WriteLog($"Discovering types..");
             var controllers = TypeDiscovery.GetWebControllers(assemblies).ToList();
             var assemblyTypes = controllers.SelectMany(TypeDiscovery.GetWebControllerActions)
                                            .SelectMany(MethodExtensions.GetReturnTypeAndParameterTypes)
@@ -47,16 +41,12 @@ namespace Nimrod
             return toWrites;
         }
 
-        private IEnumerable<FileToWrite> GetDynamicFiles(IEnumerable<Type> types, ModuleType moduleType)
-            => types.AsDebugFriendlyParallel().Select(type =>
-            {
-                var buildRules = ToTypeScriptBuildRules.GetRules(moduleType);
-                var toTypeScript = buildRules.GetToTypeScript(type);
-                var lines = toTypeScript.GetLines();
-                return new FileToWrite(GetTypeScriptFilename(type), lines);
-            });
+        static private IEnumerable<FileToWrite> GetDynamicFiles(IEnumerable<Type> types, ModuleType moduleType)
+                => types.Select(type => new FileToWrite(GetTypeScriptFilename(type),
+                    ToTypeScriptBuildRules.GetRules(moduleType).GetToTypeScript(type).GetLines())
+                );
 
-        public static string GetTypeScriptFilename(Type type)
+        static public string GetTypeScriptFilename(Type type)
         {
             string name;
             if (type.IsGenericType)
@@ -76,7 +66,7 @@ namespace Nimrod
         }
 
 
-        private IEnumerable<FileToWrite> GetStaticFiles(ModuleType module)
+        static private IEnumerable<FileToWrite> GetStaticFiles(ModuleType module)
         {
             var buildRules = ToTypeScriptBuildRules.GetRules(module);
             return new[] {
@@ -86,4 +76,3 @@ namespace Nimrod
         }
     }
 }
-

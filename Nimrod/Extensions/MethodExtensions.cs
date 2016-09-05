@@ -28,9 +28,8 @@ namespace Nimrod
             => method.GetCustomAttributes(true)
                 .Select(attribute =>
                 {
-                    var attributeType = attribute.GetType();
                     HttpMethodAttribute enumAttribute;
-                    bool success = TypeToHttpMethodAttribute.TryGetValue(attributeType, out enumAttribute);
+                    bool success = TypeToHttpMethodAttribute.TryGetValue(attribute.GetType(), out enumAttribute);
                     return new { Success = success, Attribute = enumAttribute };
 
                 }).FirstOrDefault(a => a.Success)

@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Nimrod
 {
+    /// <summary>
+    /// Responsible for accessing the file system
+    /// </summary>
     public class IoOperations
     {
         public string OutputFolderPath { get; }
@@ -17,7 +20,7 @@ namespace Nimrod
         {
             this.FileSystem = fileSystem.ThrowIfNull(nameof(fileSystem));
             this.OutputFolderPath = outputFolderPath;
-            this.Logger = logger.ThrowIfNull(nameof(logger)); ;
+            this.Logger = logger.ThrowIfNull(nameof(logger));
 
             this.WriteLog("outputFolderPath = " + outputFolderPath);
         }
@@ -25,17 +28,6 @@ namespace Nimrod
         public void WriteLog(string log)
         {
             this.Logger.WriteLine(log);
-        }
-
-        public void RecreateOutputFolder()
-        {
-            this.WriteLog($"Recursive deletion of {this.OutputFolderPath}...");
-
-            if (this.FileSystem.Directory.Exists(this.OutputFolderPath))
-            {
-                this.FileSystem.Directory.Delete(this.OutputFolderPath, true);
-            }
-            this.FileSystem.Directory.CreateDirectory(this.OutputFolderPath);
         }
 
         /// <summary>
@@ -51,7 +43,9 @@ namespace Nimrod
             files.AsDebugFriendlyParallel().ForAll(content =>
             {
                 this.WriteLog($"Writing {content.Name}...");
-                this.WriteFile(content.Content, content.Name);
+
+                var filePath = this.FileSystem.Path.Combine(this.OutputFolderPath, content.Name);
+                this.FileSystem.File.WriteAllText(filePath, content.Content);
             });
             this.WriteLog($"Writing {files.Count} files...Done!");
         }
@@ -70,7 +64,7 @@ namespace Nimrod
                     }
                     else
                     {
-                        this.WriteLog($"Warning! The specified dll {filePath} doesn't exist and will be skipped.");
+                        this.WriteLog($"Warning! The specified file {filePath} doesn't exist and will be skipped.");
                         return new
                         {
                             File = null as FileInfoBase,
@@ -80,7 +74,6 @@ namespace Nimrod
                 })
                 .Where(file => file.Success)
                 .Select(file => file.File);
-
 
         /// <summary>
         /// Load all assemblies found in the same folder as the given DLL
@@ -106,15 +99,15 @@ namespace Nimrod
             });
         }
 
-        /// <summary>
-        /// Create a file with the content given in the output folder
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="fileName"></param>
-        public void WriteFile(string content, string fileName)
+        private void RecreateOutputFolder()
         {
-            var filePath = this.FileSystem.Path.Combine(this.OutputFolderPath, fileName);
-            this.FileSystem.File.WriteAllText(filePath, content);
+            this.WriteLog($"Recursive deletion of {this.OutputFolderPath}...");
+
+            if (this.FileSystem.Directory.Exists(this.OutputFolderPath))
+            {
+                this.FileSystem.Directory.Delete(this.OutputFolderPath, true);
+            }
+            this.FileSystem.Directory.CreateDirectory(this.OutputFolderPath);
         }
     }
 }
