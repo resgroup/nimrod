@@ -5,8 +5,23 @@ using System.Text;
 
 namespace Nimrod
 {
+
+
     public static class IEnumerableExtensions
     {
+
+        public static IEnumerable<TOutput> ApplyTryGet<TSource, TOutput>(this IEnumerable<TSource> source, TryGetFunc<TSource, TOutput> outputSelector)
+            => source.Select(item =>
+            {
+                TOutput output;
+                bool success = outputSelector(item, out output);
+                return new { Success = success, Output = output };
+            }).Where(a => a.Success).Select(a => a.Output);
+
+        public static TSource? FirstOrNullable<TSource>(this IEnumerable<TSource> source)
+            where TSource : struct
+            => source.Any() ? source.FirstOrDefault() : new TSource?();
+
         /// <summary>
         /// Set the Degree of parallelisme to 1 if in debug
         /// </summary>

@@ -19,6 +19,8 @@ namespace Nimrod
             { typeof(System.Web.Http.HttpDeleteAttribute), HttpMethodAttribute.Delete },
         };
 
+        static TryGetFunc<Type, HttpMethodAttribute> TypeToHttpMethodAttributeDelegate = TypeToHttpMethodAttribute.TryGetValue;
+
         /// <summary>
         /// returns the first Attribut of type HttpMethod found
         /// </summary>
@@ -26,14 +28,9 @@ namespace Nimrod
         /// <returns></returns>
         public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)
             => method.GetCustomAttributes(true)
-                .Select(attribute =>
-                {
-                    HttpMethodAttribute enumAttribute;
-                    bool success = TypeToHttpMethodAttribute.TryGetValue(attribute.GetType(), out enumAttribute);
-                    return new { Success = success, Attribute = enumAttribute };
-
-                }).FirstOrDefault(a => a.Success)
-                ?.Attribute;
+                     .Select(attribute => attribute.GetType())
+                     .ApplyTryGet(TypeToHttpMethodAttributeDelegate)
+                     .FirstOrNullable();
 
         /// <summary>
         /// Returns the return type and the arguments type of the method

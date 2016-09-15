@@ -53,7 +53,7 @@ You should check that the DLLs exists in the folder, and version numbers are the
         ///  - inheritance
         ///  - public properties
         /// </summary>
-        public static IEnumerable<Type> ReferencedTypes(this Type type)
+        public static HashSet<Type> ReferencedTypes(this Type type)
         {
             var generics = type.GetGenericArguments();
             var baseTypes = type.GetBaseTypes();

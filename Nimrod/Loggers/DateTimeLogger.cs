@@ -14,10 +14,7 @@ namespace Nimrod
             this.Tracer = tracer.ThrowIfNull(nameof(tracer));
         }
 
-        public void WriteLine(string message)
-        {
-            this.Tracer.WriteLine($"{DateTime.Now.ToLocalTime()} - {message}");
-        }
+        public void WriteLine(string message) => this.Tracer.WriteLine($"{DateTime.Now.ToLocalTime()} - {message}");
 
         public void Dispose()
         {

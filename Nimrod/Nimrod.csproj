@@ -109,6 +109,7 @@
     <Compile Include="Extensions\MethodExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\TryGetFuncDelegates.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FileToWrite.cs" />
     <Compile Include="Loggers\DateTimeLogger.cs" />

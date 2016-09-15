@@ -20,7 +20,7 @@ namespace Nimrod
 
         static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            Assembly assembly = null;
+            Assembly assembly;
             assemblies.TryGetValue(args.Name, out assembly);
             return assembly;
         }

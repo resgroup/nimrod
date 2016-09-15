@@ -122,7 +122,10 @@ namespace Nimrod
         /// <returns></returns>
         private static bool TryGetTypeScriptForSimpleType(this Type type, bool includeNamespace, bool includeGenericArguments, out string value)
         {
-            value = PredicateToTypescriptStringMap.Where(kvp => kvp.Key(type)).Select(kvp => kvp.Value(type, includeNamespace, includeGenericArguments)).FirstOrDefault();
+            value = PredicateToTypescriptStringMap
+                        .Where(kvp => kvp.Key(type))
+                        .Select(kvp => kvp.Value(type, includeNamespace, includeGenericArguments))
+                        .FirstOrDefault();
             return value != null;
         }
 
@@ -160,10 +163,7 @@ namespace Nimrod
         }
 
         public static string ArrayToTypeScript(this Type type, bool includeNamespace)
-        {
-            var elementTypeName = type.GetElementType().ToTypeScript(includeNamespace);
-            return $"{elementTypeName}[]";
-        }
+            => $"{type.GetElementType().ToTypeScript(includeNamespace)}[]";
 
         /// <summary>
         /// Complicated stuff for returning the name of a generic class
