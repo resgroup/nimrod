@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -24,7 +23,7 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_ArrayLike_Test()
         {
-            var writer = new EnumToDefaultTypeScript(typeof(Fruits));
+            var writer = new EnumToDefaultTypeScript(typeof(Fruits).ToTypeScript());
             var lines = writer.GetLines();
             string ts = lines.JoinNewLine();
             Assert.IsTrue(ts.Contains("enum Fruits"));
@@ -37,7 +36,7 @@ namespace Nimrod.Test
         [ExpectedException(typeof(NotSupportedException))]
         public void EnumTypesNotIntNotSupported()
         {
-            var writer = new EnumToDefaultTypeScript(typeof(SomeEnumHexa));
+            var writer = new EnumToDefaultTypeScript(typeof(SomeEnumHexa).ToTypeScript());
             var value = writer.GetLines().ToList();
             Assert.Fail("Should not reach this point", value);
         }

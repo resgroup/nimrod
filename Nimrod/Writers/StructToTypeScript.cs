@@ -11,9 +11,9 @@ namespace Nimrod
     /// </summary>
     public abstract class StructToTypeScript : ToTypeScript
     {
-        public StructToTypeScript(Type type) : base(type)
+        public StructToTypeScript(TypeScriptType type) : base(type)
         {
-            if (!this.Type.IsValueType)
+            if (!this.Type.Type.IsValueType)
             {
                 throw new ArgumentException($"{this.Type.Name} is not a Struct.", nameof(type));
             }

@@ -7,12 +7,12 @@ namespace Nimrod.Writers.Module
 {
     public class ModelToModuleTypeScript : ModelToTypeScript
     {
-        public ModelToModuleTypeScript(Type type) : base(type) { }
+        public ModelToModuleTypeScript(TypeScriptType type) : base(type) { }
 
         protected override IEnumerable<string> GetHeader()
         {
-            var genericArguments = this.Type.GetGenericArguments().ToHashSet();
-            var propertyTypes = this.Type.GetProperties()
+            var genericArguments = this.Type.Type.GetGenericArguments().ToHashSet();
+            var propertyTypes = this.Type.Type.GetProperties()
                                     .Select(p => p.PropertyType)
                                     .Where(p => !genericArguments.Contains(p));
             var imports = ModuleHelper.GetTypesToImport(propertyTypes)
@@ -26,7 +26,7 @@ namespace Nimrod.Writers.Module
 
         protected override IEnumerable<string> GetFooter()
         {
-            var nonGenericTypescriptClass = this.Type.ToTypeScript(false, false);
+            var nonGenericTypescriptClass = this.Type.ToString(false, false);
             return new[] {
                 $"}}",
                 // no generic for export on require mode

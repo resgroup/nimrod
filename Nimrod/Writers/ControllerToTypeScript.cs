@@ -15,9 +15,9 @@ namespace Nimrod
         public string ServiceName => this.Type.Name.Replace("Controller", "Service");
         public virtual bool NeedNameSpace => false;
 
-        public ControllerToTypeScript(Type type) : base(type)
+        public ControllerToTypeScript(TypeScriptType type) : base(type)
         {
-            if (!type.IsWebController())
+            if (!type.Type.IsWebController())
             {
                 throw new ArgumentOutOfRangeException($"Type {type.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(type));
             }
@@ -39,7 +39,7 @@ namespace Nimrod
 
         private IEnumerable<string> GetInterface()
         {
-            var actions = this.Type.GetWebControllerActions();
+            var actions = this.Type.Type.GetWebControllerActions();
             var signatures = actions.Select(a => a.GetMethodSignature(NeedNameSpace));
 
             return new[] {
@@ -51,7 +51,7 @@ namespace Nimrod
 
         private IEnumerable<string> GetImplementation()
         {
-            var body = TypeDiscovery.GetWebControllerActions(this.Type).SelectMany(method =>
+            var body = TypeDiscovery.GetWebControllerActions(this.Type.Type).SelectMany(method =>
             {
                 var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
                 var parameters = method.GetParameters();
@@ -59,7 +59,7 @@ namespace Nimrod
                 var signature = method.GetMethodSignature(NeedNameSpace);
 
                 var entityName = this.Type.Name.Substring(0, this.Type.Name.Length - "Controller".Length);
-                var genericArgString = method.GetReturnType().ToTypeScript(NeedNameSpace, true);
+                var genericArgString = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true);
 
                 var beautifulParamList = parameters
                             .Select(p => $"{p.Name}: {p.Name}")

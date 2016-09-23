@@ -7,14 +7,14 @@ namespace Nimrod.Writers.Require
     public class ModelToRequireTypeScript : ModelToTypeScript
     {
 
-        public ModelToRequireTypeScript(Type type) : base(type)
+        public ModelToRequireTypeScript(TypeScriptType type) : base(type)
         {
         }
 
         protected override IEnumerable<string> GetHeader()
         {
-            var genericArguments = this.Type.GetGenericArguments().ToHashSet();
-            var propertyTypes = this.Type.GetProperties()
+            var genericArguments = this.Type.Type.GetGenericArguments().ToHashSet();
+            var propertyTypes = this.Type.Type.GetProperties()
                                     .Select(p => p.PropertyType)
                                     .Where(p => !genericArguments.Contains(p));
             var imports = RequireModuleHelper.GetTypesToImport(propertyTypes)
@@ -29,7 +29,7 @@ namespace Nimrod.Writers.Require
         protected override IEnumerable<string> GetFooter() =>
             new[] {
                 $"}}",
-                $"export = { this.Type.ToTypeScript(false, false) };"
+                $"export = { this.Type.ToString(false, false, false) };"
             };
     }
 }

@@ -119,6 +119,8 @@
     <Compile Include="HttpMethodAttribute.cs" />
     <Compile Include="ModuleType.cs" />
     <Compile Include="Loggers\VoidLogger.cs" />
+    <Compile Include="ToTypeScriptOptions.cs" />
+    <Compile Include="TypeScriptType.cs" />
     <Compile Include="Writers\Default\ControllerToDefaultTypeScript.cs" />
     <Compile Include="Writers\Default\StaticToDefaultTypeScript.cs" />
     <Compile Include="Writers\Default\ToDefaultTypeScriptBuildRules.cs" />

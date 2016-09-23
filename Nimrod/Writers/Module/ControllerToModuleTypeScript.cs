@@ -8,11 +8,11 @@ namespace Nimrod.Writers.Module
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class ControllerToModuleTypeScript : ControllerToTypeScript
     {
-        public ControllerToModuleTypeScript(Type type) : base(type) { }
+        public ControllerToModuleTypeScript(TypeScriptType type) : base(type) { }
 
         protected override IEnumerable<string> GetHeader()
         {
-            var actions = TypeDiscovery.GetWebControllerActions(this.Type);
+            var actions = TypeDiscovery.GetWebControllerActions(this.Type.Type);
             var importedTypes = actions.SelectMany(action => action.GetReturnTypeAndParameterTypes())
                                        .Distinct();
 

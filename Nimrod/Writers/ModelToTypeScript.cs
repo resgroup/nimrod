@@ -8,19 +8,19 @@ namespace Nimrod
     public abstract class ModelToTypeScript : ToTypeScript
     {
         public virtual bool PrefixPropertyWithNamespace => false;
-        public string TsName => this.Type.ToTypeScript();
+        public string TsName => this.Type.ToString(new ToTypeScriptOptions().WithStrictNullCheck(false));
 
-        public ModelToTypeScript(Type type) : base(type) { }
+        public ModelToTypeScript(TypeScriptType type) : base(type) { }
 
         protected abstract IEnumerable<string> GetHeader();
         protected abstract IEnumerable<string> GetFooter();
 
-        private IEnumerable<string> GetBody() => this.Type.GetProperties()
+        private IEnumerable<string> GetBody() => this.Type.Type.GetProperties()
                     .Select(property => new
                     {
                         Attributes = Attribute.GetCustomAttributes(property),
                         Property = property,
-                        TypeScriptProperty = property.PropertyType.ToTypeScript(PrefixPropertyWithNamespace)
+                        TypeScriptProperty = property.PropertyType.ToTypeScript().ToString(PrefixPropertyWithNamespace)
                     })
                     // do not write attribute that are not serialize throught the [IgnoreDataMember] attribute
                     .Where(a => a.Attributes.OfType<IgnoreDataMemberAttribute>().IsEmpty())

@@ -10,19 +10,19 @@ namespace Nimrod
 {
     public abstract class ToTypeScriptBuildRules
     {
-        public abstract Func<Type, ToTypeScript> ControllerBuilder { get; }
-        public abstract Func<Type, ToTypeScript> EnumBuilder { get; }
-        public abstract Func<Type, ToTypeScript> StructBuilder { get; }
-        public abstract Func<Type, ToTypeScript> ModelBuilder { get; }
+        public abstract Func<TypeScriptType, ToTypeScript> ControllerBuilder { get; }
+        public abstract Func<TypeScriptType, ToTypeScript> EnumBuilder { get; }
+        public abstract Func<TypeScriptType, ToTypeScript> StructBuilder { get; }
+        public abstract Func<TypeScriptType, ToTypeScript> ModelBuilder { get; }
         public abstract StaticToTypeScript StaticBuilder { get; }
 
         public IEnumerable<ToTypeScriptBuildRule> Rules => new[] {
-                new ToTypeScriptBuildRule(type => type.IsWebController(), ControllerBuilder),
-                new ToTypeScriptBuildRule(type => type.IsEnum, EnumBuilder),
-                new ToTypeScriptBuildRule(type => type.IsValueType, StructBuilder),
+                new ToTypeScriptBuildRule(type => type.Type.IsWebController(), ControllerBuilder),
+                new ToTypeScriptBuildRule(type => type.Type.IsEnum, EnumBuilder),
+                new ToTypeScriptBuildRule(type => type.Type.IsValueType, StructBuilder),
                 new ToTypeScriptBuildRule(type => true, ModelBuilder)
             };
-        public ToTypeScript GetToTypeScript(Type type)
+        public ToTypeScript GetToTypeScript(TypeScriptType type)
         {
             var item = this.Rules
                     .Where(s => s.Predicate(type))

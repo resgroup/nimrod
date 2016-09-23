@@ -7,10 +7,10 @@ namespace Nimrod
 {
     public class ToTypeScriptBuildRule
     {
-        public Func<Type, bool> Predicate { get; }
-        public Func<Type, ToTypeScript> Builder { get; }
+        public Func<TypeScriptType, bool> Predicate { get; }
+        public Func<TypeScriptType, ToTypeScript> Builder { get; }
 
-        public ToTypeScriptBuildRule(Func<Type, bool> predicate, Func<Type, ToTypeScript> builder)
+        public ToTypeScriptBuildRule(Func<TypeScriptType, bool> predicate, Func<TypeScriptType, ToTypeScript> builder)
         {
             this.Predicate = predicate;
             this.Builder = builder;

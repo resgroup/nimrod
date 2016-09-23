@@ -8,11 +8,11 @@ namespace Nimrod.Writers.Require
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class ControllerToRequireTypeScript : ControllerToTypeScript
     {
-        public ControllerToRequireTypeScript(Type type) : base(type) { }
+        public ControllerToRequireTypeScript(TypeScriptType type) : base(type) { }
 
         protected override IEnumerable<string> GetHeader()
         {
-            var actions = TypeDiscovery.GetWebControllerActions(this.Type);
+            var actions = TypeDiscovery.GetWebControllerActions(this.Type.Type);
 
             var typesInParameters = actions.SelectMany(method => method.GetParameters().Select(p => p.ParameterType));
             var typesInReturns = actions.Select(method => method.GetReturnType());

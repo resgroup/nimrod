@@ -8,19 +8,19 @@ namespace Nimrod
 {
     public abstract class EnumToTypeScript : ToTypeScript
     {
-        public string TsName => this.Type.ToTypeScript();
+        public string TsName => this.Type.ToString();
 
         protected abstract IEnumerable<string> GetHeader();
         protected abstract IEnumerable<string> GetFooter();
         protected abstract IEnumerable<string> GetHeaderDescription();
         protected abstract IEnumerable<string> GetFooterDescription();
-        public EnumToTypeScript(Type type) : base(type)
+        public EnumToTypeScript(TypeScriptType type) : base(type)
         {
-            if (!this.Type.IsEnum)
+            if (!this.Type.Type.IsEnum)
             {
                 throw new ArgumentException($"{this.Type.Name} is not an System.Enum.", nameof(type));
             }
-            var underlyingType = Enum.GetUnderlyingType(this.Type);
+            var underlyingType = Enum.GetUnderlyingType(this.Type.Type);
             if (underlyingType != typeof(int))
             {
                 throw new NotSupportedException($"Unsupported underlying type for enums in typescript [{underlyingType}]. Only ints are supported.");
@@ -38,12 +38,12 @@ namespace Nimrod
         public IEnumerable<string> GetBodyDescription() => new[] {
             $@"static getDescription(item: {this.TsName}): string {{
                 switch (item) {{
-                        {this.Type.GetEnumValues()
+                        {this.Type.Type.GetEnumValues()
                         .OfType<object>()
                         .Select(enumValue =>
                         {
                             var description = EnumExtensions.GetDescription(enumValue);
-                            var enumName = this.Type.GetEnumName(enumValue);
+                            var enumName = this.Type.Type.GetEnumName(enumValue);
                             return $"case {this.TsName}.{enumName}: return '{description}';";
                         }).JoinNewLine()}
                 }}
@@ -51,10 +51,10 @@ namespace Nimrod
         };
 
         public IEnumerable<string> GetBody() =>
-            this.Type.GetEnumValues().OfType<object>()
+            this.Type.Type.GetEnumValues().OfType<object>()
                      .Select(enumValue =>
                      {
-                         var enumName = this.Type.GetEnumName(enumValue);
+                         var enumName = this.Type.Type.GetEnumName(enumValue);
                          return $"{enumName} = {(int)enumValue},";
                      });
     }

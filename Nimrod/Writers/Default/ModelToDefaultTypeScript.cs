@@ -8,13 +8,13 @@ namespace Nimrod.Writers.Default
     {
         public override bool PrefixPropertyWithNamespace => true;
 
-        public ModelToDefaultTypeScript(Type type) : base(type) { }
+        public ModelToDefaultTypeScript(TypeScriptType type) : base(type) { }
 
         protected override IEnumerable<string> GetHeader()
         {
-            var baseType = Type.BaseType;
+            var baseType = Type.Type.BaseType;
             bool hasExtension = baseType != null && !baseType.IsSystem();
-            string extension = hasExtension ? $" extends {baseType.ToTypeScript(true)}" : "";
+            string extension = hasExtension ? $" extends {baseType.ToTypeScript().ToString(true, true, false)}" : "";
 
             return new[] {
                 $"namespace {this.Type.Namespace} {{",

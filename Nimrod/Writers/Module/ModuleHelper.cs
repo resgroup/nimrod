@@ -23,9 +23,9 @@ namespace Nimrod.Writers.Module
 
         public static string GetImportLine(Type type)
         {
-            var typeName = type.ToTypeScript(false, false);
-            var moduleName = type.TypeScriptModuleName();
-            return $"import {typeName} from './{moduleName}';";
+            var tsType = type.ToTypeScript();
+            var typeName = tsType.ToString(false, false);
+            return $"import {typeName} from './{ tsType.TypeScriptModuleName}';";
         }
     }
 }

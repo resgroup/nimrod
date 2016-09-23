@@ -48,9 +48,9 @@ namespace Nimrod
         {
             var ns = needNamespace ? "Nimrod." : "";
             var arguments = method.GetParameters()
-                    .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript(needNamespace)}")
+                    .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript().ToString(needNamespace)}")
                     .Join("");
-            var returnType = method.GetReturnType().ToTypeScript(needNamespace);
+            var returnType = method.GetReturnType().ToTypeScript().ToString(needNamespace);
 
             return $"{method.Name}(restApi: {ns}IRestApi{arguments}, config?: {ns}IRequestConfig): {ns}IPromise<{returnType}>";
         }

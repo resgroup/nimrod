@@ -8,7 +8,7 @@ namespace Nimrod.Writers.Default
     {
         public override bool NeedNameSpace => true;
 
-        public ControllerToDefaultTypeScript(Type type) : base(type) { }
+        public ControllerToDefaultTypeScript(TypeScriptType type) : base(type) { }
 
         protected override IEnumerable<string> GetHeader() => new[] {
             $"namespace {this.Type.Namespace} {{"

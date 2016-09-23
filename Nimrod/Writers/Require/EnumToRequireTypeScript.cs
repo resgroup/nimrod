@@ -9,7 +9,7 @@ namespace Nimrod.Writers.Require
 {
     public class EnumToModuleTypeScript : EnumToTypeScript
     {
-        public EnumToModuleTypeScript(Type type) : base(type) { }
+        public EnumToModuleTypeScript(TypeScriptType type) : base(type) { }
 
         protected override IEnumerable<string> GetHeader() => new[] {
             $"enum {TsName} {{"

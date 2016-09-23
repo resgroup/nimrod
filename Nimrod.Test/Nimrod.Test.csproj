@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="Extensions\MethodExtensionsTests.cs" />
     <Compile Include="Extensions\ObjectExtensionsTests.cs" />
+    <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="GeneratorTests.cs" />
     <Compile Include="ToTypeScriptBuildRulesTests.cs" />
     <Compile Include="TupleToTypeScriptTests.cs" />

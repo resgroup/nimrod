@@ -7,8 +7,8 @@ namespace Nimrod
 {
     public abstract class ToTypeScript
     {
-        public Type Type { get; }
-        public ToTypeScript(Type type)
+        public TypeScriptType Type { get; }
+        public ToTypeScript(TypeScriptType type)
         {
             this.Type = type.ThrowIfNull(nameof(type));
         }

@@ -43,7 +43,7 @@ namespace Nimrod
 
         static private IEnumerable<FileToWrite> GetDynamicFiles(IEnumerable<Type> types, ModuleType moduleType)
                 => types.Select(type => new FileToWrite(GetTypeScriptFilename(type),
-                    ToTypeScriptBuildRules.GetRules(moduleType).GetToTypeScript(type).GetLines())
+                    ToTypeScriptBuildRules.GetRules(moduleType).GetToTypeScript(type.ToTypeScript()).GetLines())
                 );
 
         static public string GetTypeScriptFilename(Type type)

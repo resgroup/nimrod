@@ -7,7 +7,7 @@ namespace Nimrod.Writers.Default
 {
     public class EnumToDefaultTypeScript : EnumToTypeScript
     {
-        public EnumToDefaultTypeScript(Type type) : base(type) { }
+        public EnumToDefaultTypeScript(TypeScriptType type) : base(type) { }
 
         protected override IEnumerable<string> GetHeader() => new[] {
             $"namespace {this.Type.Namespace} {{",
