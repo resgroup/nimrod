@@ -46,7 +46,6 @@ namespace Nimrod
                             var enumName = this.Type.GetEnumName(enumValue);
                             return $"case {this.TsName}.{enumName}: return '{description}';";
                         }).JoinNewLine()}
-                    default: return item.toString();
                 }}
             }}"
         };
