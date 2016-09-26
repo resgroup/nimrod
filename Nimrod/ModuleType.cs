@@ -2,6 +2,6 @@
 {
     public enum ModuleType
     {
-        Require, TypeScript, Module
+        TypeScript, Module
     }
 }

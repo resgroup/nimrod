@@ -26,7 +26,7 @@ namespace Nimrod.Writers.Module
 
         protected override IEnumerable<string> GetFooter()
         {
-            var nonGenericTypescriptClass = this.Type.ToString(false, false);
+            var nonGenericTypescriptClass = this.Type.ToString(false, false, false);
             return new[] {
                 $"}}",
                 // no generic for export on require mode

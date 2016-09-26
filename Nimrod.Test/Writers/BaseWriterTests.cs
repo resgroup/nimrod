@@ -1,10 +1,8 @@
-﻿using Nimrod.Test.ModelExamples;
-using Nimrod.Writers.Default;
-using Nimrod.Writers.Require;
+﻿using Nimrod.Writers.Default;
+using Nimrod.Writers.Module;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -19,30 +17,21 @@ namespace Nimrod.Test
         }
         public class GenericWrapper<T>
         {
-            public GenericItem<T> Item
-            {
-                get; set;
-            }
+            public GenericItem<T> Item { get; set; }
         }
 
         [Test]
-        public void WriteModel_GetImports()
+        public void WriteModel_WriteImports_GenericWrapper()
         {
-            var dependencies = new[] { typeof(GenericWrapper<GenericItem<int>>) };
-            var imports = RequireModuleHelper.GetTypesToImport(dependencies)
-                .OrderBy(s => s.Name)
-                .ToList();
-
-            Assert.AreEqual(2, imports.Count);
-            Assert.AreEqual(typeof(GenericItem<>), imports[0]);
-            Assert.AreEqual(typeof(GenericWrapper<>), imports[1]);
+            var lines = ModuleHelper.GetImportLine(typeof(GenericWrapper<>));
+            Assert.AreEqual("import IGenericWrapper from './Nimrod.Test.GenericWrapper';", lines);
         }
 
         [Test]
-        public void WriteModel_WriteImports()
+        public void WriteModel_WriteImports_GenericItem()
         {
-            Assert.AreEqual("import IGenericItem = require('./Nimrod.Test.GenericItem');", RequireModuleHelper.GetImportLine(typeof(GenericItem<>)));
-            Assert.AreEqual("import IGenericWrapper = require('./Nimrod.Test.GenericWrapper');", RequireModuleHelper.GetImportLine(typeof(GenericWrapper<>)));
+            var lines = ModuleHelper.GetImportLine(typeof(GenericItem<>));
+            Assert.AreEqual("import IGenericItem from './Nimrod.Test.GenericItem';", lines);
         }
 
         [Test]

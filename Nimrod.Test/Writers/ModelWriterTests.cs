@@ -1,6 +1,6 @@
 ﻿using Nimrod.Test.ModelExamples;
 using Nimrod.Writers.Default;
-using Nimrod.Writers.Require;
+using Nimrod.Writers.Module;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -96,9 +96,9 @@ namespace Nimrod.Test
         [Test]
         public void ModelWriter_RequireExportWithoutGenericArgument()
         {
-            var writer = new ModelToRequireTypeScript(typeof(Fuzz<int>).ToTypeScript(), false);
+            var writer = new ModelToModuleTypeScript(typeof(Fuzz<int>).ToTypeScript(), false);
             string ts = writer.GetLines().JoinNewLine();
-            Assert.IsTrue(ts.Contains("export = IFuzz;"));
+            Assert.IsTrue(ts.Contains("export default IFuzz;"));
         }
     }
 }

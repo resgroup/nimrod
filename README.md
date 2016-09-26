@@ -117,11 +117,12 @@ Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\asse
 
 |Name|Alias|Description|
 |:----|:----|:-----|
-|--module|-m|Module mode, valid values are `typescript` for [typescript] modules style and `require` for [requirejs] modules|
+|--module|-m|Module mode, valid values are `typescript` for [typescript] modules style and `module` for [ES2015] modules|
 |--output|-o|Directory where files will be generated|
 |--files|-f|Assembly files to read, separated by a comma. Example : --files=bin\\Assembly1.dll,bin\\Assembly2.dll|
 |--verbose|-v|Prints all messages to standard output|
 |--help|-h|Prints a usage message showing the command line syntax|
+|--strictNullCheck|-n|Usage of nullables types, compatible for typescript 2.0|
 
 ---
 # Grunt
