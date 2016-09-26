@@ -101,10 +101,9 @@ namespace Nimrod
             var arguments = method.GetParameters()
                     .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript().ToString(options)}")
                     .Join("");
-            var returnType = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true, true);
+            var returnType = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true, StrictNullCheck);
 
             return $"{method.Name}(restApi: {ns}IRestApi{arguments}, config?: {ns}IRequestConfig): {ns}IPromise<{returnType}>";
         }
-
     }
 }
