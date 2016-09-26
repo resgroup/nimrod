@@ -12,6 +12,7 @@ export interface IGruntNimrodOptions {
     verbose?: boolean;
     module?: string;
     output?: string;
+    strictNullCheck?: boolean;
     files?: string[];
 }
 
@@ -28,9 +29,14 @@ module.exports = function (grunt: IGrunt) {
             verbose = ' --verbose';
         }
 
+        let strictNullCheck = '';
+        if (options.strictNullCheck === true) {
+            strictNullCheck = ' --strictNullCheck';
+        }
+
         let pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
 
-        let cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose;
+        let cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose + strictNullCheck;
         if (options.verbose) {
             grunt.log.write('Executing command : ' + cmd);
         }

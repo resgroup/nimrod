@@ -1,0 +1,5 @@
+{
+  "globalDependencies": {
+    "gruntjs": "registry:dt/gruntjs#0.4.0+20160602153508"
+  }
+}

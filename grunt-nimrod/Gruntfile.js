@@ -30,17 +30,7 @@ module.exports = function (grunt) {
         },
         ts: {
             default: {
-                files: {
-                    'tasks/': ['src/**/*.ts', 'typings/**/*.ts']
-                },
-                options: {
-                    module: 'commonjs',
-                    fast: 'never',
-                    outDir: '../tasks/',
-                    target: 'es5',
-                    sourceMap: 'true',
-                    declaration: 'true'
-                }
+                tsconfig: true
             }
         }
     });

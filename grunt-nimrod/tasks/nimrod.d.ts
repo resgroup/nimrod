@@ -3,5 +3,6 @@ export interface IGruntNimrodOptions {
     verbose?: boolean;
     module?: string;
     output?: string;
+    strictNullCheck?: boolean;
     files?: string[];
 }

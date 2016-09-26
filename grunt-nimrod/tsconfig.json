@@ -1,16 +1,14 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
     "noImplicitAny": true,
-    "removeComments": true,
-    "noLib": false,
-    "out": "build/",
+    "outDir": "./tasks/",
     "sourceMap": true
   },
   "exclude": [
-    "bower_components",
     "node_modules"
   ]
 }

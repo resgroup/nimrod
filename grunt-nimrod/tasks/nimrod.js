@@ -9,8 +9,12 @@ module.exports = function (grunt) {
         if (options.verbose === true) {
             verbose = ' --verbose';
         }
+        var strictNullCheck = '';
+        if (options.strictNullCheck === true) {
+            strictNullCheck = ' --strictNullCheck';
+        }
         var pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
-        var cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose;
+        var cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose + strictNullCheck;
         if (options.verbose) {
             grunt.log.write('Executing command : ' + cmd);
         }

@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/7a5e847b0f79cc99fac0ba3b5ede6f716862b6ef/gruntjs/gruntjs.d.ts",
+    "raw": "registry:dt/gruntjs#0.4.0+20160602153508",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/7a5e847b0f79cc99fac0ba3b5ede6f716862b6ef/gruntjs/gruntjs.d.ts"
+  }
+}
