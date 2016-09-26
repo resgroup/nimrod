@@ -6,9 +6,16 @@ using System.Text;
 
 namespace Nimrod
 {
-    static public class Generator
+    public class Generator
     {
-        static public void Generate(IEnumerable<string> dllPaths, ModuleType moduleType, IoOperations ioOperations)
+        public bool StrictNullCheck { get; }
+        public ModuleType ModuleType { get; }
+        public Generator(bool strictNullCheck, ModuleType moduleType)
+        {
+            this.StrictNullCheck = strictNullCheck;
+            this.ModuleType = moduleType;
+        }
+        public void Generate(IEnumerable<string> dllPaths, IoOperations ioOperations)
         {
             var fileInfos = ioOperations.GetFileInfos(dllPaths).ToList();
             ioOperations.LoadAssemblies(fileInfos);
@@ -16,13 +23,13 @@ namespace Nimrod
             var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
             ioOperations.WriteLog($"Discovering types..");
             var types = GetTypesToWrite(assemblies).ToList();
-            var files = GetDynamicFiles(types.AsDebugFriendlyParallel(), moduleType)
-                 .Union(GetStaticFiles(moduleType))
+            var files = GetDynamicFiles(types.AsDebugFriendlyParallel())
+                 .Union(GetStaticFiles())
                  .ToList();
 
             ioOperations.Dump(files);
         }
-        static private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
+        private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
             var controllers = TypeDiscovery.GetWebControllers(assemblies).ToList();
             var assemblyTypes = controllers.SelectMany(TypeDiscovery.GetWebControllerActions)
@@ -41,9 +48,9 @@ namespace Nimrod
             return toWrites;
         }
 
-        static private IEnumerable<FileToWrite> GetDynamicFiles(IEnumerable<Type> types, ModuleType moduleType)
+        private IEnumerable<FileToWrite> GetDynamicFiles(IEnumerable<Type> types)
                 => types.Select(type => new FileToWrite(GetTypeScriptFilename(type),
-                    ToTypeScriptBuildRules.GetRules(moduleType).GetToTypeScript(type.ToTypeScript()).GetLines())
+                    ToTypeScriptBuildRules.GetRules(this.ModuleType).GetToTypeScript(new TypeScriptType(type), this.StrictNullCheck).GetLines())
                 );
 
         static public string GetTypeScriptFilename(Type type)
@@ -66,9 +73,9 @@ namespace Nimrod
         }
 
 
-        static private IEnumerable<FileToWrite> GetStaticFiles(ModuleType module)
+        private IEnumerable<FileToWrite> GetStaticFiles()
         {
-            var buildRules = ToTypeScriptBuildRules.GetRules(module);
+            var buildRules = ToTypeScriptBuildRules.GetRules(this.ModuleType);
             return new[] {
                 new FileToWrite("IRestApi.ts", buildRules.StaticBuilder.GetRestApiLines()),
                 new FileToWrite("IPromise.ts", buildRules.StaticBuilder.GetPromiseLines())

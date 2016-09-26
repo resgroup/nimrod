@@ -7,7 +7,7 @@ namespace Nimrod.Writers.Module
 {
     public class ModelToModuleTypeScript : ModelToTypeScript
     {
-        public ModelToModuleTypeScript(TypeScriptType type) : base(type) { }
+        public ModelToModuleTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
 
         protected override IEnumerable<string> GetHeader()
         {

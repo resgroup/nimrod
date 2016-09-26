@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
 using System.Text;
 
@@ -15,7 +13,7 @@ namespace Nimrod
         public string ServiceName => this.Type.Name.Replace("Controller", "Service");
         public virtual bool NeedNameSpace => false;
 
-        public ControllerToTypeScript(TypeScriptType type) : base(type)
+        public ControllerToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck)
         {
             if (!type.Type.IsWebController())
             {
@@ -40,7 +38,7 @@ namespace Nimrod
         private IEnumerable<string> GetInterface()
         {
             var actions = this.Type.Type.GetWebControllerActions();
-            var signatures = actions.Select(a => a.GetMethodSignature(NeedNameSpace));
+            var signatures = actions.Select(a => GetMethodSignature(a));
 
             return new[] {
                 $@"export interface I{GetControllerName()} {{
@@ -56,10 +54,10 @@ namespace Nimrod
                 var httpVerb = method.FirstOrDefaultHttpMethodAttribute();
                 var parameters = method.GetParameters();
 
-                var signature = method.GetMethodSignature(NeedNameSpace);
+                var signature = GetMethodSignature(method);
 
                 var entityName = this.Type.Name.Substring(0, this.Type.Name.Length - "Controller".Length);
-                var genericArgString = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true);
+                var genericArgString = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true, false);
 
                 var beautifulParamList = parameters
                             .Select(p => $"{p.Name}: {p.Name}")
@@ -90,6 +88,22 @@ namespace Nimrod
                 body,
                 $"}}"
             };
+        }
+
+        /// <summary>
+        /// Return method signature in typescript of a C# method
+        /// </summary>
+        /// <param name="method">The method</param>
+        public string GetMethodSignature(MethodInfo method)
+        {
+            var options = new ToTypeScriptOptions(NeedNameSpace, true, this.StrictNullCheck);
+            var ns = NeedNameSpace ? "Nimrod." : "";
+            var arguments = method.GetParameters()
+                    .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript().ToString(options)}")
+                    .Join("");
+            var returnType = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true, true);
+
+            return $"{method.Name}(restApi: {ns}IRestApi{arguments}, config?: {ns}IRequestConfig): {ns}IPromise<{returnType}>";
         }
 
     }

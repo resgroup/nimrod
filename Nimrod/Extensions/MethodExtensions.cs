@@ -39,21 +39,6 @@ namespace Nimrod
             => new[] { method.GetReturnType() }
                 .Union(method.GetParameters().Select(p => p.ParameterType));
 
-        /// <summary>
-        /// Return method signature in typescript of a C# method
-        /// </summary>
-        /// <param name="method">The method</param>
-        /// <param name="needNamespace">Do we need to add namespace information on types?</param>
-        public static string GetMethodSignature(this MethodInfo method, bool needNamespace)
-        {
-            var ns = needNamespace ? "Nimrod." : "";
-            var arguments = method.GetParameters()
-                    .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript().ToString(needNamespace)}")
-                    .Join("");
-            var returnType = method.GetReturnType().ToTypeScript().ToString(needNamespace);
-
-            return $"{method.Name}(restApi: {ns}IRestApi{arguments}, config?: {ns}IRequestConfig): {ns}IPromise<{returnType}>";
-        }
 
         /// <summary>
         /// Return method return's type of a controller

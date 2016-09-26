@@ -8,9 +8,9 @@ namespace Nimrod
     public abstract class ModelToTypeScript : ToTypeScript
     {
         public virtual bool PrefixPropertyWithNamespace => false;
-        public string TsName => this.Type.ToString(new ToTypeScriptOptions().WithStrictNullCheck(false));
+        public string TsName => this.Type.ToString(new ToTypeScriptOptions().WithNullable(false));
 
-        public ModelToTypeScript(TypeScriptType type) : base(type) { }
+        public ModelToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
 
         protected abstract IEnumerable<string> GetHeader();
         protected abstract IEnumerable<string> GetFooter();
@@ -19,16 +19,18 @@ namespace Nimrod
                     .Select(property => new
                     {
                         Attributes = Attribute.GetCustomAttributes(property),
-                        Property = property,
-                        TypeScriptProperty = property.PropertyType.ToTypeScript().ToString(PrefixPropertyWithNamespace)
+                        Property = property
                     })
                     // do not write attribute that are not serialize throught the [IgnoreDataMember] attribute
                     .Where(a => a.Attributes.OfType<IgnoreDataMemberAttribute>().IsEmpty())
                     .Select(a =>
                     {
+                        var nullable = !a.Attributes.OfType<JetBrains.Annotations.NotNullAttribute>().Any();
                         var attributeName = a.Attributes.OfType<DataMemberAttribute>().FirstOrDefault()?.Name;
                         string propertyName = string.IsNullOrWhiteSpace(attributeName) ? a.Property.Name : attributeName;
-                        return $"{propertyName}: {a.TypeScriptProperty};";
+                        var options = new ToTypeScriptOptions().WithIncludeNamespace(PrefixPropertyWithNamespace)
+                                                               .WithNullable(this.StrictNullCheck && nullable);
+                        return $"{propertyName}: { a.Property.PropertyType.ToTypeScript().ToString(options)};";
                     });
 
         public override IEnumerable<string> GetLines() =>

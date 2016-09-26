@@ -10,28 +10,28 @@ namespace Nimrod
     {
         public bool IncludeNamespace { get; }
         public bool IncludeGenericArguments { get; }
-        public bool StrictNullCheck { get; }
+        public bool Nullable { get; }
 
         public ToTypeScriptOptions()
         {
             IncludeNamespace = false;
             IncludeGenericArguments = true;
-            StrictNullCheck = true;
+            Nullable = true;
         }
-        public ToTypeScriptOptions(bool includeNamespace, bool includeGenericArguments, bool strictNullCheck)
+        public ToTypeScriptOptions(bool includeNamespace, bool includeGenericArguments, bool nullable)
         {
             this.IncludeNamespace = includeNamespace;
             this.IncludeGenericArguments = includeGenericArguments;
-            this.StrictNullCheck = strictNullCheck;
+            this.Nullable = nullable;
         }
 
         public ToTypeScriptOptions WithIncludeNamespace(bool includeNamespace)
-            => new ToTypeScriptOptions(includeNamespace, this.IncludeGenericArguments, this.StrictNullCheck);
+            => new ToTypeScriptOptions(includeNamespace, this.IncludeGenericArguments, this.Nullable);
 
         public ToTypeScriptOptions WithIncludeGenericArguments(bool includeGenericArguments)
-            => new ToTypeScriptOptions(this.IncludeNamespace, includeGenericArguments, this.StrictNullCheck);
+            => new ToTypeScriptOptions(this.IncludeNamespace, includeGenericArguments, this.Nullable);
 
-        public ToTypeScriptOptions WithStrictNullCheck(bool strictNullCheck)
-            => new ToTypeScriptOptions(this.IncludeNamespace, this.IncludeGenericArguments, strictNullCheck);
+        public ToTypeScriptOptions WithNullable(bool nullable)
+            => new ToTypeScriptOptions(this.IncludeNamespace, this.IncludeGenericArguments, nullable);
     }
 }

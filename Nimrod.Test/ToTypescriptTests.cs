@@ -109,7 +109,7 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_Enum_Test()
         {
-            Assert.AreEqual("FooCountToThree | null", typeof(FooCountToThree?).ToTypeScript().ToString());
+            Assert.AreEqual("FooCountToThree | null", typeof(FooCountToThree?).ToTypeScript().ToString(new ToTypeScriptOptions().WithNullable(true)));
             Assert.AreEqual("FooCountToThree", typeof(FooCountToThree).ToTypeScript().ToString());
         }
 

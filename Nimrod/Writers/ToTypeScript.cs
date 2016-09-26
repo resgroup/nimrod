@@ -8,9 +8,11 @@ namespace Nimrod
     public abstract class ToTypeScript
     {
         public TypeScriptType Type { get; }
-        public ToTypeScript(TypeScriptType type)
+        public bool StrictNullCheck { get; }
+        public ToTypeScript(TypeScriptType type, bool strictNullCheck)
         {
             this.Type = type.ThrowIfNull(nameof(type));
+            this.StrictNullCheck = strictNullCheck;
         }
         public abstract IEnumerable<string> GetLines();
     }

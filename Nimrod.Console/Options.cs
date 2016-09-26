@@ -22,6 +22,10 @@ namespace Nimrod.Console
             }
         }
 
+        // -n --strictNullCheck
+        [Option('n', "strictNullCheck", Required = false, HelpText = "Appends '| not null' to properties as needed by typescript 2.0")]
+        public bool StrictNullCheck { get; set; } = false;
+
         // -v --verbose
         [Option('v', "verbose", Required = false, HelpText = "Prints all messages to standard output.")]
         public bool Verbose { get; set; } = false;

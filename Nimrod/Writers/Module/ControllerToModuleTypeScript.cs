@@ -8,7 +8,7 @@ namespace Nimrod.Writers.Module
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class ControllerToModuleTypeScript : ControllerToTypeScript
     {
-        public ControllerToModuleTypeScript(TypeScriptType type) : base(type) { }
+        public ControllerToModuleTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
 
         protected override IEnumerable<string> GetHeader()
         {

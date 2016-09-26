@@ -33,14 +33,17 @@ namespace Nimrod
         public override string ToString() => this.ToString(false);
 
         public string ToString(ToTypeScriptOptions options)
-            => this.ToString(options.IncludeNamespace, options.IncludeGenericArguments, options.StrictNullCheck);
+            => this.ToString(options.IncludeNamespace, options.IncludeGenericArguments, options.Nullable);
         public string ToString(bool includeNamespace) => this.ToString(includeNamespace, true);
         public string ToString(bool includeNamespace, bool includeGenericArguments) => this.ToString(includeNamespace, includeGenericArguments, true);
         public string ToString(bool includeNamespace, bool includeGenericArguments, bool strictNullCheck)
         {
+
+            var options = new ToTypeScriptOptions(includeNamespace, includeGenericArguments, strictNullCheck);
+            string strictNullCheckString = " | null";
             string simpleTypeScript;
             string result;
-            if (TryGetTypeScriptForSimpleType(this.Type, includeNamespace, includeGenericArguments, out simpleTypeScript))
+            if (TryGetTypeScriptForSimpleType(this.Type, options, out simpleTypeScript))
             {
                 result = simpleTypeScript;
             }
@@ -68,14 +71,14 @@ namespace Nimrod
                 var genericArguments = this.Type.GetGenericArguments();
                 if (this.Type.FullName != null && this.Type.FullName.Contains("System.Nullable") && genericArguments.Length == 1)
                 {
-                    result = $"{genericArguments[0].ToTypeScript().ToString(includeNamespace)}{(strictNullCheck ? " | null" : "")}";
+                    result = $"{genericArguments[0].ToTypeScript().ToString(includeNamespace)}{(strictNullCheck ? strictNullCheckString : "")}";
                 }
                 else
                 {
-                    result = $"{ToTypeScriptForGenericClass(this.Type, includeNamespace, includeGenericArguments)}";
+                    result = $"{ToTypeScriptForGenericClass(this.Type, options)}";
                     if (this.Type.IsArray)
                     {
-                        result = $"{result}{(strictNullCheck ? " | null" : "")}";
+                        result = $"{result}{(strictNullCheck ? strictNullCheckString : "")}";
                     }
                 }
             }
@@ -92,11 +95,11 @@ namespace Nimrod
                 {
                     if (result.HasNonEmbededWhiteSpace())
                     {
-                        return $"({result}) | null";
+                        return $"({result}){strictNullCheckString}";
                     }
                     else
                     {
-                        return $"{result} | null";
+                        return $"{result}{strictNullCheckString}";
                     }
                 }
             }
@@ -107,14 +110,13 @@ namespace Nimrod
         }
 
 
-        private string ArrayToTypeScript(bool includeNamespace)
+        private string ArrayToTypeScript(ToTypeScriptOptions options)
         {
-            var tsSubType = $"{this.Type.GetElementType().ToTypeScript().ToString(includeNamespace)}";
-
+            var tsSubType = $"{this.Type.GetElementType().ToTypeScript().ToString(options)}";
             return tsSubType.HasNonEmbededWhiteSpace() ? $"({tsSubType})[]" : $"{tsSubType}[]";
         }
 
-        private static string TupleToTypeScript(Type type, bool includeNamespace, bool includeGenericArguments)
+        private static string TupleToTypeScript(Type type, ToTypeScriptOptions options)
         {
             // search the generic type definition so the method work for both Tuple<int> and Tuple<T>
             var genericTypeDefinition = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
@@ -123,7 +125,7 @@ namespace Nimrod
                 throw new ArgumentException(nameof(type), "Type should be a Tuple");
             }
             var content = type.GetGenericArguments()
-                .Select(a => a.ToTypeScript().ToString(includeNamespace, includeGenericArguments))
+                .Select(a => a.ToTypeScript().ToString(options))
                 .Select((s, i) => $"Item{i + 1}: {s}")
                 .Join(", ");
 
@@ -138,11 +140,11 @@ namespace Nimrod
         /// <param name="includeGenericArguments"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private static bool TryGetTypeScriptForSimpleType(Type type, bool includeNamespace, bool includeGenericArguments, out string value)
+        private static bool TryGetTypeScriptForSimpleType(Type type, ToTypeScriptOptions options, out string value)
         {
             value = PredicateToTypescriptStringMap
                         .Where(kvp => kvp.Key(type))
-                        .Select(kvp => kvp.Value(type, includeNamespace, includeGenericArguments))
+                        .Select(kvp => kvp.Value(type, options))
                         .FirstOrDefault();
             return value != null;
         }
@@ -150,15 +152,15 @@ namespace Nimrod
         // Map predicate on a type to its representation in typescript
         // usage of Dictionary is to simplify the type inference
         // use list of tuples when real tuples will be there in C#7
-        private static readonly Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> PredicateToTypescriptStringMap = new Dictionary<Predicate<Type>, Func<Type, bool, bool, string>> {
-                { t => t.IsArray, (t, n, g) => t.ToTypeScript().ArrayToTypeScript(n)},
-                { t => t.IsTuple(), (t, n, g) => TupleToTypeScript(t, n, g) },
-                { t => t == typeof(string), (t, n, g) => "string" },
-                { t => t.IsNumber(), (t, n, g) => "number" },
-                { t => t == typeof(bool), (t, n, g) => "boolean" },
-                { t => t.IsDateTime(), (t, n, g) => "Date" },
-                { t => t.IsObject(), (t, n, g) => "any" },
-                { t => t == typeof(void), (t, n, g) => "void" }
+        private static readonly Dictionary<Predicate<Type>, Func<Type, ToTypeScriptOptions, string>> PredicateToTypescriptStringMap = new Dictionary<Predicate<Type>, Func<Type, ToTypeScriptOptions, string>> {
+                { t => t.IsArray, (t, options) => t.ToTypeScript().ArrayToTypeScript(options)},
+                { t => t.IsTuple(), (t,options) => TupleToTypeScript(t, options) },
+                { t => t == typeof(string), (t, options) => "string" },
+                { t => t.IsNumber(), (t, options) => "number" },
+                { t => t == typeof(bool), (t,options) => "boolean" },
+                { t => t.IsDateTime(), (t, options) => "Date" },
+                { t => t.IsObject(), (t, options) => "any" },
+                { t => t == typeof(void), (t, options) => "void" }
             };
 
 
@@ -166,13 +168,13 @@ namespace Nimrod
         /// <summary>
         /// Complicated stuff for returning the name of a generic class
         /// </summary>
-        private static string ToTypeScriptForGenericClass(Type type, bool includeNamespace, bool includeGenericArguments)
+        private static string ToTypeScriptForGenericClass(Type type, ToTypeScriptOptions options)
         {
             var genericArguments = type.GetGenericArguments();
 
             if (type.IsGeneric1DArray(genericArguments))
             {
-                string baseType = genericArguments[0].ToTypeScript().ToString(includeNamespace);
+                string baseType = genericArguments[0].ToTypeScript().ToString(options);
                 if (baseType.HasNonEmbededWhiteSpace())
                 {
                     return $"({baseType})[]";
@@ -197,22 +199,22 @@ namespace Nimrod
                 {
                     keyTypescript = "number";
                 }
-                var valueTypescript = genericArguments[1].ToTypeScript().ToString(includeNamespace);
+                var valueTypescript = genericArguments[1].ToTypeScript().ToString(options);
 
                 return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";
             }
             else
             {
-                return GenericTypeToTypeScript(type, includeNamespace, includeGenericArguments);
+                return GenericTypeToTypeScript(type, options);
             }
         }
         /// <summary>
         /// Generic type, emit GenericType`2<A, B> as GenericType<A, B> 
         /// </summary>
-        private static string GenericTypeToTypeScript(Type type, bool includeNamespace, bool includeGenericArguments)
+        private static string GenericTypeToTypeScript(Type type, ToTypeScriptOptions options)
         {
             var result = new StringBuilder();
-            if (includeNamespace)
+            if (options.IncludeNamespace)
             {
                 result.Append($"{type.GetGenericTypeDefinition().Namespace}.");
             }
@@ -221,10 +223,10 @@ namespace Nimrod
             // generics type got a name like Foo`2, we parse only before the `
             var withoutAfterBacktick = genericTypeDefinitionName.Remove(genericTypeDefinitionName.IndexOf('`'));
             result.Append($"I{withoutAfterBacktick}");
-            if (includeGenericArguments)
+            if (options.IncludeGenericArguments)
             {
                 var args = type.GetGenericArguments()
-                    .Select(t => t.ToTypeScript().ToString(includeNamespace, true, false))
+                    .Select(t => t.ToTypeScript().ToString(options.IncludeNamespace, true, false))
                     .Join(", ");
                 result.Append($"<{args}>");
             }

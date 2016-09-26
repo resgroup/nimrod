@@ -11,7 +11,7 @@ namespace Nimrod
     /// </summary>
     public abstract class StructToTypeScript : ToTypeScript
     {
-        public StructToTypeScript(TypeScriptType type) : base(type)
+        public StructToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck)
         {
             if (!this.Type.Type.IsValueType)
             {

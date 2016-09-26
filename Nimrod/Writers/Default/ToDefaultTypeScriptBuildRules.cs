@@ -7,10 +7,10 @@ namespace Nimrod.Writers.Default
 {
     public class ToDefaultTypeScriptBuildRules : ToTypeScriptBuildRules
     {
-        public override Func<TypeScriptType, ToTypeScript> ControllerBuilder => type => new ControllerToDefaultTypeScript(type);
-        public override Func<TypeScriptType, ToTypeScript> EnumBuilder => type => new EnumToDefaultTypeScript(type);
-        public override Func<TypeScriptType, ToTypeScript> StructBuilder => type => new StructToDefaultTypeScript(type);
-        public override Func<TypeScriptType, ToTypeScript> ModelBuilder => type => new ModelToDefaultTypeScript(type);
+        public override Func<TypeScriptType, bool, ToTypeScript> ControllerBuilder => (type, strictNullCheck) => new ControllerToDefaultTypeScript(type, strictNullCheck);
+        public override Func<TypeScriptType, bool, ToTypeScript> EnumBuilder => (type, strictNullCheck) => new EnumToDefaultTypeScript(type, strictNullCheck);
+        public override Func<TypeScriptType, bool, ToTypeScript> StructBuilder => (type, strictNullCheck) => new StructToDefaultTypeScript(type, strictNullCheck);
+        public override Func<TypeScriptType, bool, ToTypeScript> ModelBuilder => (type, strictNullCheck) => new ModelToDefaultTypeScript(type, strictNullCheck);
         public override StaticToTypeScript StaticBuilder => new StaticToDefaultTypeScript();
     }
 }

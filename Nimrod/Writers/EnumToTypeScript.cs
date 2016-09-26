@@ -14,7 +14,7 @@ namespace Nimrod
         protected abstract IEnumerable<string> GetFooter();
         protected abstract IEnumerable<string> GetHeaderDescription();
         protected abstract IEnumerable<string> GetFooterDescription();
-        public EnumToTypeScript(TypeScriptType type) : base(type)
+        public EnumToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck)
         {
             if (!this.Type.Type.IsEnum)
             {

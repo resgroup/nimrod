@@ -8,7 +8,7 @@ namespace Nimrod.Writers.Default
     {
         public override bool PrefixPropertyWithNamespace => true;
 
-        public ModelToDefaultTypeScript(TypeScriptType type) : base(type) { }
+        public ModelToDefaultTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
 
         protected override IEnumerable<string> GetHeader()
         {

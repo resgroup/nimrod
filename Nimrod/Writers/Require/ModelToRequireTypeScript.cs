@@ -7,7 +7,7 @@ namespace Nimrod.Writers.Require
     public class ModelToRequireTypeScript : ModelToTypeScript
     {
 
-        public ModelToRequireTypeScript(TypeScriptType type) : base(type)
+        public ModelToRequireTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck)
         {
         }
 

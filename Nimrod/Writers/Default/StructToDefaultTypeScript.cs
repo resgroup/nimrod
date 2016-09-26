@@ -9,7 +9,7 @@ namespace Nimrod.Writers.Default
     /// </summary>
     public class StructToDefaultTypeScript : StructToTypeScript
     {
-        public StructToDefaultTypeScript(TypeScriptType type) : base(type) { }
+        public StructToDefaultTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
 
         public override IEnumerable<string> GetLines() => new[] {
             $@"namespace {this.Type.Namespace} {{

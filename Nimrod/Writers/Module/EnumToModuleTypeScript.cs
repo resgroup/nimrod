@@ -7,7 +7,7 @@ namespace Nimrod.Writers.Module
 {
     public class EnumToModuleTypeScript : EnumToTypeScript
     {
-        public EnumToModuleTypeScript(TypeScriptType type) : base(type) { }
+        public EnumToModuleTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
 
         protected override IEnumerable<string> GetHeader() => new[] {
             $"enum {TsName} {{"

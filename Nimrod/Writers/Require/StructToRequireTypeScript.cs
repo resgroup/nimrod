@@ -6,7 +6,7 @@ namespace Nimrod.Writers.Require
 {
     public class StructToRequireTypeScript : StructToTypeScript
     {
-        public StructToRequireTypeScript(TypeScriptType type) : base(type) { }
+        public StructToRequireTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
 
         public override IEnumerable<string> GetLines()
         {

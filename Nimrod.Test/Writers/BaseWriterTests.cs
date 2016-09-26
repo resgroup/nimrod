@@ -49,7 +49,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_GenericListContainer()
         {
             var genericTypeDefinition = typeof(BarWrapper<int>).GetGenericTypeDefinition().ToTypeScript();
-            var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
+            var writer = new ModelToDefaultTypeScript(genericTypeDefinition, true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Bars: (T | null)[] | null;"));
         }
@@ -58,7 +58,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_GenericCustomContainer()
         {
             var genericTypeDefinition = typeof(Fuzz<int>).GetGenericTypeDefinition().ToTypeScript();
-            var writer = new ModelToDefaultTypeScript(genericTypeDefinition);
+            var writer = new ModelToDefaultTypeScript(genericTypeDefinition, true);
 
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T> | null;"));

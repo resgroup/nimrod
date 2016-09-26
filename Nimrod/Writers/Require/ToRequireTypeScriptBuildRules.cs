@@ -7,10 +7,10 @@ namespace Nimrod.Writers.Require
 {
     public class ToRequireTypeScriptBuildRules : ToTypeScriptBuildRules
     {
-        public override Func<TypeScriptType, ToTypeScript> ControllerBuilder => type => new ControllerToRequireTypeScript(type);
-        public override Func<TypeScriptType, ToTypeScript> EnumBuilder => type => new EnumToModuleTypeScript(type);
-        public override Func<TypeScriptType, ToTypeScript> StructBuilder => type => new StructToRequireTypeScript(type);
-        public override Func<TypeScriptType, ToTypeScript> ModelBuilder => type => new ModelToRequireTypeScript(type);
+        public override Func<TypeScriptType, bool, ToTypeScript> ControllerBuilder => (type, strictNullCheck) => new ControllerToRequireTypeScript(type, strictNullCheck);
+        public override Func<TypeScriptType, bool, ToTypeScript> EnumBuilder => (type, strictNullCheck) => new EnumToModuleTypeScript(type, strictNullCheck);
+        public override Func<TypeScriptType, bool, ToTypeScript> StructBuilder => (type, strictNullCheck) => new StructToRequireTypeScript(type, strictNullCheck);
+        public override Func<TypeScriptType, bool, ToTypeScript> ModelBuilder => (type, strictNullCheck) => new ModelToRequireTypeScript(type, strictNullCheck);
         public override StaticToTypeScript StaticBuilder => new StaticToRequireTypeScript();
     }
 }
