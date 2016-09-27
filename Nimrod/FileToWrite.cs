@@ -10,11 +10,13 @@ namespace Nimrod
     {
         public string Name { get; }
         public IEnumerable<string> Lines { get; }
-        public string Content => this.Lines.IndentLines().Concat("").JoinNewLine();
-        public FileToWrite(string name, IEnumerable<string> lines)
+        public IEnumerable<string> Imports { get; }
+        public string Content => this.Imports.Concat(this.Lines).IndentLines().Concat("").JoinNewLine();
+        public FileToWrite(string name, IEnumerable<string> lines, IEnumerable<string> imports)
         {
             this.Name = name;
             this.Lines = lines;
+            this.Imports = imports;
         }
     }
 }

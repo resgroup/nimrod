@@ -1,47 +1,29 @@
-﻿using Nimrod.Writers.Default;
-using Nimrod.Writers.Module;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nimrod
+namespace Nimrod.Writers
 {
-    public abstract class ToTypeScriptBuildRules
+    public class ToTypeScriptBuildRules
     {
-        public abstract Func<TypeScriptType, bool, ToTypeScript> ControllerBuilder { get; }
-        public abstract Func<TypeScriptType, bool, ToTypeScript> EnumBuilder { get; }
-        public abstract Func<TypeScriptType, bool, ToTypeScript> StructBuilder { get; }
-        public abstract Func<TypeScriptType, bool, ToTypeScript> ModelBuilder { get; }
-        public abstract StaticToTypeScript StaticBuilder { get; }
-
         public IEnumerable<ToTypeScriptBuildRule> Rules => new[] {
-                new ToTypeScriptBuildRule(type => type.Type.IsWebController(), ControllerBuilder),
-                new ToTypeScriptBuildRule(type => type.Type.IsEnum, EnumBuilder),
-                new ToTypeScriptBuildRule(type => type.Type.IsValueType, StructBuilder),
-                new ToTypeScriptBuildRule(type => true, ModelBuilder)
+                new ToTypeScriptBuildRule(type => type.Type.IsWebController(),(a, b, c) => new ControllerToTypeScript(a, b, c)),
+                new ToTypeScriptBuildRule(type => type.Type.IsEnum, (a, b, c) => new EnumToTypeScript(a, b, c)),
+                new ToTypeScriptBuildRule(type => type.Type.IsValueType, (a, b, c) => new StructToTypeScript(a, b, c)),
+                new ToTypeScriptBuildRule(type => true, (a, b, c) => new ModelToTypeScript(a, b, c))
             };
-        public ToTypeScript GetToTypeScript(TypeScriptType type, bool strictNullCheck)
+        public ToTypeScript GetToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
         {
             var item = this.Rules
                     .Where(s => s.Predicate(type))
-                    .Select(s => s.Builder(type, strictNullCheck))
+                    .Select(s => s.Builder(type, strictNullCheck, singleFile))
                     .FirstOrDefault();
             if (item == null)
             {
                 throw new NotImplementedException("Unable to build ToTypeScript object, object doesn't respect any rule");
             }
             return item;
-        }
-
-        public static ToTypeScriptBuildRules GetRules(ModuleType moduleType)
-        {
-            switch (moduleType)
-            {
-                case ModuleType.Module: return new ToModuleTypeScriptBuildRules();
-                case ModuleType.TypeScript: return new ToDefaultTypeScriptBuildRules();
-                default: throw new NotImplementedException($"The module type [{moduleType}] doesn't have build rules. You need to write a new class inheriting ToTypeScriptBuildRules");
-            }
         }
     }
 }

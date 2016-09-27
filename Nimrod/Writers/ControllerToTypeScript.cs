@@ -4,48 +4,40 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Nimrod
+namespace Nimrod.Writers
 {
     // This project can output the Class library as a NuGet Package.
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
-    public abstract class ControllerToTypeScript : ToTypeScript
+    public class ControllerToTypeScript : ToTypeScript
     {
         public string ServiceName => this.Type.Name.Replace("Controller", "Service");
         public virtual bool NeedNameSpace => false;
 
-        public ControllerToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck)
+        public ControllerToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
+            : base(type, strictNullCheck, singleFile)
         {
             if (!type.Type.IsWebController())
             {
                 throw new ArgumentOutOfRangeException($"Type {type.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(type));
             }
         }
-
-        protected abstract IEnumerable<string> GetHeader();
-        protected abstract IEnumerable<string> GetFooter();
-
-        public override IEnumerable<string> GetLines()
+        public override IEnumerable<string> GetImports()
         {
-            var headers = GetHeader();
-            var interface_ = GetInterface();
-            var implementation = GetImplementation();
-            var footer = GetFooter();
-            return headers.Concat(interface_).Concat(implementation).Concat(footer);
+            var actions = TypeDiscovery.GetWebControllerActions(this.Type.Type);
+            var importedTypes = actions.SelectMany(action => action.GetReturnTypeAndParameterTypes())
+                                       .Distinct();
+
+            var imports = ModuleHelper.GetTypesToImport(importedTypes)
+                                 .Where(type => this.SingleFile ? true : type.Namespace != this.Type.Namespace)
+                                 .Select(t => ModuleHelper.GetImportLine(t, this.SingleFile));
+            return imports.Concat(new[] {
+                $"import {{ RestApi }} from '../Nimrod';",
+                $"import {{ Promise }} from '../Nimrod';",
+                $"import {{ RequestConfig }} from '../Nimrod';"
+            });
         }
 
-        protected string GetControllerName() => this.Type.Name.Replace("Controller", "Service");
-
-        private IEnumerable<string> GetInterface()
-        {
-            var actions = this.Type.Type.GetWebControllerActions();
-            var signatures = actions.Select(a => GetMethodSignature(a));
-
-            return new[] {
-                $@"export interface I{GetControllerName()} {{
-                    {signatures.Select(signature => $"{signature};").JoinNewLine()}
-                }}"
-            };
-        }
+        public override IEnumerable<string> GetLines() => GetImplementation().Concat(this.SingleFile ? $"export default { this.Type.Name};" : "");
 
         private IEnumerable<string> GetImplementation()
         {
@@ -84,7 +76,7 @@ namespace Nimrod
                 };
             }).JoinNewLine();
             return new[] {
-                $"export class {ServiceName} implements I{ServiceName} {{",
+                $"export class {ServiceName} {{",
                 body,
                 $"}}"
             };
@@ -97,13 +89,12 @@ namespace Nimrod
         public string GetMethodSignature(MethodInfo method)
         {
             var options = new ToTypeScriptOptions(NeedNameSpace, true, this.StrictNullCheck);
-            var ns = NeedNameSpace ? "Nimrod." : "";
             var arguments = method.GetParameters()
                     .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript().ToString(options)}")
                     .Join("");
             var returnType = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true, StrictNullCheck);
 
-            return $"{method.Name}(restApi: {ns}IRestApi{arguments}, config?: {ns}IRequestConfig): {ns}IPromise<{returnType}>";
+            return $"{method.Name}(restApi: RestApi{arguments}, config?: RequestConfig): Promise<{returnType}>";
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nimrod.Writers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,11 +10,11 @@ namespace Nimrod
     public class Generator
     {
         public bool StrictNullCheck { get; }
-        public ModuleType ModuleType { get; }
-        public Generator(bool strictNullCheck, ModuleType moduleType)
+        public bool SingleFile { get; }
+        public Generator(bool strictNullCheck, bool singleFile)
         {
             this.StrictNullCheck = strictNullCheck;
-            this.ModuleType = moduleType;
+            this.SingleFile = singleFile;
         }
         public void Generate(IEnumerable<string> dllPaths, IoOperations ioOperations)
         {
@@ -23,11 +24,22 @@ namespace Nimrod
             var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
             ioOperations.WriteLog($"Discovering types..");
             var types = GetTypesToWrite(assemblies).ToList();
-            var files = GetDynamicFiles(types.AsDebugFriendlyParallel())
-                 .Union(GetStaticFiles())
-                 .ToList();
 
-            ioOperations.Dump(files);
+            if (this.SingleFile)
+            {
+                var files = types.AsDebugFriendlyParallel().Select(GetFileToWrite).ToList();
+
+                ioOperations.Dump(files);
+            }
+            else
+            {
+                var files = types.AsDebugFriendlyParallel().Select(type => new { Type = type, File = GetFileToWrite(type) })
+                    .GroupBy(t => t.Type.Namespace)
+                    .Select(a => new FileToWrite($"{a.Key}.ts", a.SelectMany(t => t.File.Lines), a.SelectMany(t => t.File.Imports).Distinct()))
+                    .ToList();
+                ioOperations.Dump(files);
+            }
+
         }
         private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
         {
@@ -48,10 +60,11 @@ namespace Nimrod
             return toWrites;
         }
 
-        private IEnumerable<FileToWrite> GetDynamicFiles(IEnumerable<Type> types)
-                => types.Select(type => new FileToWrite(GetTypeScriptFilename(type),
-                    ToTypeScriptBuildRules.GetRules(this.ModuleType).GetToTypeScript(new TypeScriptType(type), this.StrictNullCheck).GetLines())
-                );
+        private FileToWrite GetFileToWrite(Type type)
+        {
+            var toTypeScript = new ToTypeScriptBuildRules().GetToTypeScript(new TypeScriptType(type), this.StrictNullCheck, this.SingleFile);
+            return new FileToWrite(GetTypeScriptFilename(type), toTypeScript.GetLines(), toTypeScript.GetImports());
+        }
 
         static public string GetTypeScriptFilename(Type type)
         {
@@ -70,16 +83,6 @@ namespace Nimrod
                 name = type.Name;
             }
             return $"{type.Namespace}.{name}.ts";
-        }
-
-
-        private IEnumerable<FileToWrite> GetStaticFiles()
-        {
-            var buildRules = ToTypeScriptBuildRules.GetRules(this.ModuleType);
-            return new[] {
-                new FileToWrite("IRestApi.ts", buildRules.StaticBuilder.GetRestApiLines()),
-                new FileToWrite("IPromise.ts", buildRules.StaticBuilder.GetPromiseLines())
-            };
         }
     }
 }

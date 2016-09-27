@@ -55,7 +55,7 @@ namespace Nimrod.Console
                     logger = VoidLogger.Default;
                 }
                 var ioOperations = new IoOperations(new FileSystem(), options.OutputPath, logger);
-                var generator = new Generator(options.StrictNullCheck, options.ModuleType);
+                var generator = new Generator(options.StrictNullCheck, !options.Group);
                 generator.Generate(options.Files, ioOperations);
             }
         }

@@ -8,19 +8,6 @@ namespace Nimrod.Console
 {
     public class Options
     {
-        // -i -import
-        [Option('m', "module", Required = false, HelpText = "Module mode, valid values are 'typescript' for typescript namespaces style and 'module' for ECMAScript 2015 style imports.")]
-        public string Module { get; set; } = "typescript";
-
-        public ModuleType ModuleType
-        {
-            get
-            {
-                if (Module.ToLowerInvariant() == "module") return ModuleType.Module;
-                return ModuleType.TypeScript;
-            }
-        }
-
         // -n --strictNullCheck
         [Option('n', "strictNullCheck", Required = false, HelpText = "Appends '| not null' to properties as needed by typescript 2.0")]
         public bool StrictNullCheck { get; set; } = false;
@@ -32,8 +19,11 @@ namespace Nimrod.Console
         [Option('h', "help", Required = false, HelpText = "Output the help")]
         public bool Help { get; set; }
 
-        [Option('o', "output", Required = true, HelpText = "Directory where files will be generated.")]
+        [Option('o', "output", Required = false, HelpText = "Directory where files will be generated.")]
         public string OutputPath { get; set; }
+
+        [Option('g', "group", Required = false, HelpText = "Group modules by namespace")]
+        public bool Group { get; set; }
 
         // Assemblies to retrieve, -f --files
         [OptionList('f', "files", Required = true, Separator = ',', HelpText = "Specify files, separated by a comma. Example --files=bin\\Assembly1.dll,bin\\Assembly2.dll")]

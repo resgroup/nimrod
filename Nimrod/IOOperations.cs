@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
@@ -37,8 +38,7 @@ namespace Nimrod
         /// <param name="files"></param>
         public void Dump(IList<FileToWrite> files)
         {
-            this.RecreateOutputFolder();
-
+            this.RecreateOutputFolder(this.OutputFolderPath);
             this.WriteLog($"Writing {files.Count} files...");
             files.AsDebugFriendlyParallel().ForAll(content =>
             {
@@ -99,15 +99,15 @@ namespace Nimrod
             });
         }
 
-        private void RecreateOutputFolder()
+        private void RecreateOutputFolder(string folder)
         {
-            this.WriteLog($"Recursive deletion of {this.OutputFolderPath}...");
+            this.WriteLog($"Recursive deletion of {folder}...");
 
-            if (this.FileSystem.Directory.Exists(this.OutputFolderPath))
+            if (this.FileSystem.Directory.Exists(folder))
             {
-                this.FileSystem.Directory.Delete(this.OutputFolderPath, true);
+                this.FileSystem.Directory.Delete(folder, true);
             }
-            this.FileSystem.Directory.CreateDirectory(this.OutputFolderPath);
+            this.FileSystem.Directory.CreateDirectory(folder);
         }
     }
 }

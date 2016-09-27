@@ -1,5 +1,4 @@
-﻿using Nimrod.Writers.Default;
-using Nimrod.Writers.Module;
+﻿using Nimrod.Writers;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -38,7 +37,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_GenericListContainer()
         {
             var genericTypeDefinition = typeof(BarWrapper<int>).GetGenericTypeDefinition().ToTypeScript();
-            var writer = new ModelToDefaultTypeScript(genericTypeDefinition, true);
+            var writer = new ModelToTypeScript(genericTypeDefinition, true, true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Bars: (T | null)[] | null;"));
         }
@@ -47,7 +46,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_GenericCustomContainer()
         {
             var genericTypeDefinition = typeof(Fuzz<int>).GetGenericTypeDefinition().ToTypeScript();
-            var writer = new ModelToDefaultTypeScript(genericTypeDefinition, true);
+            var writer = new ModelToTypeScript(genericTypeDefinition, true, true);
 
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T> | null;"));

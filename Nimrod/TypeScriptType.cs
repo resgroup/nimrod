@@ -59,9 +59,7 @@ namespace Nimrod
                 }
                 else
                 {
-                    string iPrefix = this.Type.IsEnum ? "" : "I";
-                    string typeName = $"{iPrefix}{this.Type.Name}";
-                    result = includeNamespace ? $"{this.Type.Namespace}.{typeName}" : $"{typeName}";
+                    result = $"{(includeNamespace ? "{this.Type.Namespace}." : "")}{this.Type.Name}";
                 }
             }
             else

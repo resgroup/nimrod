@@ -4,14 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Nimrod
+namespace Nimrod.Writers
 {
     /// <summary>
     /// For classes which extends String, ie: which are Serializable
     /// </summary>
-    public abstract class StructToTypeScript : ToTypeScript
+    public class StructToTypeScript : ToTypeScript
     {
-        public StructToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck)
+
+        public StructToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
+            : base(type, strictNullCheck, singleFile)
         {
             if (!this.Type.Type.IsValueType)
             {
@@ -19,6 +21,10 @@ namespace Nimrod
             }
         }
 
-        public abstract override IEnumerable<string> GetLines();
+        public override IEnumerable<string> GetImports() => new List<string>();
+
+        public override IEnumerable<string> GetLines() => new[] {
+            this.SingleFile ? $"export default class {this.Type} extends String {{}}" : $"export class {this.Type} extends String {{}}"
+        };
     }
 }

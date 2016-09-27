@@ -28,9 +28,12 @@
     <None Include="package.json" />
     <None Include="README.md" />
     <None Include="tsd.json" />
+    <None Include="typings.json" />
+    <None Include="typings\globals\gruntjs\typings.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gruntfile.js" />
+    <Content Include="tasks\nimrod.js" />
     <None Include="tasks\Nimrod.Console\bin\Release\Nimrod.Console.exe.config" />
     <None Include="tasks\Nimrod.Console\bin\Release\Nimrod.Console.vshost.exe.config" />
     <None Include="tasks\Nimrod.Console\bin\Release\Nimrod.Console.vshost.exe.manifest" />
@@ -55,11 +58,9 @@
     <Content Include="tasks\Nimrod.Console\bin\Release\System.Web.WebPages.Razor.dll" />
     <Content Include="tasks\Nimrod.Console\bin\Release\System.Web.WebPages.Razor.xml" />
     <Content Include="tasks\Nimrod.Console\bin\Release\System.Web.WebPages.xml" />
-    <Content Include="tasks\nimrod.js" />
     <TypeScriptCompile Include="tasks\nimrod.d.ts" />
-    <TypeScriptCompile Include="typings\gruntjs\gruntjs.d.ts" />
-    <TypeScriptCompile Include="typings\node\node.d.ts" />
-    <TypeScriptCompile Include="typings\tsd.d.ts" />
+    <TypeScriptCompile Include="typings\globals\gruntjs\index.d.ts" />
+    <TypeScriptCompile Include="typings\index.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

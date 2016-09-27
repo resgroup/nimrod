@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nimrod.Writers.Module
+namespace Nimrod.Writers
 {
     public static class ModuleHelper
     {
@@ -21,11 +21,18 @@ namespace Nimrod.Writers.Module
             return baseTypes.Union(genericTypes).Union(referencedType).Where(type => !type.IsSystem());
         }
 
-        public static string GetImportLine(Type type)
+        public static string GetImportLine(Type type, bool singleFile)
         {
             var tsType = type.ToTypeScript();
             var typeName = tsType.ToString(false, false, false);
-            return $"import {typeName} from './{ tsType.TypeScriptModuleName}';";
+            if (singleFile)
+            {
+                return $"import {typeName} from './{ tsType.TypeScriptModuleName}';";
+            }
+            else
+            {
+                return $"import {{ {typeName} }} from './{ type.Namespace}';";
+            }
         }
     }
 }

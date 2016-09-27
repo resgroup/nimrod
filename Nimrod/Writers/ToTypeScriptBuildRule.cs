@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nimrod
+namespace Nimrod.Writers
 {
     public class ToTypeScriptBuildRule
     {
         public Func<TypeScriptType, bool> Predicate { get; }
-        public Func<TypeScriptType, bool, ToTypeScript> Builder { get; }
+        public Func<TypeScriptType, bool, bool, ToTypeScript> Builder { get; }
 
-        public ToTypeScriptBuildRule(Func<TypeScriptType, bool> predicate, Func<TypeScriptType, bool, ToTypeScript> builder)
+        public ToTypeScriptBuildRule(Func<TypeScriptType, bool> predicate, Func<TypeScriptType, bool, bool, ToTypeScript> builder)
         {
             this.Predicate = predicate;
             this.Builder = builder;

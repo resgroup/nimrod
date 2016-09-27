@@ -3,17 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Nimrod
+namespace Nimrod.Writers
 {
-    public abstract class ModelToTypeScript : ToTypeScript
+    public class ModelToTypeScript : ToTypeScript
     {
         public virtual bool PrefixPropertyWithNamespace => false;
         public string TsName => this.Type.ToString(new ToTypeScriptOptions().WithNullable(false));
 
-        public ModelToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck) { }
+        public ModelToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
+            : base(type, strictNullCheck, singleFile) { }
 
-        protected abstract IEnumerable<string> GetHeader();
-        protected abstract IEnumerable<string> GetFooter();
+        public override IEnumerable<string> GetImports()
+        {
+            var genericArguments = this.Type.Type.GetGenericArguments().ToHashSet();
+            var propertyTypes = this.Type.Type.GetProperties()
+                                .Select(p => p.PropertyType)
+                                .Where(p => !genericArguments.Contains(p));
+            var imports = ModuleHelper.GetTypesToImport(propertyTypes)
+                                .Where(t => this.SingleFile ? true : t.Namespace != this.Type.Namespace)
+                                .Where(t => !genericArguments.Contains(t))
+                                .Select(t => ModuleHelper.GetImportLine(t, this.SingleFile));
+
+            return imports;
+        }
+
+        protected string GetHeader()
+        {
+            if (this.SingleFile)
+            {
+                return $"interface {TsName} {{";
+            }
+            else
+            {
+                return $"export interface {TsName} {{";
+            }
+        }
+
+        protected IEnumerable<string> GetFooter()
+        {
+            var nonGenericTypescriptClass = this.Type.ToString(false, false, false);
+            yield return "}";
+            if (this.SingleFile)
+            {
+                yield return $"export default {nonGenericTypescriptClass};";
+            }
+        }
 
         private IEnumerable<string> GetBody() => this.Type.Type.GetProperties()
                     .Select(property => new
@@ -34,7 +68,7 @@ namespace Nimrod
                     });
 
         public override IEnumerable<string> GetLines() =>
-            this.GetHeader()
+            new[] { this.GetHeader() }
             .Concat(this.GetBody())
             .Concat(this.GetFooter());
     }

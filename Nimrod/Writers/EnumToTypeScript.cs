@@ -4,17 +4,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace Nimrod
+namespace Nimrod.Writers
 {
-    public abstract class EnumToTypeScript : ToTypeScript
+    public class EnumToTypeScript : ToTypeScript
     {
         public string TsName => this.Type.ToString();
-
-        protected abstract IEnumerable<string> GetHeader();
-        protected abstract IEnumerable<string> GetFooter();
-        protected abstract IEnumerable<string> GetHeaderDescription();
-        protected abstract IEnumerable<string> GetFooterDescription();
-        public EnumToTypeScript(TypeScriptType type, bool strictNullCheck) : base(type, strictNullCheck)
+        public EnumToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
+            : base(type, strictNullCheck, singleFile)
         {
             if (!this.Type.Type.IsEnum)
             {
@@ -26,17 +22,18 @@ namespace Nimrod
                 throw new NotSupportedException($"Unsupported underlying type for enums in typescript [{underlyingType}]. Only ints are supported.");
             }
         }
+        public override IEnumerable<string> GetImports() => new List<string>();
 
         public override IEnumerable<string> GetLines()
-            => this.GetHeader()
+            => new[] { this.SingleFile ? $"enum {TsName} {{" : $"export enum {TsName} {{" }
                     .Concat(this.GetBody())
-                    .Concat(this.GetFooter())
-                    .Concat(this.GetHeaderDescription())
-                    .Concat(this.GetBodyDescription())
-                    .Concat(this.GetFooterDescription());
+                    .Concat(new[] { $"}}" })
+                    .Concat(this.GetBodyDescription());
 
         public IEnumerable<string> GetBodyDescription() => new[] {
-            $@"static getDescription(item: {this.TsName}): string {{
+            $@"
+        export{(this.SingleFile ? " default" : "")} class {TsName}Utilities {{
+            static getDescription(item: {this.TsName}): string {{
                 switch (item) {{
                         {this.Type.Type.GetEnumValues()
                         .OfType<object>()
@@ -47,7 +44,8 @@ namespace Nimrod
                             return $"case {this.TsName}.{enumName}: return '{description}';";
                         }).JoinNewLine()}
                 }}
-            }}"
+            }}
+        }}"
         };
 
         public IEnumerable<string> GetBody() =>
