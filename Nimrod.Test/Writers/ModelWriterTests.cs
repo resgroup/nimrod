@@ -68,7 +68,7 @@ namespace Nimrod.Test
             var writer = new ModelToTypeScript(genericTypeDefinition.ToTypeScript(), true, true);
             string ts = writer.GetLines().JoinNewLine();
 
-            Assert.IsTrue(ts.Contains("export interface IGenericFoo<T> {"));
+            Assert.IsTrue(ts.Contains("interface GenericFoo<T> {"));
             Assert.IsTrue(ts.Contains("GenericProperty: T | null;"));
             Assert.IsTrue(ts.Contains("GenericContainer: (T | null)[] | null;"));
             Assert.IsTrue(ts.Contains("NonGenericProperty: number;"));
@@ -86,7 +86,7 @@ namespace Nimrod.Test
         {
             var writer = new ModelToTypeScript(typeof(Fuzz<int>).GetGenericTypeDefinition().ToTypeScript(), true, true);
             string ts = writer.GetLines().JoinNewLine();
-            Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T> | null;"));
+            Assert.IsTrue(ts.Contains("Fuzzs: GenericFoo<T> | null;"));
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace Nimrod.Test
         {
             var writer = new ModelToTypeScript(typeof(Fuzz<int>).ToTypeScript(), false, true);
             string ts = writer.GetLines().JoinNewLine();
-            Assert.IsTrue(ts.Contains("export default IFuzz;"));
+            Assert.IsTrue(ts.Contains("export default Fuzz;"));
         }
     }
 }

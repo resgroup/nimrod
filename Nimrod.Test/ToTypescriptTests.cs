@@ -48,7 +48,7 @@ namespace Nimrod.Test
         {
             Assert.AreEqual("{ [id: number] : number; } | null", typeof(Dictionary<int, int>).ToTypeScript().ToString());
             Assert.AreEqual("{ [id: number] : (string | null)[] | null; } | null", typeof(Dictionary<int, List<string>>).ToTypeScript().ToString());
-            Assert.AreEqual("{ [id: number] : (INonGenericClass | null)[] | null; } | null", typeof(Dictionary<int, List<NonGenericClass>>).ToTypeScript().ToString());
+            Assert.AreEqual("{ [id: number] : (NonGenericClass | null)[] | null; } | null", typeof(Dictionary<int, List<NonGenericClass>>).ToTypeScript().ToString());
         }
 
         public class Generic<T>
@@ -63,23 +63,23 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_Generic_Test()
         {
-            Assert.AreEqual("Nimrod.Test.IGeneric<string> | null", typeof(Generic<string>).ToTypeScript().ToString(true, true));
-            Assert.AreEqual("Nimrod.Test.IGeneric | null", typeof(Generic<string>).ToTypeScript().ToString(true, false));
-            Assert.AreEqual("IGeneric<string> | null", typeof(Generic<string>).ToTypeScript().ToString(false, true));
-            Assert.AreEqual("IGeneric | null", typeof(Generic<string>).ToTypeScript().ToString(false, false));
+            Assert.AreEqual("Nimrod.Test.Generic<string> | null", typeof(Generic<string>).ToTypeScript().ToString(true, true));
+            Assert.AreEqual("Nimrod.Test.Generic | null", typeof(Generic<string>).ToTypeScript().ToString(true, false));
+            Assert.AreEqual("Generic<string> | null", typeof(Generic<string>).ToTypeScript().ToString(false, true));
+            Assert.AreEqual("Generic | null", typeof(Generic<string>).ToTypeScript().ToString(false, false));
         }
 
         [Test]
         public void GetTypescriptType_GenericWithNumber_Test()
         {
-            Assert.AreEqual("Nimrod.Test.IGeneric1<string> | null", typeof(Generic1<string>).ToTypeScript().ToString(true, true));
+            Assert.AreEqual("Nimrod.Test.Generic1<string> | null", typeof(Generic1<string>).ToTypeScript().ToString(true, true));
         }
 
         [Test]
         public void GetTypescriptType_NonGeneric_Test()
         {
             var actual = typeof(NonGenericClass).ToTypeScript().ToString(true);
-            Assert.AreEqual("Nimrod.Test.INonGenericClass | null", actual);
+            Assert.AreEqual("Nimrod.Test.NonGenericClass | null", actual);
         }
 
         [Test]

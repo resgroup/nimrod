@@ -17,9 +17,7 @@ namespace Nimrod
             {
                 var options = new ToTypeScriptOptions(true, false, false);
                 var fullTypeName = this.ToString(options);
-                var index = fullTypeName.LastIndexOf(".I", StringComparison.InvariantCulture) + 1;
-                var moduleName = fullTypeName.Substring(0, index) + fullTypeName.Substring(index + 1);
-                return moduleName;
+                return fullTypeName;
             }
         }
 
@@ -59,7 +57,8 @@ namespace Nimrod
                 }
                 else
                 {
-                    result = $"{(includeNamespace ? "{this.Type.Namespace}." : "")}{this.Type.Name}";
+                    string ns = includeNamespace ? $"{this.Type.Namespace}." : "";
+                    result = $"{ns}{this.Type.Name}";
                 }
             }
             else
@@ -220,7 +219,7 @@ namespace Nimrod
             var genericTypeDefinitionName = type.GetGenericTypeDefinition().Name;
             // generics type got a name like Foo`2, we parse only before the `
             var withoutAfterBacktick = genericTypeDefinitionName.Remove(genericTypeDefinitionName.IndexOf('`'));
-            result.Append($"I{withoutAfterBacktick}");
+            result.Append(withoutAfterBacktick);
             if (options.IncludeGenericArguments)
             {
                 var args = type.GetGenericArguments()

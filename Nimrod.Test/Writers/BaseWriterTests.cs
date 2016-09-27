@@ -22,15 +22,15 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_WriteImports_GenericWrapper()
         {
-            var lines = ModuleHelper.GetImportLine(typeof(GenericWrapper<>));
-            Assert.AreEqual("import IGenericWrapper from './Nimrod.Test.GenericWrapper';", lines);
+            var lines = ModuleHelper.GetImportLine(typeof(GenericWrapper<>), true);
+            Assert.AreEqual("import GenericWrapper from './Nimrod.Test.GenericWrapper';", lines);
         }
 
         [Test]
         public void WriteModel_WriteImports_GenericItem()
         {
-            var lines = ModuleHelper.GetImportLine(typeof(GenericItem<>));
-            Assert.AreEqual("import IGenericItem from './Nimrod.Test.GenericItem';", lines);
+            var lines = ModuleHelper.GetImportLine(typeof(GenericItem<>), true);
+            Assert.AreEqual("import GenericItem from './Nimrod.Test.GenericItem';", lines);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace Nimrod.Test
             var writer = new ModelToTypeScript(genericTypeDefinition, true, true);
 
             string ts = writer.GetLines().JoinNewLine();
-            Assert.IsTrue(ts.Contains("Fuzzs: Nimrod.Test.IGenericFoo<T> | null;"));
+            Assert.IsTrue(ts.Contains("Fuzzs: GenericFoo<T> | null;"));
         }
 
     }
