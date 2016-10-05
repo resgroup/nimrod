@@ -10,6 +10,7 @@ namespace Nimrod.Writers
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class ControllerToTypeScript : ToTypeScript
     {
+        public override FileType FileType => FileType.Controller;
         public string ServiceName => this.Type.Name.Replace("Controller", "Service");
         public virtual bool NeedNameSpace => false;
 
@@ -92,9 +93,8 @@ namespace Nimrod.Writers
             var arguments = method.GetParameters()
                     .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript().ToString(options)}")
                     .Join("");
-            var returnType = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true, StrictNullCheck);
 
-            return $"{method.Name}(restApi: RestApi{arguments}, config?: RequestConfig): Promise<{returnType}>";
+            return $"{method.Name}(restApi: RestApi{arguments}, config?: RequestConfig)";
         }
     }
 }

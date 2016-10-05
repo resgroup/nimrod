@@ -116,6 +116,8 @@
     <Compile Include="Extensions\TryGetFuncDelegates.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FileToWrite.cs" />
+    <Compile Include="FileType.cs" />
+    <Compile Include="GeneratorResult.cs" />
     <Compile Include="Loggers\DateTimeLogger.cs" />
     <Compile Include="Loggers\ILogger.cs" />
     <Compile Include="IoOperations.cs" />

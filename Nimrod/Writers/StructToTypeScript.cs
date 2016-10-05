@@ -11,6 +11,7 @@ namespace Nimrod.Writers
     /// </summary>
     public class StructToTypeScript : ToTypeScript
     {
+        public override FileType FileType => FileType.Struct;
 
         public StructToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
             : base(type, strictNullCheck, singleFile)

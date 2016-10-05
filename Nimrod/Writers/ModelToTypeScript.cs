@@ -7,6 +7,7 @@ namespace Nimrod.Writers
 {
     public class ModelToTypeScript : ToTypeScript
     {
+        public override FileType FileType => FileType.Model;
         public virtual bool PrefixPropertyWithNamespace => false;
         public string TsName => this.Type.ToString(new ToTypeScriptOptions().WithNullable(false));
 

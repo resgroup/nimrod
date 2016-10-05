@@ -56,7 +56,8 @@ namespace Nimrod.Console
                 }
                 var ioOperations = new IoOperations(new FileSystem(), options.OutputPath, logger);
                 var generator = new Generator(options.StrictNullCheck, !options.Group);
-                generator.Generate(options.Files, ioOperations);
+                var result = generator.Generate(options.Files, ioOperations);
+                ioOperations.Dump(result.Files);
             }
         }
     }

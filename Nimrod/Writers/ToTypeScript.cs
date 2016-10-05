@@ -7,6 +7,7 @@ namespace Nimrod.Writers
 {
     public abstract class ToTypeScript
     {
+        public abstract FileType FileType { get; }
         public TypeScriptType Type { get; }
         public bool StrictNullCheck { get; }
         public bool SingleFile { get; }
