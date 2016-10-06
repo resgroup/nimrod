@@ -12,35 +12,25 @@ namespace Nimrod.Writers
     {
         public override FileType FileType => FileType.Controller;
         public string ServiceName => this.Type.Name.Replace("Controller", "Service");
-        public virtual bool NeedNameSpace => false;
 
-        public ControllerToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
-            : base(type, strictNullCheck, singleFile)
+        public ControllerToTypeScript(TypeScriptType type, bool strictNullCheck)
+            : base(type, strictNullCheck)
         {
             if (!type.Type.IsWebController())
             {
                 throw new ArgumentOutOfRangeException($"Type {type.Name} MUST extends System.Web.Mvc.Controller or System.Web.Http.IHttpControler", nameof(type));
             }
         }
-        public override IEnumerable<string> GetImports()
+        public override IEnumerable<Type> GetImports()
         {
             var actions = TypeDiscovery.GetWebControllerActions(this.Type.Type);
             var importedTypes = actions.SelectMany(action => action.GetReturnTypeAndParameterTypes())
                                        .Distinct();
 
-            var imports = ModuleHelper.GetTypesToImport(importedTypes)
-                                 .Where(type => this.SingleFile ? true : type.Namespace != this.Type.Namespace)
-                                 .Select(t => ModuleHelper.GetImportLine(t, this.SingleFile));
-            return imports.Concat(new[] {
-                $"import {{ RestApi }} from '../Nimrod';",
-                $"import {{ Promise }} from '../Nimrod';",
-                $"import {{ RequestConfig }} from '../Nimrod';"
-            });
+            var imports = ModuleHelper.GetTypesToImport(importedTypes);
+            return imports;
         }
-
-        public override IEnumerable<string> GetLines() => GetImplementation().Concat(this.SingleFile ? $"export default { this.Type.Name};" : "");
-
-        private IEnumerable<string> GetImplementation()
+        public override IEnumerable<string> GetLines()
         {
             var body = TypeDiscovery.GetWebControllerActions(this.Type.Type).SelectMany(method =>
             {
@@ -50,7 +40,8 @@ namespace Nimrod.Writers
                 var signature = GetMethodSignature(method);
 
                 var entityName = this.Type.Name.Substring(0, this.Type.Name.Length - "Controller".Length);
-                var genericArgString = method.GetReturnType().ToTypeScript().ToString(NeedNameSpace, true, false);
+                var genericArgString = method.GetReturnType().ToTypeScript()
+                            .ToString(p => p.Namespace != this.Type.Namespace, true, false);
 
                 var beautifulParamList = parameters
                             .Select(p => $"{p.Name}: {p.Name}")
@@ -89,7 +80,7 @@ namespace Nimrod.Writers
         /// <param name="method">The method</param>
         public string GetMethodSignature(MethodInfo method)
         {
-            var options = new ToTypeScriptOptions(NeedNameSpace, true, this.StrictNullCheck);
+            var options = new ToTypeScriptOptions(type => type.Namespace != this.Type.Namespace, true, this.StrictNullCheck);
             var arguments = method.GetParameters()
                     .Select(param => $", {param.Name}: {param.ParameterType.ToTypeScript().ToString(options)}")
                     .Join("");

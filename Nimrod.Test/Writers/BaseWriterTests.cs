@@ -20,24 +20,10 @@ namespace Nimrod.Test
         }
 
         [Test]
-        public void WriteModel_WriteImports_GenericWrapper()
-        {
-            var lines = ModuleHelper.GetImportLine(typeof(GenericWrapper<>), true);
-            Assert.AreEqual("import GenericWrapper from './Nimrod.Test.GenericWrapper';", lines);
-        }
-
-        [Test]
-        public void WriteModel_WriteImports_GenericItem()
-        {
-            var lines = ModuleHelper.GetImportLine(typeof(GenericItem<>), true);
-            Assert.AreEqual("import GenericItem from './Nimrod.Test.GenericItem';", lines);
-        }
-
-        [Test]
         public void GetTypescriptType_GenericListContainer()
         {
             var genericTypeDefinition = typeof(BarWrapper<int>).GetGenericTypeDefinition().ToTypeScript();
-            var writer = new ModelToTypeScript(genericTypeDefinition, true, true);
+            var writer = new ModelToTypeScript(genericTypeDefinition, true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Bars: (T | null)[] | null;"));
         }
@@ -46,7 +32,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_GenericCustomContainer()
         {
             var genericTypeDefinition = typeof(Fuzz<int>).GetGenericTypeDefinition().ToTypeScript();
-            var writer = new ModelToTypeScript(genericTypeDefinition, true, true);
+            var writer = new ModelToTypeScript(genericTypeDefinition, true);
 
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Fuzzs: GenericFoo<T> | null;"));

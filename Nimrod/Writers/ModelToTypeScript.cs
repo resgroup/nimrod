@@ -8,47 +8,30 @@ namespace Nimrod.Writers
     public class ModelToTypeScript : ToTypeScript
     {
         public override FileType FileType => FileType.Model;
-        public virtual bool PrefixPropertyWithNamespace => false;
-        public string TsName => this.Type.ToString(new ToTypeScriptOptions().WithNullable(false));
 
-        public ModelToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
-            : base(type, strictNullCheck, singleFile) { }
+        public ModelToTypeScript(TypeScriptType type, bool strictNullCheck)
+            : base(type, strictNullCheck) { }
 
-        public override IEnumerable<string> GetImports()
+        public override IEnumerable<Type> GetImports()
         {
             var genericArguments = this.Type.Type.GetGenericArguments().ToHashSet();
             var propertyTypes = this.Type.Type.GetProperties()
                                 .Select(p => p.PropertyType)
                                 .Where(p => !genericArguments.Contains(p));
             var imports = ModuleHelper.GetTypesToImport(propertyTypes)
-                                .Where(t => this.SingleFile ? true : t.Namespace != this.Type.Namespace)
-                                .Where(t => !genericArguments.Contains(t))
-                                .Select(t => ModuleHelper.GetImportLine(t, this.SingleFile));
+                                .Where(t => t.Namespace != this.Type.Namespace)
+                                .Where(t => !genericArguments.Contains(t));
 
             return imports;
         }
 
         protected string GetHeader()
         {
-            if (this.SingleFile)
-            {
-                return $"interface {TsName} {{";
-            }
-            else
-            {
-                return $"export interface {TsName} {{";
-            }
+            string name = this.Type.ToString(new ToTypeScriptOptions().WithNullable(false));
+            return $"export interface {name} {{";
         }
 
-        protected IEnumerable<string> GetFooter()
-        {
-            var nonGenericTypescriptClass = this.Type.ToString(false, false, false);
-            yield return "}";
-            if (this.SingleFile)
-            {
-                yield return $"export default {nonGenericTypescriptClass};";
-            }
-        }
+        protected string GetFooter() => "}";
 
         private IEnumerable<string> GetBody() => this.Type.Type.GetProperties()
                     .Select(property => new
@@ -63,7 +46,8 @@ namespace Nimrod.Writers
                         var nullable = !a.Attributes.OfType<JetBrains.Annotations.NotNullAttribute>().Any();
                         var attributeName = a.Attributes.OfType<DataMemberAttribute>().FirstOrDefault()?.Name;
                         string propertyName = string.IsNullOrWhiteSpace(attributeName) ? a.Property.Name : attributeName;
-                        var options = new ToTypeScriptOptions().WithIncludeNamespace(PrefixPropertyWithNamespace)
+                        bool includeNameSpace = this.Type.Namespace != a.Property.PropertyType.Namespace;
+                        var options = new ToTypeScriptOptions().WithIncludeNamespace(type => type.Namespace != this.Type.Namespace)
                                                                .WithNullable(this.StrictNullCheck && nullable);
                         return $"{propertyName}: { a.Property.PropertyType.ToTypeScript().ToString(options)};";
                     });

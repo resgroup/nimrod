@@ -8,13 +8,25 @@ namespace Nimrod
 {
     public class FileToWrite
     {
-        public string Name { get; }
+        public string Namespace { get; }
         public IEnumerable<string> Lines { get; }
-        public IEnumerable<string> Imports { get; }
-        public string Content => this.Imports.Concat(this.Lines).IndentLines().Concat("").JoinNewLine();
-        public FileToWrite(string name, IEnumerable<string> lines, IEnumerable<string> imports)
+        public IEnumerable<Type> Imports { get; }
+        public string Content =>
+            CustomImports.Concat(importLines).Concat(this.Lines).IndentLines().Concat("").JoinNewLine();
+
+        public IEnumerable<string> CustomImports => new[] {
+                $"import {{ RestApi, RequestConfig }} from '../Nimrod';",
+        };
+
+        public string FileName => $"{Namespace}.ts";
+
+        IEnumerable<string> importLines => this.Imports.GroupBy(t => t.Namespace)
+            .Where(t => t.Key != this.Namespace)
+            .Select(grp => $"import * as {grp.Key.Replace('.', '_')} from './{ grp.Key}';");
+
+        public FileToWrite(string @namespace, IEnumerable<string> lines, IEnumerable<Type> imports)
         {
-            this.Name = name;
+            this.Namespace = @namespace;
             this.Lines = lines;
             this.Imports = imports;
         }

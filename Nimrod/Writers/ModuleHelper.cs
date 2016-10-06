@@ -20,20 +20,6 @@ namespace Nimrod.Writers
 
             return baseTypes.Union(genericTypes).Union(referencedType).Where(type => !type.IsSystem());
         }
-
-        public static string GetImportLine(Type type, bool singleFile)
-        {
-            var tsType = type.ToTypeScript();
-            var typeName = tsType.ToString(false, false, false);
-            if (singleFile)
-            {
-                return $"import {typeName} from './{ tsType.TypeScriptModuleName}';";
-            }
-            else
-            {
-                return $"import {{ {typeName} }} from './{ type.Namespace}';";
-            }
-        }
     }
 }
 

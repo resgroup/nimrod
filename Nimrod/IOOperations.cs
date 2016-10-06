@@ -42,9 +42,9 @@ namespace Nimrod
             this.WriteLog($"Writing {files.Count} files...");
             files.AsDebugFriendlyParallel().ForAll(content =>
             {
-                this.WriteLog($"Writing {content.Name}...");
+                this.WriteLog($"Writing {content.FileName}...");
 
-                var filePath = this.FileSystem.Path.Combine(this.OutputFolderPath, content.Name);
+                var filePath = this.FileSystem.Path.Combine(this.OutputFolderPath, content.FileName);
                 this.FileSystem.File.WriteAllText(filePath, content.Content);
             });
             this.WriteLog($"Writing {files.Count} files...Done!");

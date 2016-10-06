@@ -8,16 +8,16 @@ namespace Nimrod.Writers
     public class ToTypeScriptBuildRules
     {
         public IEnumerable<ToTypeScriptBuildRule> Rules => new[] {
-                new ToTypeScriptBuildRule(type => type.Type.IsWebController(),(a, b, c) => new ControllerToTypeScript(a, b, c)),
-                new ToTypeScriptBuildRule(type => type.Type.IsEnum, (a, b, c) => new EnumToTypeScript(a, b, c)),
-                new ToTypeScriptBuildRule(type => type.Type.IsValueType, (a, b, c) => new StructToTypeScript(a, b, c)),
-                new ToTypeScriptBuildRule(type => true, (a, b, c) => new ModelToTypeScript(a, b, c))
+                new ToTypeScriptBuildRule(type => type.Type.IsWebController(),(type, b) => new ControllerToTypeScript(type, b)),
+                new ToTypeScriptBuildRule(type => type.Type.IsEnum, (type, b) => new EnumToTypeScript(type, b)),
+                new ToTypeScriptBuildRule(type => type.Type.IsValueType, (type, b) => new StructToTypeScript(type, b)),
+                new ToTypeScriptBuildRule(type => true, (type, b) => new ModelToTypeScript(type, b))
             };
-        public ToTypeScript GetToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
+        public ToTypeScript GetToTypeScript(TypeScriptType type, bool strictNullCheck)
         {
             var item = this.Rules
                     .Where(s => s.Predicate(type))
-                    .Select(s => s.Builder(type, strictNullCheck, singleFile))
+                    .Select(s => s.Builder(type, strictNullCheck))
                     .FirstOrDefault();
             if (item == null)
             {

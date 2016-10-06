@@ -10,11 +10,9 @@ namespace Nimrod
     public class Generator
     {
         public bool StrictNullCheck { get; }
-        public bool SingleFile { get; }
-        public Generator(bool strictNullCheck, bool singleFile)
+        public Generator(bool strictNullCheck)
         {
             this.StrictNullCheck = strictNullCheck;
-            this.SingleFile = singleFile;
         }
         public GeneratorResult Generate(IEnumerable<string> dllPaths, IoOperations ioOperations)
         {
@@ -25,27 +23,20 @@ namespace Nimrod
             ioOperations.WriteLog($"Discovering types..");
             var types = GetTypesToWrite(assemblies).ToList();
 
-            var stuff = types.AsDebugFriendlyParallel()
-                             .Select(type => new { Type = type, File = GetFileToWrite(type) })
+            var toTypeScritps = types.AsDebugFriendlyParallel()
+                             .Select(type => new ToTypeScriptBuildRules().GetToTypeScript(new TypeScriptType(type), this.StrictNullCheck))
                              .ToList();
-            IEnumerable<FileToWrite> files;
-            if (this.SingleFile)
-            {
-                files = stuff.Select(t => t.File.Item2);
-            }
-            else
-            {
-                files = stuff
+            var files = toTypeScritps
                    .GroupBy(t => t.Type.Namespace)
-                   .Select(a => new FileToWrite($"{a.Key}.ts", a.SelectMany(t => t.File.Item2.Lines), a.SelectMany(t => t.File.Item2.Imports).Distinct()));
-            }
-            var controllers = stuff
-                .Where(t => t.File.Item1 == FileType.Controller)
-                                   .Select(t => t.File.Item2.Name)
+                   .Select(a => new FileToWrite($"{a.Key}", a.SelectMany(t => t.GetLines()), a.SelectMany(t => t.GetImports())));
+
+            var controllers = toTypeScritps
+                .Where(t => t.FileType == FileType.Controller)
+                                   .Select(t => t.Type.Namespace)
                                    .ToList();
-            var models = stuff
-                   .Where(t => t.File.Item1 != FileType.Controller)
-                  .Select(t => t.File.Item2.Name)
+            var models = toTypeScritps
+                   .Where(t => t.FileType != FileType.Controller)
+                  .Select(t => t.Type.Namespace)
                   .ToList();
 
 
@@ -71,29 +62,5 @@ namespace Nimrod
             return toWrites;
         }
 
-        private Tuple<FileType, FileToWrite> GetFileToWrite(Type type)
-        {
-            var toTypeScript = new ToTypeScriptBuildRules().GetToTypeScript(new TypeScriptType(type), this.StrictNullCheck, this.SingleFile);
-            return Tuple.Create(toTypeScript.FileType, new FileToWrite(GetTypeScriptFilename(type), toTypeScript.GetLines(), toTypeScript.GetImports()));
-        }
-
-        static public string GetTypeScriptFilename(Type type)
-        {
-            string name;
-            if (type.IsGenericType)
-            {
-                var genericType = type.GetGenericTypeDefinition();
-                name = genericType.Name.Remove(genericType.Name.IndexOf('`'));
-            }
-            else if (type.IsWebController())
-            {
-                name = $"{type.Name.Replace("Controller", "Service")}";
-            }
-            else
-            {
-                name = type.Name;
-            }
-            return $"{type.Namespace}.{name}.ts";
-        }
     }
 }

@@ -10,8 +10,8 @@ namespace Nimrod.Writers
     {
         public override FileType FileType => FileType.Enum;
         public string TsName => this.Type.ToString();
-        public EnumToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
-            : base(type, strictNullCheck, singleFile)
+        public EnumToTypeScript(TypeScriptType type, bool strictNullCheck)
+            : base(type, strictNullCheck)
         {
             if (!this.Type.Type.IsEnum)
             {
@@ -23,17 +23,17 @@ namespace Nimrod.Writers
                 throw new NotSupportedException($"Unsupported underlying type for enums in typescript [{underlyingType}]. Only ints are supported.");
             }
         }
-        public override IEnumerable<string> GetImports() => new List<string>();
+        public override IEnumerable<Type> GetImports() => new List<Type>();
 
         public override IEnumerable<string> GetLines()
-            => new[] { this.SingleFile ? $"enum {TsName} {{" : $"export enum {TsName} {{" }
+            => new[] { $"export enum {TsName} {{" }
                     .Concat(this.GetBody())
                     .Concat(new[] { $"}}" })
                     .Concat(this.GetBodyDescription());
 
         public IEnumerable<string> GetBodyDescription() => new[] {
             $@"
-        export{(this.SingleFile ? " default" : "")} class {TsName}Utilities {{
+        export class {TsName}Utilities {{
             static getDescription(item: {this.TsName}): string {{
                 switch (item) {{
                         {this.Type.Type.GetEnumValues()

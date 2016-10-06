@@ -39,7 +39,7 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_UseDataMemberName()
         {
-            var writer = new ModelToTypeScript(typeof(DataMemberSpecificName).ToTypeScript(), true, true);
+            var writer = new ModelToTypeScript(typeof(DataMemberSpecificName).ToTypeScript(), true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("bar"));
             Assert.IsFalse(ts.Contains("Foo"));
@@ -48,7 +48,7 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_DoNotUseDataMemberName_IfEmptyOrWhitespace()
         {
-            var writer = new ModelToTypeScript(typeof(DataMemberSpecificName).ToTypeScript(), true, true);
+            var writer = new ModelToTypeScript(typeof(DataMemberSpecificName).ToTypeScript(), true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("EmptyName"));
         }
@@ -56,7 +56,7 @@ namespace Nimrod.Test
         [Test]
         public void WriteModel_IgnoreDataMember()
         {
-            var writer = new ModelToTypeScript(typeof(IgnoreDataMemberClass).ToTypeScript(), true, true);
+            var writer = new ModelToTypeScript(typeof(IgnoreDataMemberClass).ToTypeScript(), true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsFalse(ts.Contains("Foo"));
         }
@@ -65,7 +65,7 @@ namespace Nimrod.Test
         public void GetTypescriptType_Generic()
         {
             var genericTypeDefinition = typeof(GenericFoo<int>).GetGenericTypeDefinition();
-            var writer = new ModelToTypeScript(genericTypeDefinition.ToTypeScript(), true, true);
+            var writer = new ModelToTypeScript(genericTypeDefinition.ToTypeScript(), true);
             string ts = writer.GetLines().JoinNewLine();
 
             Assert.IsTrue(ts.Contains("interface GenericFoo<T> {"));
@@ -76,7 +76,7 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_GenericListContainer()
         {
-            var writer = new ModelToTypeScript(typeof(BarWrapper<int>).GetGenericTypeDefinition().ToTypeScript(), true, true);
+            var writer = new ModelToTypeScript(typeof(BarWrapper<int>).GetGenericTypeDefinition().ToTypeScript(), true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Bars: (T | null)[] | null;"));
         }
@@ -84,18 +84,11 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_GenericCustomContainer()
         {
-            var writer = new ModelToTypeScript(typeof(Fuzz<int>).GetGenericTypeDefinition().ToTypeScript(), true, true);
+            var writer = new ModelToTypeScript(typeof(Fuzz<int>).GetGenericTypeDefinition().ToTypeScript(), true);
             string ts = writer.GetLines().JoinNewLine();
             Assert.IsTrue(ts.Contains("Fuzzs: GenericFoo<T> | null;"));
         }
 
-        [Test]
-        public void ModelWriter_RequireExportWithoutGenericArgument()
-        {
-            var writer = new ModelToTypeScript(typeof(Fuzz<int>).ToTypeScript(), false, true);
-            string ts = writer.GetLines().JoinNewLine();
-            Assert.IsTrue(ts.Contains("export default Fuzz;"));
-        }
     }
 }
 

@@ -8,24 +8,25 @@ namespace Nimrod
 {
     public class ToTypeScriptOptions
     {
-        public bool IncludeNamespace { get; }
+        public Predicate<Type> IncludeNamespace { get; }
         public bool IncludeGenericArguments { get; }
         public bool Nullable { get; }
 
+
         public ToTypeScriptOptions()
         {
-            IncludeNamespace = false;
+            IncludeNamespace = (type) => false;
             IncludeGenericArguments = true;
             Nullable = true;
         }
-        public ToTypeScriptOptions(bool includeNamespace, bool includeGenericArguments, bool nullable)
+        public ToTypeScriptOptions(Predicate<Type> includeNamespace, bool includeGenericArguments, bool nullable)
         {
             this.IncludeNamespace = includeNamespace;
             this.IncludeGenericArguments = includeGenericArguments;
             this.Nullable = nullable;
         }
 
-        public ToTypeScriptOptions WithIncludeNamespace(bool includeNamespace)
+        public ToTypeScriptOptions WithIncludeNamespace(Predicate<Type> includeNamespace)
             => new ToTypeScriptOptions(includeNamespace, this.IncludeGenericArguments, this.Nullable);
 
         public ToTypeScriptOptions WithIncludeGenericArguments(bool includeGenericArguments)

@@ -23,7 +23,7 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_ArrayLike_Test()
         {
-            var writer = new EnumToTypeScript(typeof(Fruits).ToTypeScript(), false, true);
+            var writer = new EnumToTypeScript(typeof(Fruits).ToTypeScript(), false);
             var lines = writer.GetLines();
             string ts = lines.JoinNewLine();
             Assert.IsTrue(ts.Contains("enum Fruits"));
@@ -36,7 +36,7 @@ namespace Nimrod.Test
         [ExpectedException(typeof(NotSupportedException))]
         public void EnumTypesNotIntNotSupported()
         {
-            var writer = new EnumToTypeScript(typeof(SomeEnumHexa).ToTypeScript(), false, true);
+            var writer = new EnumToTypeScript(typeof(SomeEnumHexa).ToTypeScript(), false);
             var value = writer.GetLines().ToList();
             Assert.Fail("Should not reach this point", value);
         }

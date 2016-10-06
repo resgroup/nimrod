@@ -26,18 +26,18 @@ namespace Nimrod.Test
         [Test]
         public void TupleToTypeScriptTests_NameSpaceInclude_Test()
         {
-            Assert.AreEqual("{ Item1: SomeClass | null } | null", typeof(Tuple<SomeClass>).ToTypeScript().ToString(false));
-            Assert.AreEqual("{ Item1: Very.Specific.NameSpace.SomeClass | null } | null", typeof(Tuple<SomeClass>).ToTypeScript().ToString(true));
+            Assert.AreEqual("{ Item1: SomeClass | null } | null", typeof(Tuple<SomeClass>).ToTypeScript().ToString(type => false));
+            Assert.AreEqual("{ Item1: Very_Specific_NameSpace.SomeClass | null } | null", typeof(Tuple<SomeClass>).ToTypeScript().ToString(type => true));
         }
 
         [Test]
         public void TupleToTypeScriptTests_Generic_Test()
         {
-            Assert.AreEqual("{ Item1: SomeGenericClass<number> | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(false, true));
-            Assert.AreEqual("{ Item1: Very.Specific.NameSpace.SomeGenericClass<number> | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(true, true));
+            Assert.AreEqual("{ Item1: SomeGenericClass<number> | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(type => false, true));
+            Assert.AreEqual("{ Item1: Very_Specific_NameSpace.SomeGenericClass<number> | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(type => true, true));
 
-            Assert.AreEqual("{ Item1: SomeGenericClass | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(false, false));
-            Assert.AreEqual("{ Item1: Very.Specific.NameSpace.SomeGenericClass | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(true, false));
+            Assert.AreEqual("{ Item1: SomeGenericClass | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(type => false, false));
+            Assert.AreEqual("{ Item1: Very_Specific_NameSpace.SomeGenericClass | null } | null", typeof(Tuple<SomeGenericClass<int>>).ToTypeScript().ToString(type => true, false));
         }
 
         [Test]

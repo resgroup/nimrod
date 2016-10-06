@@ -11,16 +11,6 @@ namespace Nimrod
         public string Name => this.Type.Name;
         public string Namespace => this.Type.Namespace;
 
-        public string TypeScriptModuleName
-        {
-            get
-            {
-                var options = new ToTypeScriptOptions(true, false, false);
-                var fullTypeName = this.ToString(options);
-                return fullTypeName;
-            }
-        }
-
         public Type Type { get; }
         public TypeScriptType(Type type)
         {
@@ -28,13 +18,13 @@ namespace Nimrod
         }
 
 
-        public override string ToString() => this.ToString(false);
+        public override string ToString() => this.ToString((p) => false);
 
         public string ToString(ToTypeScriptOptions options)
             => this.ToString(options.IncludeNamespace, options.IncludeGenericArguments, options.Nullable);
-        public string ToString(bool includeNamespace) => this.ToString(includeNamespace, true);
-        public string ToString(bool includeNamespace, bool includeGenericArguments) => this.ToString(includeNamespace, includeGenericArguments, true);
-        public string ToString(bool includeNamespace, bool includeGenericArguments, bool strictNullCheck)
+        public string ToString(Predicate<Type> includeNamespace) => this.ToString(includeNamespace, true);
+        public string ToString(Predicate<Type> includeNamespace, bool includeGenericArguments) => this.ToString(includeNamespace, includeGenericArguments, true);
+        public string ToString(Predicate<Type> includeNamespace, bool includeGenericArguments, bool strictNullCheck)
         {
 
             var options = new ToTypeScriptOptions(includeNamespace, includeGenericArguments, strictNullCheck);
@@ -57,7 +47,7 @@ namespace Nimrod
                 }
                 else
                 {
-                    string ns = includeNamespace ? $"{this.Type.Namespace}." : "";
+                    string ns = includeNamespace(this.Type) ? $"{this.Type.Namespace.Replace('.', '_')}." : "";
                     result = $"{ns}{this.Type.Name}";
                 }
             }
@@ -211,9 +201,9 @@ namespace Nimrod
         private static string GenericTypeToTypeScript(Type type, ToTypeScriptOptions options)
         {
             var result = new StringBuilder();
-            if (options.IncludeNamespace)
+            if (options.IncludeNamespace(type))
             {
-                result.Append($"{type.GetGenericTypeDefinition().Namespace}.");
+                result.Append($"{type.GetGenericTypeDefinition().Namespace.Replace('.', '_')}.");
             }
 
             var genericTypeDefinitionName = type.GetGenericTypeDefinition().Name;

@@ -22,9 +22,6 @@ namespace Nimrod.Console
         [Option('o', "output", Required = false, HelpText = "Directory where files will be generated.")]
         public string OutputPath { get; set; }
 
-        [Option('g', "group", Required = false, HelpText = "Group modules by namespace")]
-        public bool Group { get; set; }
-
         // Assemblies to retrieve, -f --files
         [OptionList('f', "files", Required = true, Separator = ',', HelpText = "Specify files, separated by a comma. Example --files=bin\\Assembly1.dll,bin\\Assembly2.dll")]
         public IList<string> Files { get; set; }

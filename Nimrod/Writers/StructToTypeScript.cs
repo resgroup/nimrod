@@ -13,8 +13,8 @@ namespace Nimrod.Writers
     {
         public override FileType FileType => FileType.Struct;
 
-        public StructToTypeScript(TypeScriptType type, bool strictNullCheck, bool singleFile)
-            : base(type, strictNullCheck, singleFile)
+        public StructToTypeScript(TypeScriptType type, bool strictNullCheck)
+            : base(type, strictNullCheck)
         {
             if (!this.Type.Type.IsValueType)
             {
@@ -22,10 +22,10 @@ namespace Nimrod.Writers
             }
         }
 
-        public override IEnumerable<string> GetImports() => new List<string>();
+        public override IEnumerable<Type> GetImports() => new List<Type>();
 
         public override IEnumerable<string> GetLines() => new[] {
-            this.SingleFile ? $"export default class {this.Type} extends String {{}}" : $"export class {this.Type} extends String {{}}"
+            $"export class {this.Type} extends String {{}}"
         };
     }
 }
