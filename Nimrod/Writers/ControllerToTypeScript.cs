@@ -61,7 +61,7 @@ namespace Nimrod.Writers
                 else
                 {
                     paramsBody =
-                        new[] { $@"let data = {{" }
+                        new[] { $@"const data = {{" }
                         .Concat(beautifulParamList)
                         .Concat(new[] {$"}};",
                         $"return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);"

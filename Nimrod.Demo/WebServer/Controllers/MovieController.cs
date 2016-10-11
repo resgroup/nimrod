@@ -13,7 +13,7 @@ namespace Nimrod.Demo.Controllers
         // fake database
         public readonly static List<Movie> MoviesPersistence = new List<Movie> {
                 new Movie {
-                    Guid = new Guid().ToString(),
+                    Guid = Guid.NewGuid().ToString(),
                     Name = "Pulp Fiction",
                     Rating = 9,
                     Actors = new List<string> { "John Travolta", "Samuel L. Jackson"}
@@ -37,7 +37,7 @@ namespace Nimrod.Demo.Controllers
         [HttpPost]
         public JsonNetResult<Movie> Add(Movie movie)
         {
-            movie.Guid = new Guid().ToString();
+            movie.Guid = Guid.NewGuid().ToString();
 
             MoviesPersistence.Add(movie);
             return JsonNetResult.Create(movie);

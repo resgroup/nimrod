@@ -60,24 +60,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="typings.json" />
     <TypeScriptCompile Include="src\components\movies.component.ts" />
+    <TypeScriptCompile Include="src\Nimrod.Generated\Nimrod.Demo.Controllers.ts" />
+    <TypeScriptCompile Include="src\Nimrod.Generated\Nimrod.Demo.Models.ts" />
+    <TypeScriptCompile Include="src\Nimrod.ts" />
     <TypeScriptCompile Include="src\nimrod.demo.module.ts" />
-    <TypeScriptCompile Include="src\ServerApi\IPromise.d.ts" />
     <None Include="package.json" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <TypeScriptCompile Include="webpack.config.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gruntfile.js" />
-    <TypeScriptCompile Include="src\ServerApi\IRequestShoftcutConfig.d.ts" />
-    <TypeScriptCompile Include="src\ServerApi\restApi.service.ts" />
-    <TypeScriptCompile Include="typings\main\ambient\angular\index.d.ts" />
-    <TypeScriptCompile Include="typings\main\ambient\jquery\index.d.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="src\ServerApi.Generated\IRestApi.ts" />
-    <TypeScriptCompile Include="src\ServerApi.Generated\Nimrod.Demo.Controllers.MovieService.ts" />
-    <TypeScriptCompile Include="src\ServerApi.Generated\Nimrod.Demo.Models.Movie.ts" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
