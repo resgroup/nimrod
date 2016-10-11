@@ -18,57 +18,48 @@ This library allows you to skip the step to rewrite your frontend code by genera
 
 C# code
 ```csharp
-public class Movie
+namespace Nimrod.Test
 {
-    public string Name { get; }
-    public double Rating { get; }
-    public List<string> Actors { get; }
-}
-public class MovieController : Controller
-{
-    [HttpGet]
-    public JsonNetResult<Movie> Movie(int id)
+    public class Movie
     {
-        throw new NotImplementedException();
+        public string Name { get; }
+        public double Rating { get; }
+        public List<string> Actors { get; }
+    }
+    public class MovieController : Controller
+    {
+        [HttpGet]
+        public JsonNetResult<Movie> MovieById(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 ```
 Generated TypeScript code
 ```ts
-namespace Nimrod.Test.ModelExamples {
-    export interface IMovie {
-        Name: string;
-        Rating: number;
-        Actors: string[];
-    }
+/* Nimrod.Test.ts */
+import { RestApi, RequestConfig } from '../Nimrod';
+export interface IMovie {
+    Name: string;
+    Rating: number;
+    Actors: string[];
 }
-namespace Nimrod.Test.ModelExamples {
-    export interface IMovieService {
-        Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie>;
-    }
-    export class MovieService implements IMovieService {
-        public Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie> {
-            (config || (config = {})).params = {
-                id: id
-            };
-            return restApi.Get<Nimrod.Test.ModelExamples.IMovie>('/Movie/Movie', config);
-        }
-    }
-    service('serverApi.MovieService', MovieService);
+export class MovieService {
+    public Movie(restApi: RestApi, id: number, config?: RequestConfig) {
+    (config || (config = {})).params = {
+        id: id
+    };
+    return restApi.Get<IMovie>('/Movie/MovieById', config);
 }
-
 ```
-You will need to implemented interfaces `IRequestShortcutConfig` and `IPromise` according to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
+You will need to implemented the object `RestApi` and `RequestConfig` according to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
 
 ```ts
-namespace Nimrod {
-    export interface IRequestShortcutConfig extends ng.IRequestShortcutConfig {
-    }
-	export interface IPromise<T> extends ng.IPromise<T> {
-    }
+export interface RequestConfig extends angular.IRequestShortcutConfig {
 }
 ```
-The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. The wrapper has to implement the `Nimrod.IRestApi` interface which is composed of the four methods Get, Post, Put and Delete.
+The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. The wrapper has to implement the `RestApi` interface which is composed of the four methods Get, Post, Put and Delete.
 
 Example with Angular and the [$http](https://docs.angularjs.org/api/ng/service/$http) angular service:
 
@@ -111,13 +102,12 @@ When you launch Nimrod, the following steps happen:
 
 Use the Nimrod.Console utilities to generate files
 ```shell
-Nimrod.Console.exe -m typescript -o .\\src\\ServerApi.Generated --files=..\\assembly1.dll,..\\assembly2.dll',
+Nimrod.Console.exe -o .\\src\\ServerApi.Generated --files=..\\assembly1.dll,..\\assembly2.dll',
 ```
 ###  Options
 
 |Name|Alias|Description|
 |:----|:----|:-----|
-|--module|-m|Module mode, valid values are `typescript` for [typescript] modules style and `module` for [ES2015] modules|
 |--output|-o|Directory where files will be generated|
 |--files|-f|Assembly files to read, separated by a comma. Example : --files=bin\\Assembly1.dll,bin\\Assembly2.dll|
 |--verbose|-v|Prints all messages to standard output|
@@ -149,7 +139,6 @@ module.exports = function(grunt) {
     nimrod: {
       default_options: {
         options: {
-			module: 'typescript',
 			output: 'C:\\temp\\nimrod-test-generated',
 			files : ['C:\\path\\to\\assembly1\\assembly1.dll'
 				    ,'C:\\path\\to\\assembly2\\assembly2.dll']
