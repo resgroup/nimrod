@@ -10,7 +10,6 @@ import * as child from 'child_process';
 export interface IGruntNimrodOptions {
     exe?: string;
     verbose?: boolean;
-    module?: string;
     output?: string;
     strictNullCheck?: boolean;
     files?: string[];
@@ -36,7 +35,7 @@ module.exports = function (grunt: IGrunt) {
 
         let pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
 
-        let cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose + strictNullCheck;
+        let cmd = pathExe + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose + strictNullCheck;
         if (options.verbose) {
             grunt.log.write('Executing command : ' + cmd);
         }

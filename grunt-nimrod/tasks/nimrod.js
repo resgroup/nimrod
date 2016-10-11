@@ -14,7 +14,7 @@ module.exports = function (grunt) {
             strictNullCheck = ' --strictNullCheck';
         }
         var pathExe = options.exe || __dirname + '\\Nimrod.Console\\bin\\Release\\Nimrod.Console.exe';
-        var cmd = pathExe + ' -m ' + options.module + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose + strictNullCheck;
+        var cmd = pathExe + ' -o ' + options.output + ' --files=' + options.files.join(',') + verbose + strictNullCheck;
         if (options.verbose) {
             grunt.log.write('Executing command : ' + cmd);
         }

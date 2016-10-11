@@ -58,7 +58,7 @@ namespace Nimrod
                 var genericArguments = this.Type.GetGenericArguments();
                 if (this.Type.FullName != null && this.Type.FullName.Contains("System.Nullable") && genericArguments.Length == 1)
                 {
-                    result = $"{genericArguments[0].ToTypeScript().ToString(includeNamespace)}{(strictNullCheck ? strictNullCheckString : "")}";
+                    result = $"{genericArguments[0].ToTypeScript().ToString(includeNamespace)}{strictNullCheckString}";
                 }
                 else
                 {

@@ -47,8 +47,6 @@ namespace Nimrod.Writers
                             .Select(p => $"{p.Name}: {p.Name}")
                             .Join($",{Environment.NewLine}");
 
-
-
                 bool isGetOrDelete = httpVerb == HttpMethodAttribute.Get || httpVerb == HttpMethodAttribute.Delete;
 
                 var paramsBody = isGetOrDelete ?
