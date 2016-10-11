@@ -35,40 +35,28 @@ public class MovieController : Controller
 ```
 Generated TypeScript code
 ```ts
-namespace Nimrod.Test.ModelExamples {
-    export interface IMovie {
-        Name: string;
-        Rating: number;
-        Actors: string[];
-    }
+/* Nimrod.Test.ts */
+import { RestApi, RequestConfig } from '../Nimrod';
+export interface IMovie {
+    Name: string;
+    Rating: number;
+    Actors: string[];
 }
-namespace Nimrod.Test.ModelExamples {
-    export interface IMovieService {
-        Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie>;
-    }
-    export class MovieService implements IMovieService {
-        public Movie(restApi: Nimrod.IRestApi, id: number, config?: Nimrod.IRequestShortcutConfig): Nimrod.IPromise<Nimrod.Test.ModelExamples.IMovie> {
-            (config || (config = {})).params = {
-                id: id
-            };
-            return restApi.Get<Nimrod.Test.ModelExamples.IMovie>('/Movie/Movie', config);
-        }
-    }
-    service('serverApi.MovieService', MovieService);
+export class MovieService {
+    public Movie(restApi: RestApi, id: number, config?: RequestConfig) {
+    (config || (config = {})).params = {
+        id: id
+    };
+    return restApi.Get<IMovie>('/Movie/Movie', config);
 }
-
 ```
-You will need to implemented interfaces `IRequestShortcutConfig` and `IPromise` according to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
+You will need to implemented the object `RestApi` and `RequestConfig` according to your javascript framework. It could be Angular or React or whatever, here is an example that works for Angular:
 
 ```ts
-namespace Nimrod {
-    export interface IRequestShortcutConfig extends ng.IRequestShortcutConfig {
-    }
-	export interface IPromise<T> extends ng.IPromise<T> {
-    }
+export interface RequestConfig extends angular.IRequestShortcutConfig {
 }
 ```
-The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. The wrapper has to implement the `Nimrod.IRestApi` interface which is composed of the four methods Get, Post, Put and Delete.
+The `restApi` parameter is a wrapper you must write that will wrap the logic of the ajax request. The wrapper has to implement the `RestApi` interface which is composed of the four methods Get, Post, Put and Delete.
 
 Example with Angular and the [$http](https://docs.angularjs.org/api/ng/service/$http) angular service:
 
