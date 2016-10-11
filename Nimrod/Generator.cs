@@ -28,7 +28,17 @@ namespace Nimrod
                              .ToList();
             var files = toTypeScritps
                    .GroupBy(t => t.Type.Namespace)
-                   .Select(a => new FileToWrite($"{a.Key}", a.SelectMany(t => t.GetLines()), a.SelectMany(t => t.GetImports())));
+                   .Select(a =>
+                   {
+                       bool containsControllers = a.Any(aaa => aaa.FileType == FileType.Controller);
+                       var extraImport = containsControllers ? new[] { $"import {{ RestApi, RequestConfig }} from '../Nimrod';" } : new string[0];
+                       var imports = a.SelectMany(t => t.GetImports())
+                                      .GroupBy(t => t.Namespace)
+                                      .Where(t => t.Key != a.Key)
+                                      .Select(grp => $"import * as {grp.Key.Replace('.', '_')} from './{ grp.Key}';");
+                       var content = a.SelectMany(t => t.GetLines());
+                       return new FileToWrite($"{a.Key}", extraImport.Concat(imports).Concat(content));
+                   });
 
             var controllers = toTypeScritps
                 .Where(t => t.FileType == FileType.Controller)
@@ -51,7 +61,7 @@ namespace Nimrod
                                            .ToList();
             var referencedTypes = TypeDiscovery.EnumerateTypes(assemblyTypes)
                                                .Union(assemblyTypes)
-                                               .Union(controllers);
+                                               .Union(controllers.Where(c => c.GetWebControllerActions().Any()));
 
             // Write all types except the ones in System
             var toWrites = referencedTypes

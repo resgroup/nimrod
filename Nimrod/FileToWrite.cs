@@ -10,25 +10,13 @@ namespace Nimrod
     {
         public string Namespace { get; }
         public IEnumerable<string> Lines { get; }
-        public IEnumerable<Type> Imports { get; }
-        public string Content =>
-            CustomImports.Concat(importLines).Concat(this.Lines).IndentLines().Concat("").JoinNewLine();
-
-        public IEnumerable<string> CustomImports => new[] {
-                $"import {{ RestApi, RequestConfig }} from '../Nimrod';",
-        };
-
+        public string Content => this.Lines.IndentLines().Concat("").JoinNewLine();
         public string FileName => $"{Namespace}.ts";
 
-        IEnumerable<string> importLines => this.Imports.GroupBy(t => t.Namespace)
-            .Where(t => t.Key != this.Namespace)
-            .Select(grp => $"import * as {grp.Key.Replace('.', '_')} from './{ grp.Key}';");
-
-        public FileToWrite(string @namespace, IEnumerable<string> lines, IEnumerable<Type> imports)
+        public FileToWrite(string @namespace, IEnumerable<string> lines)
         {
             this.Namespace = @namespace;
-            this.Lines = lines;
-            this.Imports = imports;
+            this.Lines = lines.ThrowIfNull(nameof(lines));
         }
     }
 }

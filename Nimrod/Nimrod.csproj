@@ -112,6 +112,7 @@
     <Compile Include="Extensions\Memoization.cs" />
     <Compile Include="Extensions\MethodExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\SmartEnumerable.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TryGetFuncDelegates.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />

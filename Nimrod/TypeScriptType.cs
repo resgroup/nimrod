@@ -188,7 +188,7 @@ namespace Nimrod
                 }
                 var valueTypescript = genericArguments[1].ToTypeScript().ToString(options);
 
-                return $"{{ [id: {keyTypescript}] : {valueTypescript}; }}";
+                return $"{{ [id: {keyTypescript}]: {valueTypescript}; }}";
             }
             else
             {

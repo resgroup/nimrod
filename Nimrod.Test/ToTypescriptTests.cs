@@ -46,9 +46,9 @@ namespace Nimrod.Test
         [Test]
         public void GetTypescriptType_Dictionary_Test()
         {
-            Assert.AreEqual("{ [id: number] : number; } | null", typeof(Dictionary<int, int>).ToTypeScript().ToString());
-            Assert.AreEqual("{ [id: number] : (string | null)[] | null; } | null", typeof(Dictionary<int, List<string>>).ToTypeScript().ToString());
-            Assert.AreEqual("{ [id: number] : (NonGenericClass | null)[] | null; } | null", typeof(Dictionary<int, List<NonGenericClass>>).ToTypeScript().ToString());
+            Assert.AreEqual("{ [id: number]: number; } | null", typeof(Dictionary<int, int>).ToTypeScript().ToString());
+            Assert.AreEqual("{ [id: number]: (string | null)[] | null; } | null", typeof(Dictionary<int, List<string>>).ToTypeScript().ToString());
+            Assert.AreEqual("{ [id: number]: (NonGenericClass | null)[] | null; } | null", typeof(Dictionary<int, List<NonGenericClass>>).ToTypeScript().ToString());
         }
 
         public class Generic<T>

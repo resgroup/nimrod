@@ -43,27 +43,32 @@ namespace Nimrod.Writers
                 var genericArgString = method.GetReturnType().ToTypeScript()
                             .ToString(p => p.Namespace != this.Type.Namespace, true, false);
 
-                var beautifulParamList = parameters
-                            .Select(p => $"{p.Name}: {p.Name}")
-                            .Join($",{Environment.NewLine}");
+                var beautifulParamList = parameters.ToSmartEnumerable()
+                            .Select(p => $"{p.Value.Name}: {p.Value.Name}{(p.IsLast ? "" : ",")}");
 
                 bool isGetOrDelete = httpVerb == HttpMethodAttribute.Get || httpVerb == HttpMethodAttribute.Delete;
 
-                var paramsBody = isGetOrDelete ?
-                    $@"(config || (config = {{}})).params = {{
-                    {beautifulParamList}
-                    }};
-                    return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', config);" :
+                IEnumerable<string> paramsBody;
+                if (isGetOrDelete)
+                {
+                    paramsBody =
+                        new[] { $@"(config || (config = {{}})).params = {{" }
+                        .Concat(beautifulParamList)
+                        .Concat(new[] {$"}};",
+                        $"return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', config);"
+                    });
+                }
+                else
+                {
+                    paramsBody =
+                        new[] { $@"let data = {{" }
+                        .Concat(beautifulParamList)
+                        .Concat(new[] {$"}};",
+                        $"return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);"
+                    });
+                }
 
-                   $@"let data = {{
-                    {beautifulParamList}
-                    }};
-                    return restApi.{httpVerb}<{genericArgString}>('/{entityName}/{method.Name}', data, config);";
-                return new[] {
-                    $"public {signature} {{",
-                    paramsBody,
-                    $"}}"
-                };
+                return new[] { $"public {signature} {{", paramsBody.Join(Environment.NewLine), $"}}" };
             }).JoinNewLine();
             return new[] {
                 $"export class {ServiceName} {{",
