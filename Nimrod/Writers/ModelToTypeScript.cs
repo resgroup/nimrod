@@ -46,8 +46,8 @@ namespace Nimrod.Writers
                         var nullable = !a.Attributes.OfType<JetBrains.Annotations.NotNullAttribute>().Any();
                         var attributeName = a.Attributes.OfType<DataMemberAttribute>().FirstOrDefault()?.Name;
                         string propertyName = string.IsNullOrWhiteSpace(attributeName) ? a.Property.Name : attributeName;
-                        bool includeNameSpace = this.Type.Namespace != a.Property.PropertyType.Namespace;
-                        var options = new ToTypeScriptOptions().WithIncludeNamespace(type => type.Namespace != this.Type.Namespace)
+                        Predicate<Type> includeNamespacePredicate = type => this.Type.Namespace != type.Namespace;
+                        var options = new ToTypeScriptOptions().WithIncludeNamespace(includeNamespacePredicate)
                                                                .WithNullable(this.StrictNullCheck && nullable);
                         return $"{propertyName}: { a.Property.PropertyType.ToTypeScript().ToString(options)};";
                     });

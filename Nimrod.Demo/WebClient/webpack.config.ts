@@ -10,12 +10,10 @@ var config = {
         filename: 'nimrod.demo.bundle.js'
     },
     resolve: {
-        extensions: ['', '.ts', '.tsx', '.js', '.jsx'],
-        alias: {
-        }
+        extensions: ['.ts', '.js'],
     },
     module: {
-        loaders: [{ test: /\.tsx?$/, loader: 'awesome-typescript-loader' }]
+        loaders: [{ test: /\.ts$/, loader: 'awesome-typescript-loader' }]
     }
 };
 

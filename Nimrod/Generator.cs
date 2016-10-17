@@ -21,7 +21,7 @@ namespace Nimrod
 
             var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
             ioOperations.WriteLog($"Discovering types..");
-            var types = GetTypesToWrite(assemblies).ToList();
+            var types = this.GetTypesToWrite(assemblies).ToList();
 
             var toTypeScritps = types.AsDebugFriendlyParallel()
                              .Select(type => new ToTypeScriptBuildRules().GetToTypeScript(new TypeScriptType(type), this.StrictNullCheck))
