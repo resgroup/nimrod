@@ -10,7 +10,7 @@ namespace Nimrod.Writers
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class ControllerToTypeScript : ToTypeScript
     {
-        public override FileType FileType => FileType.Controller;
+        public override ObjectType ObjectType => ObjectType.Controller;
         public string ServiceName => this.Type.Name.Replace("Controller", "Service");
 
         public ControllerToTypeScript(TypeScriptType type, bool strictNullCheck)

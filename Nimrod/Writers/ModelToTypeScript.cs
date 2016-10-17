@@ -7,7 +7,7 @@ namespace Nimrod.Writers
 {
     public class ModelToTypeScript : ToTypeScript
     {
-        public override FileType FileType => FileType.Model;
+        public override ObjectType ObjectType => ObjectType.Model;
 
         public ModelToTypeScript(TypeScriptType type, bool strictNullCheck)
             : base(type, strictNullCheck) { }
@@ -19,7 +19,6 @@ namespace Nimrod.Writers
                                 .Select(p => p.PropertyType)
                                 .Where(p => !genericArguments.Contains(p));
             var imports = ModuleHelper.GetTypesToImport(propertyTypes)
-                                .Where(t => t.Namespace != this.Type.Namespace)
                                 .Where(t => !genericArguments.Contains(t));
 
             return imports;

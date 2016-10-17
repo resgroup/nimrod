@@ -8,7 +8,7 @@ namespace Nimrod.Writers
 {
     public class EnumToTypeScript : ToTypeScript
     {
-        public override FileType FileType => FileType.Enum;
+        public override ObjectType ObjectType => ObjectType.Enum;
         public string TsName => this.Type.ToString();
         public EnumToTypeScript(TypeScriptType type, bool strictNullCheck)
             : base(type, strictNullCheck)

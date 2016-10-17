@@ -8,6 +8,8 @@ namespace Nimrod
 {
     public static class TypeDiscovery
     {
+
+        public static HashSet<Type> EnumerateTypes(Type startType) => EnumerateTypes(new[] { startType });
         /// <summary>
         /// Get every type referenced by this type,
         /// including itself, Properties, Generics and Inheritance
@@ -17,7 +19,6 @@ namespace Nimrod
         // Func<int, int> fib = null;
         // fib = n => n > 1 ? fib(n – 1) + fib(n – 2) : n;
         // fib = fib.Memoize();
-        public static HashSet<Type> EnumerateTypes(Type startType) => EnumerateTypes(new[] { startType });
         public static HashSet<Type> EnumerateTypes(IEnumerable<Type> startTypes)
         {
             Func<Type, List<Type>> memoizedEnumerateTypes = null;

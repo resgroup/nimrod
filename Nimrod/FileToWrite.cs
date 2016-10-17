@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Nimrod
 {
@@ -15,6 +14,10 @@ namespace Nimrod
 
         public FileToWrite(string @namespace, IEnumerable<string> lines)
         {
+            if (string.IsNullOrWhiteSpace(@namespace))
+            {
+                throw new ArgumentNullException(nameof(@namespace));
+            }
             this.Namespace = @namespace;
             this.Lines = lines.ThrowIfNull(nameof(lines));
         }

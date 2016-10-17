@@ -21,55 +21,61 @@ namespace Nimrod
 
             var assemblies = fileInfos.Select(t => Assembly.LoadFile(t.FullName));
             ioOperations.WriteLog($"Discovering types..");
-            var types = this.GetTypesToWrite(assemblies).ToList();
+            var assembliesTypes = this.GetTypesToWrite(assemblies).ToList();
 
-            var toTypeScritps = types.AsDebugFriendlyParallel()
-                             .Select(type => new ToTypeScriptBuildRules().GetToTypeScript(new TypeScriptType(type), this.StrictNullCheck))
-                             .ToList();
-            var files = toTypeScritps
-                   .GroupBy(t => t.Type.Namespace)
-                   .Select(a =>
-                   {
-                       bool containsControllers = a.Any(aaa => aaa.FileType == FileType.Controller);
-                       var extraImport = containsControllers ? new[] { $"import {{ RestApi, RequestConfig }} from '../Nimrod';" } : new string[0];
-                       var imports = a.SelectMany(t => t.GetImports())
-                                      .GroupBy(t => t.Namespace)
-                                      .Where(t => t.Key != a.Key)
-                                      .Select(grp => $"import * as {grp.Key.Replace('.', '_')} from './{ grp.Key}';");
-                       var content = a.SelectMany(t => t.GetLines());
-                       return new FileToWrite($"{a.Key}", extraImport.Concat(imports).Concat(content));
-                   });
+            var referencedTypes = TypeDiscovery.EnumerateTypes(assembliesTypes);
 
-            var controllers = toTypeScritps
-                .Where(t => t.FileType == FileType.Controller)
-                                   .Select(t => t.Type.Namespace)
-                                   .ToList();
-            var models = toTypeScritps
-                   .Where(t => t.FileType != FileType.Controller)
-                  .Select(t => t.Type.Namespace)
-                  .ToList();
-
-
-            return new GeneratorResult(controllers, models, files.ToList());
-
-        }
-        private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
-        {
-            var controllers = TypeDiscovery.GetWebControllers(assemblies).ToList();
-            var assemblyTypes = controllers.SelectMany(TypeDiscovery.GetWebControllerActions)
-                                           .SelectMany(MethodExtensions.GetReturnTypeAndParameterTypes)
-                                           .ToList();
-            var referencedTypes = TypeDiscovery.EnumerateTypes(assemblyTypes)
-                                               .Union(assemblyTypes)
-                                               .Union(controllers.Where(c => c.GetWebControllerActions().Any()));
-
-            // Write all types except the ones in System
-            var toWrites = referencedTypes
-                .Where(t => !t.IsSystem())
+            var types = referencedTypes
+                // if a generic, get the type definition, not the actual implementation
                 .Select(t => t.IsGenericType ? t.GetGenericTypeDefinition() : t)
                 .Distinct()
                 .ToList();
-            return toWrites;
+
+            var toTypeScripts = types
+                // do not write System types
+                .Where(t => !t.IsSystem())
+                .Select(type => new TypeScriptType(type))
+                .Select(type => ToTypeScript.Build(type, this.StrictNullCheck))
+                // an abstract controller should not be called directly by the api
+                .Where(t => !t.IsAbstractController)
+                .ToList();
+            var files = toTypeScripts
+                         .AsDebugFriendlyParallel()
+                         .GroupBy(t => t.Type.Namespace)
+                         .Select(grp => GetFileForNamespaceGroup(grp.Key, grp.ToList()));
+
+            return new GeneratorResult(toTypeScripts, files.ToList());
+        }
+
+        private FileToWrite GetFileForNamespaceGroup(string @namespace, List<ToTypeScript> toTypeScripts)
+        {
+            bool containsControllers = toTypeScripts.Any(obj => obj.ObjectType == ObjectType.Controller);
+            // add static import only if the files is going to contains controllers
+            var extraImport = containsControllers ? new[] { $"import {{ RestApi, RequestConfig }} from '../Nimrod';" } : new string[0];
+            var imports = toTypeScripts
+                        .SelectMany(t => t.GetImports())
+                        // do not write import for the same namespace
+                        .Where(import => import.Namespace != @namespace)
+                        .GroupBy(import => import.Namespace)
+                        .Select(grp => $"import * as {grp.Key.Replace('.', '_')} from './{ grp.Key}';")
+                        .OrderBy(importLine => importLine);
+            var content = toTypeScripts.SelectMany(t => t.GetLines());
+            return new FileToWrite($"{@namespace}", extraImport.Concat(imports).Concat(content));
+        }
+
+        /// <summary>
+        /// Get every type of every method referenced by an action of a web controller.
+        /// </summary>
+        private List<Type> GetTypesToWrite(IEnumerable<Assembly> assemblies)
+        {
+            var controllers = TypeDiscovery.GetWebControllers(assemblies)
+                    .Where(c => c.GetWebControllerActions().Any())
+                    .ToList();
+            var assemblyTypes = controllers.SelectMany(TypeDiscovery.GetWebControllerActions)
+                                           .SelectMany(MethodExtensions.GetReturnTypeAndParameterTypes)
+                                           .ToList();
+            var result = assemblyTypes.Union(controllers).ToList();
+            return result;
         }
 
     }
