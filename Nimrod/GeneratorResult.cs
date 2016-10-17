@@ -8,7 +8,7 @@ namespace Nimrod
 {
     public class GeneratorResult
     {
-        private List<ToTypeScript> ToTypeScripts;
+        public List<ToTypeScript> ToTypeScripts { get; }
 
         public IEnumerable<ToTypeScript> Services => this.ToTypeScripts.Where(t => t.ObjectType == ObjectType.Controller);
         public IEnumerable<ToTypeScript> Models => this.ToTypeScripts.Where(t => t.ObjectType != ObjectType.Controller);
