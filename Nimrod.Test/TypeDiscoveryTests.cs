@@ -54,34 +54,41 @@ namespace Nimrod.Test
         public class Cat { public Dog Dog { get; } }
         public class Dog { public Cat Cat { get; } }
 
+
+        [Test]
+        public void EnumerateTypesTest_ArrayType()
+        {
+            var result = TypeDiscovery.EnumerateTypes(typeof(List<Cat>)).OrderBy(t => t.Name).ToList();
+
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(typeof(Cat), result[0]);
+            Assert.AreEqual(typeof(Dog), result[1]);
+        }
+        [Test]
+        public void EnumerateTypesTest_MultipleGenericsEmbeded()
+        {
+            var result = TypeDiscovery.EnumerateTypes(typeof(List<List<List<Cat>>>)).OrderBy(t => t.Name).ToList();
+
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(typeof(Cat), result[0]);
+            Assert.AreEqual(typeof(Dog), result[1]);
+        }
         [Test]
         public void EnumerateTypesTest_LoopReference()
         {
-            var result = TypeDiscovery.EnumerateTypes(typeof(Cat))
-                         .OrderBy(t => t.Name)
-                         .ToList();
+            var result = TypeDiscovery.EnumerateTypes(typeof(Cat)).OrderBy(t => t.Name).ToList();
 
-            Assert.AreEqual(3, result.Count);
-
+            Assert.AreEqual(2, result.Count);
             Assert.AreEqual(typeof(Cat), result[0]);
             Assert.AreEqual(typeof(Dog), result[1]);
-            Assert.AreEqual(typeof(object), result[2]);
         }
 
 
         [Test]
         public void EnumerateTypesTest_string()
         {
-            var result = TypeDiscovery.EnumerateTypes(typeof(string))
-                         .OrderBy(t => t.Name)
-                         .ToList();
-
-            Assert.AreEqual(4, result.Count);
-
-            Assert.AreEqual(typeof(int), result[0]);
-            Assert.AreEqual(typeof(object), result[1]);
-            Assert.AreEqual(typeof(string), result[2]);
-            Assert.AreEqual(typeof(ValueType), result[3]);
+            var result = TypeDiscovery.EnumerateTypes(typeof(string)).OrderBy(t => t.Name).ToList();
+            Assert.AreEqual(0, result.Count);
         }
 
         public class Nothing { }

@@ -8,8 +8,7 @@ namespace Nimrod
 {
     public static class TypeDiscovery
     {
-        public static HashSet<Type> EnumerateTypes(Type startType) => EnumerateTypes(startType, _ => true);
-        public static HashSet<Type> EnumerateTypes(Type startType, Predicate<Type> predicate) => EnumerateTypes(new[] { startType }, predicate);
+        public static HashSet<Type> EnumerateTypes(Type startType) => EnumerateTypes(new[] { startType });
         /// <summary>
         /// Get every type referenced by this type,
         /// including itself, Properties, Generics and Inheritance
@@ -19,23 +18,17 @@ namespace Nimrod
         // Func<int, int> fib = null;
         // fib = n => n > 1 ? fib(n – 1) + fib(n – 2) : n;
         // fib = fib.Memoize();
-        public static HashSet<Type> EnumerateTypes(IEnumerable<Type> startTypes, Predicate<Type> predicate)
+        public static HashSet<Type> EnumerateTypes(IEnumerable<Type> startTypes)
         {
             Func<Type, List<Type>> memoizedEnumerateTypes = null;
             memoizedEnumerateTypes = type =>
             {
                 try
                 {
-                    if (predicate(type))
-                    {
-                        var referencedTypes = type.ReferencedTypes();
-                        var recursiveReferencedTypes = referencedTypes.SelectMany(memoizedEnumerateTypes);
-                        return referencedTypes.Union(recursiveReferencedTypes).ToList();
-                    }
-                    else
-                    {
-                        return new List<Type>();
-                    }
+                    var referencedTypes = type.ReferencedTypes();
+                    var recursiveReferencedTypes = referencedTypes.SelectMany(memoizedEnumerateTypes);
+                    return referencedTypes.Where(t => !t.IsSystem())
+                                          .Union(recursiveReferencedTypes).ToList();
                 }
                 catch (FileNotFoundException fileNotFoundException)
                 {
@@ -64,13 +57,20 @@ You should check that the DLLs exists in the folder, and version numbers are the
         public static HashSet<Type> ReferencedTypes(this Type type)
         {
             var generics = type.GetGenericArguments();
-            var baseTypes = type.GetBaseTypes();
-            var properties = type.GetProperties()
-                // properties (filter indexers http://stackoverflow.com/questions/1347936/indentifying-a-custom-indexer-using-reflection-in-c-sharp)
-                .Where(p => p.GetIndexParameters().Length == 0)
-                .Select(t => t.PropertyType);
-
-            return generics.Union(properties).Union(baseTypes).Union(type).ToHashSet();
+            if (type.IsSystem())
+            {
+                // if the type is system, we only want to seek the generics that can belongs to the caller
+                return generics.ToHashSet();
+            }
+            else
+            {
+                var baseTypes = type.GetBaseTypes();
+                var properties = type.GetProperties()
+                    // properties (filter indexers http://stackoverflow.com/questions/1347936/indentifying-a-custom-indexer-using-reflection-in-c-sharp)
+                    .Where(p => p.GetIndexParameters().Length == 0)
+                    .Select(t => t.PropertyType);
+                return generics.Union(properties).Union(baseTypes).Union(type).ToHashSet();
+            }
         }
 
         static public IEnumerable<Type> GetWebControllers(IEnumerable<Assembly> assemblies)
