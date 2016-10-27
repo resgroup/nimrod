@@ -8,8 +8,8 @@ namespace Nimrod
 {
     public static class TypeDiscovery
     {
-
-        public static HashSet<Type> EnumerateTypes(Type startType) => EnumerateTypes(new[] { startType });
+        public static HashSet<Type> EnumerateTypes(Type startType) => EnumerateTypes(startType, _ => true);
+        public static HashSet<Type> EnumerateTypes(Type startType, Predicate<Type> predicate) => EnumerateTypes(new[] { startType }, predicate);
         /// <summary>
         /// Get every type referenced by this type,
         /// including itself, Properties, Generics and Inheritance
@@ -19,16 +19,23 @@ namespace Nimrod
         // Func<int, int> fib = null;
         // fib = n => n > 1 ? fib(n – 1) + fib(n – 2) : n;
         // fib = fib.Memoize();
-        public static HashSet<Type> EnumerateTypes(IEnumerable<Type> startTypes)
+        public static HashSet<Type> EnumerateTypes(IEnumerable<Type> startTypes, Predicate<Type> predicate)
         {
             Func<Type, List<Type>> memoizedEnumerateTypes = null;
             memoizedEnumerateTypes = type =>
             {
                 try
                 {
-                    var referencedTypes = type.ReferencedTypes();
-                    var recursiveReferencedTypes = referencedTypes.SelectMany(memoizedEnumerateTypes);
-                    return referencedTypes.Union(recursiveReferencedTypes).ToList();
+                    if (predicate(type))
+                    {
+                        var referencedTypes = type.ReferencedTypes();
+                        var recursiveReferencedTypes = referencedTypes.SelectMany(memoizedEnumerateTypes);
+                        return referencedTypes.Union(recursiveReferencedTypes).ToList();
+                    }
+                    else
+                    {
+                        return new List<Type>();
+                    }
                 }
                 catch (FileNotFoundException fileNotFoundException)
                 {

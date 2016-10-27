@@ -23,7 +23,7 @@ namespace Nimrod
             ioOperations.WriteLog($"Discovering types..");
             var assembliesTypes = this.GetTypesToWrite(assemblies).ToList();
 
-            var referencedTypes = TypeDiscovery.EnumerateTypes(assembliesTypes);
+            var referencedTypes = TypeDiscovery.EnumerateTypes(assembliesTypes, t => !t.IsSystem());
 
             var types = referencedTypes
                 // if a generic, get the type definition, not the actual implementation
