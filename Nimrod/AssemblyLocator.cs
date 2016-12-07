@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -20,15 +21,25 @@ namespace Nimrod
 
         static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
+            var assemblyName = new AssemblyName(args.Name);
             Assembly assembly;
-            assemblies.TryGetValue(args.Name, out assembly);
+            assemblies.TryGetValue(assemblyName.Name, out assembly);
+
+            // an assembly has been requested somewhere, but we don't load it
+            Debug.Assert(assembly != null);
             return assembly;
         }
 
         static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
         {
-            Assembly assembly = args.LoadedAssembly;
-            assemblies[assembly.FullName] = assembly;
+            var assembly = args.LoadedAssembly;
+            var assemblyName = assembly.GetName();
+
+            // Note that we load assembly by name, not full name
+            // This means that we forgot the version number
+            // we should handle the version number too,
+            // but take into account that we want to deliver the assembly if we don't find the exact same version number
+            assemblies.TryAdd(assemblyName.Name, assembly);
         }
     }
 }
