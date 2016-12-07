@@ -1,7 +1,7 @@
 {
   "name": "grunt-nimrod",
   "description": "An .NET Controller to TypeScript Converter",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "homepage": "https://github.com/resgroup/nimrod",
   "contributors": [
     {
@@ -38,14 +38,14 @@
   },
   "devDependencies": {
     "@types/node": "^6.0.41",
+    "@types/grunt": "^0.4.20",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-nodeunit": "^1.0.0",
     "grunt-exec": "^1.0.1",
     "grunt-ts": "^6.0.0-beta.3",
-    "grunt-typings": "^0.1.5",
-    "typescript": "^2.0.3"
+    "typescript": "^2.0.10"
   },
   "keywords": [
     "typescript c# .net asp.netmvc converter"

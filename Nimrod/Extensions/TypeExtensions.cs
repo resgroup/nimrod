@@ -38,7 +38,10 @@ namespace Nimrod
 
         public static bool IsWebController(this Type type)
             => typeof(System.Web.Mvc.Controller).IsAssignableFrom(type)
-            || typeof(System.Web.Http.Controllers.IHttpController).IsAssignableFrom(type);
+            || typeof(System.Web.Http.Controllers.IHttpController).IsAssignableFrom(type)
+            || typeof(System.Web.Http.ApiController).IsAssignableFrom(type)
+            || System.Reflection.TypeExtensions.IsAssignableFrom(type, typeof(System.Web.Http.ApiController));
+
 
 
         public static bool IsBuiltinType(this Type type) => BuiltinTypes.Contains(type);

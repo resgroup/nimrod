@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+
 namespace Nimrod
 {
     public static class TypeDiscovery
@@ -23,22 +24,23 @@ namespace Nimrod
             Func<Type, List<Type>> memoizedEnumerateTypes = null;
             memoizedEnumerateTypes = type =>
             {
-                try
-                {
-                    var referencedTypes = type.ReferencedTypes();
-                    var recursiveReferencedTypes = referencedTypes.SelectMany(memoizedEnumerateTypes);
-                    return referencedTypes.Where(t => !t.IsSystem())
-                                          .Union(recursiveReferencedTypes).ToList();
-                }
-                catch (FileNotFoundException fileNotFoundException)
-                {
-                    // during reflection, a type could be found without finding is corrsponding DLLs for reference
-                    string message = $@"
-Cannot understand the property of type {type.FullName}.
-The following DLL has not been found in the loaded assemblies: {fileNotFoundException.FileName}
-You should check that the DLLs exists in the folder, and version numbers are the sames.";
-                    throw new FileNotFoundException(message, fileNotFoundException.FileName, fileNotFoundException);
-                }
+                //   try
+                //  {
+
+                var referencedTypes = type.ReferencedTypes();
+                var recursiveReferencedTypes = referencedTypes.SelectMany(memoizedEnumerateTypes);
+                return referencedTypes.Where(t => !t.IsSystem())
+                                      .Union(recursiveReferencedTypes).ToList();
+                /*    }
+                    catch (FileNotFoundException fileNotFoundException)
+                    {
+                        // during reflection, a type could be found without finding is corrsponding DLLs for reference
+                        string message = $@"
+    Cannot understand the property of type {type.FullName}.
+    The following DLL has not been found in the loaded assemblies: {fileNotFoundException.FileName}
+    You should check that the DLLs exists in the folder, and version numbers are the sames.";
+                        throw new FileNotFoundException(message, fileNotFoundException.FileName, fileNotFoundException);
+                    }*/
             };
 
             // provide a default value
@@ -65,9 +67,27 @@ You should check that the DLLs exists in the folder, and version numbers are the
             else
             {
                 var baseTypes = type.GetBaseTypes();
-                var properties = type.GetProperties()
+                var properties = System.Reflection.TypeExtensions.GetProperties(type, BindingFlags.Public | BindingFlags.Instance)
                     // properties (filter indexers http://stackoverflow.com/questions/1347936/indentifying-a-custom-indexer-using-reflection-in-c-sharp)
-                    .Where(p => p.GetIndexParameters().Length == 0)
+                    .Where(p =>
+                    {
+                        try
+                        {
+                            var aa = p;
+                            var bb = p.GetIndexParameters();
+                            return p.GetIndexParameters().Length == 0;
+                        }
+
+                        catch (FileNotFoundException fileNotFoundException)
+                        {
+                            // during reflection, a type could be found without finding is corrsponding DLLs for reference
+                            string message = $@"
+Cannot understand the property {p.Name} of type {type.FullName}.
+The following DLL has not been found in the loaded assemblies: {fileNotFoundException.FileName}
+You should check that the DLLs exists in the folder, and version numbers are the sames.";
+                            throw new FileNotFoundException(message, fileNotFoundException.FileName, fileNotFoundException);
+                        }
+                    })
                     .Select(t => t.PropertyType);
                 return generics.Union(properties).Union(baseTypes).Union(type).ToHashSet();
             }

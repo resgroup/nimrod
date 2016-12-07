@@ -6,6 +6,7 @@
  * Licensed under the MIT license.
  */
 import * as child from 'child_process';
+import * as grunt from 'grunt';
 
 export interface IGruntNimrodOptions {
     exe?: string;
