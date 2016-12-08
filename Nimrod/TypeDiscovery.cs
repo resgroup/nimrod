@@ -67,30 +67,42 @@ namespace Nimrod
             else
             {
                 var baseTypes = type.GetBaseTypes();
-                var properties = System.Reflection.TypeExtensions.GetProperties(type, BindingFlags.Public | BindingFlags.Instance)
+                var properties = type.GetProperties()
+                       .Select(property =>
+                       {
+                           try
+                           {
+                               // extract information of the type
+                               // this can throw if the type is not understandable
+                               // because its assembly has not been loaded
+                               return new
+                               {
+                                   Type = property,
+                                   PropertyType = property.PropertyType,
+                                   IndexParameters = property.GetIndexParameters()
+                               };
+                           }
+                           catch (FileNotFoundException fileNotFoundException)
+                           {
+                               string message = ThrowUnavailableAssembly(fileNotFoundException, property, type);
+                               throw new FileNotFoundException(message, fileNotFoundException.FileName, fileNotFoundException);
+                           }
+                       })
                     // properties (filter indexers http://stackoverflow.com/questions/1347936/indentifying-a-custom-indexer-using-reflection-in-c-sharp)
-                    .Where(p =>
-                    {
-                        try
-                        {
-                            var aa = p;
-                            var bb = p.GetIndexParameters();
-                            return p.GetIndexParameters().Length == 0;
-                        }
+                    .Where(a => a.IndexParameters.Length == 0)
+                    .Select(a => a.PropertyType);
 
-                        catch (FileNotFoundException fileNotFoundException)
-                        {
-                            // during reflection, a type could be found without finding is corrsponding DLLs for reference
-                            string message = $@"
-Cannot understand the property {p.Name} of type {type.FullName}.
-The following DLL has not been found in the loaded assemblies: {fileNotFoundException.FileName}
-You should check that the DLLs exists in the folder, and version numbers are the sames.";
-                            throw new FileNotFoundException(message, fileNotFoundException.FileName, fileNotFoundException);
-                        }
-                    })
-                    .Select(t => t.PropertyType);
                 return generics.Union(properties).Union(baseTypes).Union(type).ToHashSet();
             }
+        }
+        private static string ThrowUnavailableAssembly(FileNotFoundException exception, PropertyInfo p, Type type)
+        {
+
+            // during reflection, a type could be found without finding is corrsponding DLLs for reference
+            return $@"
+Cannot understand the property {p.Name} of type {type.FullName}.
+The following DLL has not been found in the loaded assemblies: {exception.FileName}
+You should check that the DLLs exists in the folder, and version numbers are the sames.";
         }
 
         static public IEnumerable<Type> GetWebControllers(IEnumerable<Assembly> assemblies)

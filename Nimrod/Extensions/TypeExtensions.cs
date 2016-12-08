@@ -37,11 +37,13 @@ namespace Nimrod
             }.ToHashSet();
 
         public static bool IsWebController(this Type type)
-            => typeof(System.Web.Mvc.Controller).IsAssignableFrom(type)
-            || typeof(System.Web.Http.Controllers.IHttpController).IsAssignableFrom(type)
-            || typeof(System.Web.Http.ApiController).IsAssignableFrom(type)
-            || System.Reflection.TypeExtensions.IsAssignableFrom(type, typeof(System.Web.Http.ApiController));
-
+        {
+            var interfaces = type.GetInterfaces().Select(interfac => interfac.FullName).ToHashSet();
+            var bases = type.GetBaseTypes().Select(baseType => baseType.FullName).ToHashSet();
+            return bases.Contains("System.Web.Mvc.Controller")
+                 || bases.Contains("System.Web.Http.ApiController")
+                 || interfaces.Contains("System.Web.Http.Controllers.IHttpController");
+        }
 
 
         public static bool IsBuiltinType(this Type type) => BuiltinTypes.Contains(type);

@@ -8,29 +8,27 @@ namespace Nimrod
 {
     public static class MethodExtensions
     {
-        public static readonly Dictionary<Type, HttpMethodAttribute> TypeToHttpMethodAttribute = new Dictionary<Type, HttpMethodAttribute> {
-            { typeof(System.Web.Mvc.HttpGetAttribute), HttpMethodAttribute.Get },
-            { typeof(System.Web.Http.HttpGetAttribute), HttpMethodAttribute.Get },
-            { typeof(System.Web.Mvc.HttpPostAttribute), HttpMethodAttribute.Post },
-            { typeof(System.Web.Http.HttpPostAttribute), HttpMethodAttribute.Post },
-            { typeof(System.Web.Mvc.HttpPutAttribute), HttpMethodAttribute.Put },
-            { typeof(System.Web.Http.HttpPutAttribute), HttpMethodAttribute.Put },
-            { typeof(System.Web.Mvc.HttpDeleteAttribute), HttpMethodAttribute.Delete },
-            { typeof(System.Web.Http.HttpDeleteAttribute), HttpMethodAttribute.Delete },
+        private static readonly TryGetFunc<Type, HttpMethodAttribute> TypeToHttpMethodAttributeDelegate = (Type attributeType, out HttpMethodAttribute result) =>
+        {
+            switch (attributeType.Name)
+            {
+                case "HttpGetAttribute": result = HttpMethodAttribute.Get; return true;
+                case "HttpPostAttribute": result = HttpMethodAttribute.Post; return true;
+                case "HttpDeleteAttribute": result = HttpMethodAttribute.Delete; return true;
+                case "HttpPutAttribute": result = HttpMethodAttribute.Put; return true;
+                default: result = HttpMethodAttribute.Get; return false;
+            }
         };
-
-        static TryGetFunc<Type, HttpMethodAttribute> TypeToHttpMethodAttributeDelegate = TypeToHttpMethodAttribute.TryGetValue;
-
         /// <summary>
         /// returns the first Attribut of type HttpMethod found
         /// </summary>
         /// <param name="method"></param>
         /// <returns></returns>
         public static HttpMethodAttribute? FirstOrDefaultHttpMethodAttribute(this MethodInfo method)
-            => method.GetCustomAttributes(true)
-                     .Select(attribute => attribute.GetType())
-                     .ApplyTryGet(TypeToHttpMethodAttributeDelegate)
-                     .FirstOrNullable();
+               => method.GetCustomAttributes(true)
+                                 .Select(attribute => attribute.GetType())
+                                 .ApplyTryGet(TypeToHttpMethodAttributeDelegate)
+                                 .FirstOrNullable();
 
         /// <summary>
         /// Returns the return type and the arguments type of the method
