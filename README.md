@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/cyrilgandon/nimrod.svg)](https://travis-ci.org/cyrilgandon/nimrod)
 [![npm version](https://badge.fury.io/js/grunt-nimrod.svg)](https://badge.fury.io/js/grunt-nimrod)
 
 Nimrod
